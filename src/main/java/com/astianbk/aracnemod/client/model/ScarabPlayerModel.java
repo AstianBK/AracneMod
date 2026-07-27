@@ -6,15 +6,15 @@ package com.astianbk.aracnemod.client.model;// Made with Blockbench 5.1.5
 import com.astianbk.aracnemod.AracneMod;
 import com.astianbk.aracnemod.client.ScarabRenderState;
 import net.minecraft.client.animation.KeyframeAnimation;
-import net.minecraft.client.animation.KeyframeAnimations;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.resources.Identifier;
 
-public class ScarabModel<T extends ScarabRenderState> extends EntityModel<T> {
+public class ScarabPlayerModel<T extends AvatarRenderState> extends EntityModel<T> {
 	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Identifier.fromNamespaceAndPath(AracneMod.MODID, "scarab_entity"), "main");
 	private final ModelPart truemain;
 	private final ModelPart main;
@@ -58,7 +58,7 @@ public class ScarabModel<T extends ScarabRenderState> extends EntityModel<T> {
 	private KeyframeAnimation attack2;
 	private KeyframeAnimation bite;
 	private KeyframeAnimation idle;
-	public ScarabModel(ModelPart root) {
+	public ScarabPlayerModel(ModelPart root) {
         super(root);
         this.truemain = root.getChild("truemain");
 		this.main = this.truemain.getChild("main");
@@ -259,11 +259,10 @@ public class ScarabModel<T extends ScarabRenderState> extends EntityModel<T> {
 
 		this.walkBody.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
 		this.walkLegs.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
-		this.idle.apply(state.idle,state.ageInTicks);
-		this.attack1.apply(state.attack1,state.ageInTicks,0.2F);
-		this.attack2.apply(state.attack2,state.ageInTicks,0.2F);
-
-		this.bite.apply(state.bite,state.ageInTicks,0.2F);
-
+//		this.idle.apply(state.idle,state.ageInTicks);
+//		this.attack1.apply(state.attack1,state.ageInTicks,0.75F);
+//		this.attack2.apply(state.attack2,state.ageInTicks,0.75F);
+//
+//		this.bite.apply(state.bite,state.ageInTicks,0.75F);
 	}
 }

@@ -1,0 +1,11 @@
+{
+  "type": "aracnemod:void",
+  "generator": {
+    "type": "minecraft:noise",
+    "settings": "aracnemod:void",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "minecraft:plains"
+    }
+  }
+}

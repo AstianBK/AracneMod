@@ -5,9 +5,15 @@ import com.astianbk.aracnemod.common.registry.NRegistry;
 import com.astianbk.aracnemod.server.ScarabEntity;
 import com.astianbk.aracnemod.server.cap.NerubianCap;
 import com.astianbk.aracnemod.server.network.PacketNerubianData;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
@@ -111,9 +117,15 @@ public class Events {
     @SubscribeEvent
     public static void onUse(PlayerInteractEvent.RightClickItem event){
         NerubianCap.get(event.getEntity()).ifPresent(e->{
-            e.timeQuest = 2000;
-            e.currentQuest = QuestManager.getQuests().stream().findAny().orElse(null);
-            AracneMod.LOGGER.info("{}",e.currentQuest.getType());
+            if (event.getLevel().isClientSide())return;
+            ServerLevel level =
+                    ((ServerLevel)event.getLevel()).getServer().getLevel(ResourceKey.create(
+                            Registries.DIMENSION,
+                            Identifier.fromNamespaceAndPath("aracnemod", "void")
+                    ));
+            event.getEntity().teleport(new TeleportTransition(level,new BlockPos(0,60,0).getBottomCenter(), Vec3.ZERO,0.0F,0.0F,(entity)->{
+
+            }));
         });
     }
 

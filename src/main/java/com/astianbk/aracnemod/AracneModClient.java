@@ -3,6 +3,7 @@ package com.astianbk.aracnemod;
 import com.astianbk.aracnemod.client.ScarabRenderer;
 import com.astianbk.aracnemod.client.gui.IdolSpeechGui;
 import com.astianbk.aracnemod.client.model.ScarabModel;
+import com.astianbk.aracnemod.client.model.ScarabPlayerModel;
 import com.astianbk.aracnemod.common.registry.NRegistry;
 import com.astianbk.aracnemod.server.cap.NerubianCap;
 import com.google.common.base.Suppliers;
@@ -12,8 +13,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.model.EquipmentAssetManager;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
@@ -29,7 +37,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RenderArmEvent;
@@ -37,6 +44,8 @@ import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+
+import javax.swing.*;
 
 // This class will not load on dedicated servers. Accessing client side code from here is safe.
 @Mod(value = AracneMod.MODID, dist = Dist.CLIENT)
@@ -54,8 +63,8 @@ public class AracneModClient {
 
     @SubscribeEvent
     public static void registerModel(EntityRenderersEvent.RegisterLayerDefinitions event){
-        event.registerLayerDefinition(ScarabModel.LAYER_LOCATION, Suppliers.ofInstance(ScarabModel.createBodyLayer(new CubeDeformation(0.0F))));
-        event.registerLayerDefinition(ScarabModel.ARMOR_LOCATION,Suppliers.ofInstance(ScarabModel.createBodyLayer(new CubeDeformation(1.0F))));
+        event.registerLayerDefinition(ScarabModel.LAYER_LOCATION, Suppliers.ofInstance(ScarabModel.createBodyLayer()));
+//        event.registerLayerDefinition(ScarabModel.ARMOR_LOCATION,Suppliers.ofInstance(ScarabModel.createBodyLayer(new CubeDeformation(1.0F))));
     }
 
     @SubscribeEvent
@@ -67,10 +76,12 @@ public class AracneModClient {
         if (event.getRenderState().entityType == EntityType.PLAYER){
             AbstractClientPlayer player = Minecraft.getInstance().player;
             NerubianCap.get(player).ifPresent(nerubianCap -> {
-                if (nerubianCap.transformComplete){
-//                    EntityRendererProvider.Context context = new EntityRendererProvider.Context(Minecraft.getInstance().getEntityRenderDispatcher(),Minecraft.getInstance().getItemModelResolver(), Minecraft.getInstance().getBlockModelResolver(),Minecraft.getInstance().gameRenderer.itemInHandRenderer,Minecraft.getInstance().getResourceManager(),Minecraft.getInstance().getEntityModels(),Minecraft.getInstance().font);
-//                    ScarabModel model = new ScarabModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(ScarabModel.LAYER_LOCATION));
-//                    ScarabRenderer renderer = new ScarabRenderer(context,model);
+                if (!nerubianCap.transformComplete){
+                    AracneMod.LOGGER.info("lore");
+                    Minecraft mc = Minecraft.getInstance();
+                    EntityRendererProvider.Context context = new EntityRendererProvider.Context(mc.getEntityRenderDispatcher(),mc.getBlockModelResolver(),mc.getItemModelResolver(),mc.getMapRenderer(),mc.getResourceManager(),mc.getEntityModels(),new EquipmentAssetManager(),mc.getAtlasManager(),mc.font,mc.playerSkinRenderCache());
+                    ScarabPlayerRenderer renderer = new ScarabPlayerRenderer(context);
+                    ScarabPlayerModel model = new ScarabPlayerModel<>(context.bakeLayer(ScarabPlayerModel.LAYER_LOCATION));
 //                    ItemScarabLayer layer = new ItemScarabLayer<>(renderer,Minecraft.getInstance().gameRenderer.itemInHandRenderer);
                     PoseStack poseStack = event.getPoseStack();
                     float partialTicks = event.getPartialTick();
@@ -134,7 +145,11 @@ public class AracneModClient {
                             f4 = 1.0F;
                         }
                     }
+                    AvatarRenderState state = renderer.createRenderState();
 //                    setModelProperties(player,model);
+                    model.setupAnim((AvatarRenderState) event.getRenderState());
+
+                    model.renderToBuffer(poseStack,mc.renderBuffers().bufferSource().getBuffer(RenderTypes.entityCutout(renderer.getTextureLocation(state))), LivingEntityRenderer.getOverlayCoords(state,0.0F), OverlayTexture.NO_OVERLAY, ARGB.white(1.0F));
                     poseStack.popPose();
                 }
             });
@@ -154,13 +169,13 @@ public class AracneModClient {
                 humanoidmodel$armpose1 = clientPlayer.getOffhandItem().isEmpty() ? HumanoidModel.ArmPose.EMPTY : HumanoidModel.ArmPose.ITEM;
             }
 
-            if (clientPlayer.getMainArm() == HumanoidArm.RIGHT) {
-                playermodel.rightArmPose = humanoidmodel$armpose;
-                playermodel.leftArmPose = humanoidmodel$armpose1;
-            } else {
-                playermodel.rightArmPose = humanoidmodel$armpose1;
-                playermodel.leftArmPose = humanoidmodel$armpose;
-            }
+//            if (clientPlayer.getMainArm() == HumanoidArm.RIGHT) {
+//                playermodel.rightArmPose = humanoidmodel$armpose;
+//                playermodel.leftArmPose = humanoidmodel$armpose1;
+//            } else {
+//                playermodel.rightArmPose = humanoidmodel$armpose1;
+//                playermodel.leftArmPose = humanoidmodel$armpose;
+//            }
         }
     }
 

@@ -13,8 +13,6 @@ import net.neoforged.neoforge.client.gui.GuiLayer;
 
 public class IdolSpeechGui implements GuiLayer {
 
-
-
     @Override
     public void render(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker) {
 
