@@ -45,17 +45,27 @@ public class NRegistry {
             DeferredRegister.createItems(AracneMod.MODID);
 
     public static final DeferredBlock<Block> WEAVER_IDOL_BLOCK = BLOCKS.registerBlock("weaver_idol", WeaverIdolBlock::new);
+    public static final DeferredBlock<Block> BEDCRUST_BLOCK = BLOCKS.registerBlock("bedcrust", WeaverIdolBlock::new);
+    public static final DeferredBlock<Block> BEDSLAG_BLOCK = BLOCKS.registerBlock("bedslag", WeaverIdolBlock::new);
+    public static final DeferredBlock<Block> BEDSTONE_BLOCK = BLOCKS.registerBlock("bedstone", WeaverIdolBlock::new);
+    public static final DeferredBlock<Block> CRACKED_BEDROCK_BLOCK = BLOCKS.registerBlock("cracked_bedrock", WeaverIdolBlock::new);
 
     public static final DeferredItem<BlockItem> WEAVER_IDOL_ITEM = ITEMS.registerSimpleBlockItem("weaver_idol_item",WEAVER_IDOL_BLOCK);
+    public static final DeferredItem<BlockItem> BEDCRUST_ITEM = ITEMS.registerSimpleBlockItem("bedcrust_item",BEDCRUST_BLOCK);
+    public static final DeferredItem<BlockItem> BEDSLAG_ITEM = ITEMS.registerSimpleBlockItem("bedslag_item",BEDSLAG_BLOCK);
+    public static final DeferredItem<BlockItem> BEDSTONE_ITEM = ITEMS.registerSimpleBlockItem("bedstone_item",BEDSTONE_BLOCK);
+    public static final DeferredItem<BlockItem> CRACKED_BEDROCK_ITEM = ITEMS.registerSimpleBlockItem("cracked_bedrock_item",CRACKED_BEDROCK_BLOCK);
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> TAB = CREATIVE_MODE_TABS.register("tab", () -> CreativeModeTab.builder()
-            .title(Component.translatable("itemGroup.AracneMod")) //The language key for the title of your CreativeModeTab
+            .title(Component.translatable("itemGroup.AracneMod"))
             .withTabsBefore(CreativeModeTabs.COMBAT)
             .icon(() -> WEAVER_IDOL_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
-                output.accept(WEAVER_IDOL_ITEM.get());// Add the example item to the tab. For your own tabs, this method is preferred over the event
-
-
+                output.accept(WEAVER_IDOL_ITEM.get());
+                output.accept(BEDCRUST_ITEM.get());
+                output.accept(BEDSLAG_ITEM.get());
+                output.accept(BEDSTONE_ITEM.get());
+                output.accept(CRACKED_BEDROCK_ITEM.get());
             }).build());
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.createEntities(AracneMod.MODID);
 
@@ -63,6 +73,6 @@ public class NRegistry {
             ENTITY_TYPES.register("scarab",
                     () -> EntityType.Builder
                             .of(ScarabEntity::new, MobCategory.MONSTER)
-                            .sized(1.0F, 2.0F)
+                            .sized(1.0F, 2.0F).clientTrackingRange(10)
                             .build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(AracneMod.MODID,"scarab"))));
 }

@@ -13,6 +13,8 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.Identifier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class ScarabModel<T extends ScarabRenderState> extends EntityModel<T> {
 	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Identifier.fromNamespaceAndPath(AracneMod.MODID, "scarab_entity"), "main");
@@ -260,10 +262,10 @@ public class ScarabModel<T extends ScarabRenderState> extends EntityModel<T> {
 		this.walkBody.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
 		this.walkLegs.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
 		this.idle.apply(state.idle,state.ageInTicks);
-		this.attack1.apply(state.attack1,state.ageInTicks,0.2F);
-		this.attack2.apply(state.attack2,state.ageInTicks,0.2F);
+		this.attack1.apply(state.attack1,state.ageInTicks,0.5F);
+		this.attack2.apply(state.attack2,state.ageInTicks,0.5F);
 
-		this.bite.apply(state.bite,state.ageInTicks,0.2F);
+		this.bite.apply(state.bite,state.ageInTicks,0.5F);
 
 	}
 }

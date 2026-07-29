@@ -4,6 +4,7 @@ import com.astianbk.aracnemod.client.ScarabRenderer;
 import com.astianbk.aracnemod.client.gui.IdolSpeechGui;
 import com.astianbk.aracnemod.client.model.ScarabModel;
 import com.astianbk.aracnemod.client.model.ScarabPlayerModel;
+import com.astianbk.aracnemod.client.model.WarSpiderModel;
 import com.astianbk.aracnemod.common.registry.NRegistry;
 import com.astianbk.aracnemod.server.cap.NerubianCap;
 import com.google.common.base.Suppliers;
@@ -52,6 +53,7 @@ import javax.swing.*;
 // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
 @EventBusSubscriber(modid = AracneMod.MODID, value = Dist.CLIENT)
 public class AracneModClient {
+    public static final Identifier LOCATION = Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/war_spider/warspider.png");
     public AracneModClient(ModContainer container) {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
@@ -64,6 +66,7 @@ public class AracneModClient {
     @SubscribeEvent
     public static void registerModel(EntityRenderersEvent.RegisterLayerDefinitions event){
         event.registerLayerDefinition(ScarabModel.LAYER_LOCATION, Suppliers.ofInstance(ScarabModel.createBodyLayer()));
+        event.registerLayerDefinition(WarSpiderModel.LAYER_LOCATION,Suppliers.ofInstance(WarSpiderModel.createBodyLayer()));
 //        event.registerLayerDefinition(ScarabModel.ARMOR_LOCATION,Suppliers.ofInstance(ScarabModel.createBodyLayer(new CubeDeformation(1.0F))));
     }
 
@@ -76,12 +79,11 @@ public class AracneModClient {
         if (event.getRenderState().entityType == EntityType.PLAYER){
             AbstractClientPlayer player = Minecraft.getInstance().player;
             NerubianCap.get(player).ifPresent(nerubianCap -> {
-                if (!nerubianCap.transformComplete){
-                    AracneMod.LOGGER.info("lore");
+                if (nerubianCap.transformComplete){
                     Minecraft mc = Minecraft.getInstance();
                     EntityRendererProvider.Context context = new EntityRendererProvider.Context(mc.getEntityRenderDispatcher(),mc.getBlockModelResolver(),mc.getItemModelResolver(),mc.getMapRenderer(),mc.getResourceManager(),mc.getEntityModels(),new EquipmentAssetManager(),mc.getAtlasManager(),mc.font,mc.playerSkinRenderCache());
                     ScarabPlayerRenderer renderer = new ScarabPlayerRenderer(context);
-                    ScarabPlayerModel model = new ScarabPlayerModel<>(context.bakeLayer(ScarabPlayerModel.LAYER_LOCATION));
+                    WarSpiderModel model = new WarSpiderModel(context.bakeLayer(WarSpiderModel.LAYER_LOCATION));
 //                    ItemScarabLayer layer = new ItemScarabLayer<>(renderer,Minecraft.getInstance().gameRenderer.itemInHandRenderer);
                     PoseStack poseStack = event.getPoseStack();
                     float partialTicks = event.getPartialTick();
@@ -149,7 +151,7 @@ public class AracneModClient {
 //                    setModelProperties(player,model);
                     model.setupAnim((AvatarRenderState) event.getRenderState());
 
-                    model.renderToBuffer(poseStack,mc.renderBuffers().bufferSource().getBuffer(RenderTypes.entityCutout(renderer.getTextureLocation(state))), LivingEntityRenderer.getOverlayCoords(state,0.0F), OverlayTexture.NO_OVERLAY, ARGB.white(1.0F));
+                    model.renderToBuffer(poseStack,mc.renderBuffers().bufferSource().getBuffer(RenderTypes.entityCutout(LOCATION)), renderer.getPackedLightCoords(player,partialTicks), LivingEntityRenderer.getOverlayCoords(state,0.0F));
                     poseStack.popPose();
                 }
             });

@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "aracnemod:block/bedslag"
+      },
+      {
+        "model": "aracnemod:block/bedslag_mirrored"
+      },
+      {
+        "model": "aracnemod:block/bedslag",
+        "y": 180
+      },
+      {
+        "model": "aracnemod:block/bedslag_mirrored",
+        "y": 180
+      }
+    ]
+  }
+}

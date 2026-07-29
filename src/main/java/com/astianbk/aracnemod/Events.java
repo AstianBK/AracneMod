@@ -92,17 +92,14 @@ public class Events {
     public static void registerPackets(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(AracneMod.MODID).versioned("1.0");
 
-        registrar.playToClient(
-                PacketNerubianData.TYPE,
-                PacketNerubianData.STREAM_CODEC,
-                PacketNerubianData::handle
-        );
-
+        registrar.playToClient(PacketNerubianData.TYPE, PacketNerubianData.STREAM_CODEC, PacketNerubianData::handle);
     }
+
     @SubscribeEvent
     public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(NRegistry.SCARAB.get(), ScarabEntity.createAttributes().build());
     }
+
     @SubscribeEvent
     public static void onPick(ItemEntityPickupEvent.Pre event){
         NerubianCap.get(event.getPlayer()).ifPresent(e->{
@@ -117,15 +114,11 @@ public class Events {
     @SubscribeEvent
     public static void onUse(PlayerInteractEvent.RightClickItem event){
         NerubianCap.get(event.getEntity()).ifPresent(e->{
-            if (event.getLevel().isClientSide())return;
-            ServerLevel level =
-                    ((ServerLevel)event.getLevel()).getServer().getLevel(ResourceKey.create(
-                            Registries.DIMENSION,
-                            Identifier.fromNamespaceAndPath("aracnemod", "void")
-                    ));
-            event.getEntity().teleport(new TeleportTransition(level,new BlockPos(0,60,0).getBottomCenter(), Vec3.ZERO,0.0F,0.0F,(entity)->{
-
-            }));
+//            if (event.getLevel().isClientSide())return;
+//            ServerLevel level = ((ServerLevel)event.getLevel()).getServer().getLevel(ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath("aracnemod", "void")));
+//            event.getEntity().teleport(new TeleportTransition(level,new BlockPos(0,60,0).getBottomCenter(), Vec3.ZERO,0.0F,0.0F,(entity)->{
+//
+//            }));
         });
     }
 
