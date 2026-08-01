@@ -4,7 +4,9 @@ import com.astianbk.aracnemod.client.ScarabRenderer;
 import com.astianbk.aracnemod.client.gui.IdolSpeechGui;
 import com.astianbk.aracnemod.client.model.ScarabModel;
 import com.astianbk.aracnemod.client.model.ScarabPlayerModel;
+import com.astianbk.aracnemod.client.model.VoidKnightArmorModel;
 import com.astianbk.aracnemod.client.model.WarSpiderModel;
+import com.astianbk.aracnemod.common.items.VoidKnightArmorItem;
 import com.astianbk.aracnemod.common.registry.NRegistry;
 import com.astianbk.aracnemod.server.cap.NerubianCap;
 import com.google.common.base.Suppliers;
@@ -25,10 +27,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
@@ -67,18 +66,29 @@ public class AracneModClient {
     public static void registerModel(EntityRenderersEvent.RegisterLayerDefinitions event){
         event.registerLayerDefinition(ScarabModel.LAYER_LOCATION, Suppliers.ofInstance(ScarabModel.createBodyLayer()));
         event.registerLayerDefinition(WarSpiderModel.LAYER_LOCATION,Suppliers.ofInstance(WarSpiderModel.createBodyLayer()));
+        event.registerLayerDefinition(VoidKnightArmorModel.CHESTPLATE_LOCATION,Suppliers.ofInstance(VoidKnightArmorModel.createChestLayer()));
+        event.registerLayerDefinition(VoidKnightArmorModel.HELMET_LOCATION,Suppliers.ofInstance(VoidKnightArmorModel.createHelmetLayer()));
+        event.registerLayerDefinition(VoidKnightArmorModel.LEGGINGS_LOCATION,Suppliers.ofInstance(VoidKnightArmorModel.createLeggingsLayer()));
+        event.registerLayerDefinition(VoidKnightArmorModel.ALL_LOCATION,Suppliers.ofInstance(VoidKnightArmorModel.createBodyLayer()));
+
 //        event.registerLayerDefinition(ScarabModel.ARMOR_LOCATION,Suppliers.ofInstance(ScarabModel.createBodyLayer(new CubeDeformation(1.0F))));
     }
 
     @SubscribeEvent
     public static void RenderArm(RenderArmEvent event){
-        event.setCanceled(true);
+//        event.setCanceled(true);
     }
     @SubscribeEvent
     public static void renderModel(RenderLivingEvent.Pre event){
         if (event.getRenderState().entityType == EntityType.PLAYER){
             AbstractClientPlayer player = Minecraft.getInstance().player;
             NerubianCap.get(player).ifPresent(nerubianCap -> {
+                ((HumanoidModel)event.getRenderer().getModel()).head.visible = !(player.getItemBySlot(EquipmentSlot.HEAD).getItem() instanceof VoidKnightArmorItem);
+                ((HumanoidModel)event.getRenderer().getModel()).rightArm.visible = !(player.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof VoidKnightArmorItem);
+                ((HumanoidModel)event.getRenderer().getModel()).leftArm.visible = !(player.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof VoidKnightArmorItem);
+                ((HumanoidModel)event.getRenderer().getModel()).leftLeg.visible = !(player.getItemBySlot(EquipmentSlot.LEGS).getItem() instanceof VoidKnightArmorItem) && !(player.getItemBySlot(EquipmentSlot.FEET).getItem() instanceof VoidKnightArmorItem);
+                ((HumanoidModel)event.getRenderer().getModel()).rightLeg.visible = !(player.getItemBySlot(EquipmentSlot.LEGS).getItem() instanceof VoidKnightArmorItem) && !(player.getItemBySlot(EquipmentSlot.FEET).getItem() instanceof VoidKnightArmorItem);
+
                 if (nerubianCap.transformComplete){
                     Minecraft mc = Minecraft.getInstance();
                     EntityRendererProvider.Context context = new EntityRendererProvider.Context(mc.getEntityRenderDispatcher(),mc.getBlockModelResolver(),mc.getItemModelResolver(),mc.getMapRenderer(),mc.getResourceManager(),mc.getEntityModels(),new EquipmentAssetManager(),mc.getAtlasManager(),mc.font,mc.playerSkinRenderCache());

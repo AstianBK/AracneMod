@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "aracnemod:void"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "aracnemod:void"
+      }
+    ]
+  }
+}

@@ -52,7 +52,7 @@ public class NerubianCap {
     public boolean isDirty = false;
     ServerBossEvent event =  Util.make(
             new ServerBossEvent(UUID.randomUUID(), Component.literal("this.getDisplayName()"), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS),
-            e -> e.setDarkenScreen(true)
+            e -> e.setDarkenScreen(false)
     );
 
     public String getTimeInMinuteAndSeconds(){

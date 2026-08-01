@@ -91,6 +91,7 @@ public class ScarabEntity extends PathfinderMob {
             setYBodyRot(yaw);
             setYHeadRot(yaw);
         }
+
         if (this.level().isClientSide()){
             this.setupAnimation();
         }

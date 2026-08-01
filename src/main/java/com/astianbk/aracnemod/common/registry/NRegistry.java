@@ -2,19 +2,24 @@ package com.astianbk.aracnemod.common.registry;
 
 import com.astianbk.aracnemod.AracneMod;
 import com.astianbk.aracnemod.common.block.WeaverIdolBlock;
+import com.astianbk.aracnemod.common.items.VoidKnightArmorItem;
+import com.astianbk.aracnemod.common.items.VoidMaterial;
 import com.astianbk.aracnemod.server.ScarabEntity;
 import com.astianbk.aracnemod.server.cap.NerubianCap;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -29,6 +34,8 @@ public class NRegistry {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, AracneMod.MODID);
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENTS =
             DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, AracneMod.MODID);
+    public static final DeferredRegister<MobEffect> EFFECTS =
+            DeferredRegister.create(Registries.MOB_EFFECT, AracneMod.MODID);
 
     public static final Supplier<AttachmentType<NerubianCap>> ARACNE =
             ATTACHMENTS.register(
@@ -55,9 +62,14 @@ public class NRegistry {
     public static final DeferredItem<BlockItem> BEDSLAG_ITEM = ITEMS.registerSimpleBlockItem("bedslag_item",BEDSLAG_BLOCK);
     public static final DeferredItem<BlockItem> BEDSTONE_ITEM = ITEMS.registerSimpleBlockItem("bedstone_item",BEDSTONE_BLOCK);
     public static final DeferredItem<BlockItem> CRACKED_BEDROCK_ITEM = ITEMS.registerSimpleBlockItem("cracked_bedrock_item",CRACKED_BEDROCK_BLOCK);
+    public static final DeferredItem<Item> VOID_HELMET = ITEMS.registerItem("void_helmet",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.HELMET).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_helmet" )))));
 
+    public static final DeferredItem<Item> VOID_CHESTPLATE = ITEMS.registerItem("void_chestplate",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.CHESTPLATE).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_chestplate" )))));
+    public static final DeferredItem<Item> VOID_LEGGINGS = ITEMS.registerItem("void_leggings",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.LEGGINGS).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_leggings" )))));
+
+    public static final DeferredItem<Item> VOID_BOOTS = ITEMS.registerItem("void_boots",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.BOOTS).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_boots" )))));
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> TAB = CREATIVE_MODE_TABS.register("tab", () -> CreativeModeTab.builder()
-            .title(Component.translatable("itemGroup.AracneMod"))
+            .title(Component.translatable("itemGroup.aracnemod"))
             .withTabsBefore(CreativeModeTabs.COMBAT)
             .icon(() -> WEAVER_IDOL_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
@@ -66,6 +78,8 @@ public class NRegistry {
                 output.accept(BEDSLAG_ITEM.get());
                 output.accept(BEDSTONE_ITEM.get());
                 output.accept(CRACKED_BEDROCK_ITEM.get());
+
+
             }).build());
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.createEntities(AracneMod.MODID);
 
@@ -73,6 +87,6 @@ public class NRegistry {
             ENTITY_TYPES.register("scarab",
                     () -> EntityType.Builder
                             .of(ScarabEntity::new, MobCategory.MONSTER)
-                            .sized(1.0F, 2.0F).clientTrackingRange(10)
+                            .sized(1.0F, 2.0F).clientTrackingRange(10).updateInterval(2)
                             .build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(AracneMod.MODID,"scarab"))));
 }
