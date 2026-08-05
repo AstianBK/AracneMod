@@ -1,11 +1,9 @@
 package com.astianbk.aracnemod;
 
-import com.astianbk.aracnemod.client.ScarabRenderer;
+import com.astianbk.aracnemod.client.renderer.ScarabRenderer;
 import com.astianbk.aracnemod.client.gui.IdolSpeechGui;
-import com.astianbk.aracnemod.client.model.ScarabModel;
-import com.astianbk.aracnemod.client.model.ScarabPlayerModel;
-import com.astianbk.aracnemod.client.model.VoidKnightArmorModel;
-import com.astianbk.aracnemod.client.model.WarSpiderModel;
+import com.astianbk.aracnemod.client.model.*;
+import com.astianbk.aracnemod.client.renderer.VoidNeedleRenderer;
 import com.astianbk.aracnemod.common.items.VoidKnightArmorItem;
 import com.astianbk.aracnemod.common.registry.NRegistry;
 import com.astianbk.aracnemod.server.cap.NerubianCap;
@@ -14,17 +12,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.EquipmentAssetManager;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.*;
@@ -32,24 +27,18 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
-import net.neoforged.neoforge.client.event.RenderArmEvent;
-import net.neoforged.neoforge.client.event.RenderLivingEvent;
+import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
-import javax.swing.*;
-
-// This class will not load on dedicated servers. Accessing client side code from here is safe.
 @Mod(value = AracneMod.MODID, dist = Dist.CLIENT)
-// You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
 @EventBusSubscriber(modid = AracneMod.MODID, value = Dist.CLIENT)
 public class AracneModClient {
     public static final Identifier LOCATION = Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/war_spider/warspider.png");
@@ -64,6 +53,7 @@ public class AracneModClient {
 
     @SubscribeEvent
     public static void registerModel(EntityRenderersEvent.RegisterLayerDefinitions event){
+        event.registerLayerDefinition(VoidNeedleModel.LAYER_LOCATION,Suppliers.ofInstance(VoidNeedleModel.createBodyLayer()));
         event.registerLayerDefinition(ScarabModel.LAYER_LOCATION, Suppliers.ofInstance(ScarabModel.createBodyLayer()));
         event.registerLayerDefinition(WarSpiderModel.LAYER_LOCATION,Suppliers.ofInstance(WarSpiderModel.createBodyLayer()));
         event.registerLayerDefinition(VoidKnightArmorModel.CHESTPLATE_LOCATION,Suppliers.ofInstance(VoidKnightArmorModel.createChestLayer()));
@@ -84,6 +74,7 @@ public class AracneModClient {
             AbstractClientPlayer player = Minecraft.getInstance().player;
             NerubianCap.get(player).ifPresent(nerubianCap -> {
                 ((HumanoidModel)event.getRenderer().getModel()).head.visible = !(player.getItemBySlot(EquipmentSlot.HEAD).getItem() instanceof VoidKnightArmorItem);
+
                 ((HumanoidModel)event.getRenderer().getModel()).rightArm.visible = !(player.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof VoidKnightArmorItem);
                 ((HumanoidModel)event.getRenderer().getModel()).leftArm.visible = !(player.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof VoidKnightArmorItem);
                 ((HumanoidModel)event.getRenderer().getModel()).leftLeg.visible = !(player.getItemBySlot(EquipmentSlot.LEGS).getItem() instanceof VoidKnightArmorItem) && !(player.getItemBySlot(EquipmentSlot.FEET).getItem() instanceof VoidKnightArmorItem);
@@ -146,6 +137,7 @@ public class AracneModClient {
                     poseStack.translate(0.0F, -1.501F, 0.0F);
                     float f4 = 0.0F;
                     float f5 = 0.0F;
+
                     if (!shouldSit && player.isAlive()) {
                         f4 = player.walkAnimation.speed(partialTicks);
                         f5 = player.walkAnimation.position(partialTicks);
@@ -157,6 +149,7 @@ public class AracneModClient {
                             f4 = 1.0F;
                         }
                     }
+
                     AvatarRenderState state = renderer.createRenderState();
 //                    setModelProperties(player,model);
                     model.setupAnim((AvatarRenderState) event.getRenderState());
@@ -165,7 +158,6 @@ public class AracneModClient {
                     poseStack.popPose();
                 }
             });
-
         }
     }
 
@@ -276,6 +268,13 @@ public class AracneModClient {
                 return 0.0F;
         }
     }
+    @SubscribeEvent
+    public static void fogRender(ViewportEvent.RenderFog event){
+        if (Minecraft.getInstance().player.level().dimension()==NRegistry.THE_VOID){
+
+            event.setFarPlaneDistance(500.0F);
+        }
+    }
 
 
     @SubscribeEvent
@@ -284,6 +283,7 @@ public class AracneModClient {
     }
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(NRegistry.VOID_NEEDLE.get(), VoidNeedleRenderer::new);
         event.registerEntityRenderer(NRegistry.SCARAB.get(), ScarabRenderer::new);
     }
 }
