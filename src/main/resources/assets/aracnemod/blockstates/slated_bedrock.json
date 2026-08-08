@@ -1,0 +1,9 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "aracnemod:block/slated_bedrock"
+      }
+    ]
+  }
+}

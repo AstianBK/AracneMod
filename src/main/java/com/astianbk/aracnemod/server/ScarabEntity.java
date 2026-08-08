@@ -71,7 +71,6 @@ public class ScarabEntity extends PathfinderMob {
 
     @Override
     public void tick() {
-
         super.tick();
         if (entityData.get(ATTACKING)){
             this.attackTimer--;

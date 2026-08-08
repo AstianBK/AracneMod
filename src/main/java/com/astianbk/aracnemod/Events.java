@@ -3,6 +3,7 @@ package com.astianbk.aracnemod;
 import com.astianbk.aracnemod.common.quests.QuestManager;
 import com.astianbk.aracnemod.common.registry.NRegistry;
 import com.astianbk.aracnemod.server.ScarabEntity;
+import com.astianbk.aracnemod.server.VoidNeedleEntity;
 import com.astianbk.aracnemod.server.cap.NerubianCap;
 import com.astianbk.aracnemod.server.network.PacketNerubianData;
 import net.minecraft.core.BlockPos;
@@ -12,6 +13,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -24,6 +27,7 @@ import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -98,6 +102,7 @@ public class Events {
     @SubscribeEvent
     public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(NRegistry.SCARAB.get(), ScarabEntity.createAttributes().build());
+        event.put(NRegistry.VOID_NEEDLE.get(), ScarabEntity.createAttributes().build());
     }
 
     @SubscribeEvent
@@ -113,12 +118,13 @@ public class Events {
 
     @SubscribeEvent
     public static void onUse(PlayerInteractEvent.RightClickItem event){
+        if (!event.getItemStack().getItem().equals(Items.STICK))return;
         NerubianCap.get(event.getEntity()).ifPresent(e->{
-//            if (event.getLevel().isClientSide())return;
-//            ServerLevel level = ((ServerLevel)event.getLevel()).getServer().getLevel(ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath("aracnemod", "void")));
-//            event.getEntity().teleport(new TeleportTransition(level,new BlockPos(0,60,0).getBottomCenter(), Vec3.ZERO,0.0F,0.0F,(entity)->{
-//
-//            }));
+            if (event.getLevel().isClientSide())return;
+            ServerLevel level = ((ServerLevel)event.getLevel()).getServer().getLevel(ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath("aracnemod", "void")));
+            event.getEntity().teleport(new TeleportTransition(level,new BlockPos(0,252,0).getBottomCenter(), Vec3.ZERO,0.0F,0.0F,(entity)->{
+
+            }));
         });
     }
 

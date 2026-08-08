@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/pointed_dripstone",
+  "textures": {
+    "cross": "aracnemod:block/pointed_bedrock_up_tip"
+  }
+}

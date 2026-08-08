@@ -5,7 +5,11 @@ import com.astianbk.aracnemod.server.ScarabEntity;
 import com.astianbk.aracnemod.server.cap.NCapability;
 import com.astianbk.aracnemod.server.cap.NerubianCap;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import org.slf4j.Logger;
 
@@ -54,17 +58,21 @@ public class AracneMod {
 
 
         NRegistry.ATTACHMENTS.register(modEventBus);
+        NRegistry.CHUNK_GENERATORS.register(modEventBus);
         NRegistry.BLOCKS.register(modEventBus);
         NRegistry.ITEMS.register(modEventBus);
         NRegistry.CREATIVE_MODE_TABS.register(modEventBus);
         NRegistry.ENTITY_TYPES.register(modEventBus);
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
+        NeoForge.EVENT_BUS.addListener(this::skyRender);
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
-
+    public void skyRender(ExtractLevelRenderStateEvent event){
+        event.getRenderState().skyRenderState.skybox = DimensionType.Skybox.NONE;
+    }
 
     private void commonSetup(FMLCommonSetupEvent event) {
         // Some common setup code

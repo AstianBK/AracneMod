@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "aracnemod:block/cobbled_bedrock"
+  }
+}
