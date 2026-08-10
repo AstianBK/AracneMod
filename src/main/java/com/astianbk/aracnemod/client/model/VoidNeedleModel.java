@@ -5,6 +5,9 @@ package com.astianbk.aracnemod.client.model;// Made with Blockbench 5.1.6
 
 import com.astianbk.aracnemod.AracneMod;
 import com.astianbk.aracnemod.client.NeedleRenderState;
+import com.astianbk.aracnemod.client.anim.VoidNeedleAnim;
+import com.astianbk.aracnemod.server.VoidNeedleEntity;
+import net.minecraft.client.animation.KeyframeAnimation;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -34,7 +37,11 @@ public class VoidNeedleModel<T extends NeedleRenderState> extends EntityModel<T>
 	private final ModelPart sectionleft3;
 	private final ModelPart rightwing1;
 	private final ModelPart leftwing1;
-
+	private KeyframeAnimation attack1;
+	private KeyframeAnimation change;
+	private KeyframeAnimation bite;
+	private KeyframeAnimation idle;
+	private KeyframeAnimation wingsState;
 	public VoidNeedleModel(ModelPart root) {
         super(root);
         this.truemain = root.getChild("truemain");
@@ -57,6 +64,9 @@ public class VoidNeedleModel<T extends NeedleRenderState> extends EntityModel<T>
 		this.sectionleft3 = this.loweleftleg3.getChild("sectionleft3");
 		this.rightwing1 = this.main.getChild("rightwing1");
 		this.leftwing1 = this.main.getChild("leftwing1");
+		this.wingsState = VoidNeedleAnim.wingson.bake(root);
+		this.idle= VoidNeedleAnim.idle.bake(root);
+		this.change = VoidNeedleAnim.startcharge.bake(root);
 	}
 
 	public static LayerDefinition createBodyLayer() {
@@ -111,4 +121,16 @@ public class VoidNeedleModel<T extends NeedleRenderState> extends EntityModel<T>
 		return LayerDefinition.create(meshdefinition, 64, 64);
 	}
 
+	@Override
+	public void setupAnim(T state) {
+		super.setupAnim(state);
+		this.change.apply(state.change,state.ageInTicks,1.0F);
+		this.idle.apply(state.idle,state.ageInTicks,1.0F);
+		this.wingsState.apply(state.idle,state.ageInTicks,1.0F);
+
+		this.truemain.yRot = state.yRot* 0.017453292F;
+		if (state.phase == VoidNeedleEntity.AttackPhase.CHARGE){
+			this.truemain.xRot = state.xRot* 0.017453292F + 90.0F * 0.017453292F;
+		}
+	}
 }

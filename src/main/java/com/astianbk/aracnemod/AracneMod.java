@@ -1,46 +1,22 @@
 package com.astianbk.aracnemod;
 
 import com.astianbk.aracnemod.common.registry.NRegistry;
-import com.astianbk.aracnemod.server.ScarabEntity;
-import com.astianbk.aracnemod.server.cap.NCapability;
-import com.astianbk.aracnemod.server.cap.NerubianCap;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.world.level.dimension.DimensionType;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.MapColor;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(AracneMod.MODID)
@@ -63,6 +39,7 @@ public class AracneMod {
         NRegistry.ITEMS.register(modEventBus);
         NRegistry.CREATIVE_MODE_TABS.register(modEventBus);
         NRegistry.ENTITY_TYPES.register(modEventBus);
+        NRegistry.EFFECTS.register(modEventBus);
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
         NeoForge.EVENT_BUS.addListener(this::skyRender);
@@ -91,4 +68,10 @@ public class AracneMod {
 
     }
 
+    public static class NeedleRenderState extends LivingEntityRenderState {
+
+        public NeedleRenderState(){
+
+        }
+    }
 }

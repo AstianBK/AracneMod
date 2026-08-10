@@ -13,7 +13,6 @@ import java.util.*;
 
 public class IslandManager {
     private final WorldNoise noise;
-    private final Map<Long, List<IslandSource>> islandCache = new HashMap<>();
     private long seed;
     public IslandManager(long seed) {
         this.seed = seed;
@@ -109,7 +108,7 @@ public class IslandManager {
         for (int localX = 0; localX < 16; localX++) {
             for (int localZ = 0; localZ < 16; localZ++) {
 
-                pos.set(minX + localX, 319, minZ + localZ);
+                pos.set(minX + localX, 399, minZ + localZ);
                 chunk.setBlockState(pos, Blocks.BEDROCK.defaultBlockState());
 
             }

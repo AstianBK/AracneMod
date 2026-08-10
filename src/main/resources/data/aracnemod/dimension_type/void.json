@@ -8,7 +8,10 @@
         "sound": "minecraft:ambient.cave",
         "tick_delay": 6000
       }
-    }
+    },
+    "minecraft:visual/fog_start_distance": 0.0,
+    "minecraft:visual/fog_end_distance": 256.0,
+    "minecraft:visual/fog_color": "#090912"
   },
   "coordinate_scale": 1.0,
   "default_clock": "minecraft:the_end",
@@ -16,9 +19,9 @@
   "has_ender_dragon_fight": false,
   "has_skylight": false,
   "has_fixed_time": true,
-  "height": 320,
+  "height": 400,
   "infiniburn": "#minecraft:infiniburn_end",
-  "logical_height": 320,
+  "logical_height": 400,
   "min_y": 0,
   "monster_spawn_block_light_limit": 0,
   "monster_spawn_light_level": {

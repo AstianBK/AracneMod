@@ -66,7 +66,7 @@ public class VoidChunkGenerator extends ChunkGenerator {
 
     @Override
     public int getGenDepth() {
-        return 320;
+        return 400;
     }
 
     @Override
