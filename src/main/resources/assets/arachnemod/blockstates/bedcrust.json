@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "arachnemod:block/bedcrust"
+      },
+      {
+        "model": "arachnemod:block/bedcrust_mirrored"
+      },
+      {
+        "model": "arachnemod:block/bedcrust",
+        "y": 180
+      },
+      {
+        "model": "arachnemod:block/bedcrust_mirrored",
+        "y": 180
+      }
+    ]
+  }
+}

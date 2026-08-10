@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "arachnemod:block/bedstone"
+      },
+      {
+        "model": "arachnemod:block/bedstone_mirrored"
+      },
+      {
+        "model": "arachnemod:block/bedstone",
+        "y": 180
+      },
+      {
+        "model": "arachnemod:block/bedstone_mirrored",
+        "y": 180
+      }
+    ]
+  }
+}

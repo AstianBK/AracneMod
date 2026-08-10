@@ -1,0 +1,10 @@
+{
+  "type": "arachnemod:void",
+  "generator": {
+    "type": "arachnemod:void",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "arachnemod:pilar"
+    }
+  }
+}

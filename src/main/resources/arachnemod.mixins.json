@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.astianbk.arachnemod.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "HumanoidArmorLayerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

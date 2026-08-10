@@ -1,0 +1,8 @@
+{
+  "replace" : false,
+  "values": [
+    "arachnemod:scarab",
+    "arachnemod:void_needle",
+    "arachnemod:void_hopper"
+  ]
+}

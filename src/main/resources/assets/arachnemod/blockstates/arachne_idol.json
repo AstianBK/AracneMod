@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=true": {
+      "model":"arachnemod:block/arachne_idol_on"
+    },
+    "lit=false": {
+      "model":"arachnemod:block/arachne_idol_off"
+    }
+  }
+}

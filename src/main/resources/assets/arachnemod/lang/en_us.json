@@ -1,0 +1,13 @@
+{
+  "itemGroup.arachnemod": "Example Mod Tab",
+  "block.arachnemod.example_block": "Example Block",
+  "item.arachnemod.example_item": "Example Item",
+
+  "arachnemod.configuration.title": "Nerubian Mod Configs",
+  "arachnemod.configuration.section.arachnemod.common.toml": "Nerubian Mod Configs",
+  "arachnemod.configuration.section.arachnemod.common.toml.title": "Nerubian Mod Configs",
+  "arachnemod.configuration.items": "Item List",
+  "arachnemod.configuration.logDirtBlock": "Log Dirt Block",
+  "arachnemod.configuration.magicNumberIntroduction": "Magic Number Text",
+  "arachnemod.configuration.magicNumber": "Magic Number"
+}
