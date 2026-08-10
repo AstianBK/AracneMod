@@ -3,10 +3,14 @@ package com.astianbk.aracnemod.common.registry;
 import com.astianbk.aracnemod.AracneMod;
 import com.astianbk.aracnemod.common.block.PointedUpBlock;
 import com.astianbk.aracnemod.common.block.WeaverIdolBlock;
+import com.astianbk.aracnemod.common.effect.MarkEffect;
+import com.astianbk.aracnemod.common.effect.SilentEffect;
 import com.astianbk.aracnemod.common.items.VoidKnightArmorItem;
 import com.astianbk.aracnemod.common.items.VoidMaterial;
 import com.astianbk.aracnemod.common.worldgenerator.VoidChunkGenerator;
+import com.astianbk.aracnemod.server.OrbEntity;
 import com.astianbk.aracnemod.server.ScarabEntity;
+import com.astianbk.aracnemod.server.VoidHopperEntity;
 import com.astianbk.aracnemod.server.VoidNeedleEntity;
 import com.astianbk.aracnemod.server.cap.NerubianCap;
 import com.mojang.serialization.MapCodec;
@@ -14,6 +18,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -54,9 +59,10 @@ public class NRegistry {
     public static final DeferredRegister.Blocks BLOCKS =
             DeferredRegister.createBlocks(AracneMod.MODID);
 
-
     public static final DeferredRegister.Items ITEMS =
             DeferredRegister.createItems(AracneMod.MODID);
+    public static final DeferredHolder<MobEffect, SilentEffect> SILENT = EFFECTS.register("silent",SilentEffect::new);
+    public static final DeferredHolder<MobEffect, MarkEffect> MARK_SILENT = EFFECTS.register("mark_silent",MarkEffect::new);
 
     public static final DeferredBlock<Block> WEAVER_IDOL_BLOCK = BLOCKS.registerBlock("weaver_idol", WeaverIdolBlock::new);
     public static final DeferredBlock<Block> BEDCRUST_BLOCK = BLOCKS.registerBlock("bedcrust", Block::new);
@@ -110,6 +116,12 @@ public class NRegistry {
             }).build());
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.createEntities(AracneMod.MODID);
     public static final ResourceKey<Level> THE_VOID = ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath(AracneMod.MODID,"void"));
+    public static final DeferredHolder<EntityType<?>, EntityType<OrbEntity>> ORB =
+            ENTITY_TYPES.register("orb",
+                    () -> EntityType.Builder
+                            .of(OrbEntity::new, MobCategory.MISC)
+                            .sized(2.0F, 2.0F)
+                            .build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(AracneMod.MODID,"orb"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<ScarabEntity>> SCARAB =
             ENTITY_TYPES.register("scarab",
@@ -122,6 +134,13 @@ public class NRegistry {
             ENTITY_TYPES.register("void_needle",
                     () -> EntityType.Builder
                             .of(VoidNeedleEntity::new, MobCategory.MONSTER)
+                            .sized(1.0F, 2.0F).clientTrackingRange(10).updateInterval(2)
+                            .build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_needle"))));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<VoidHopperEntity>> VOID_HOPPER =
+            ENTITY_TYPES.register("void_hopper",
+                    () -> EntityType.Builder
+                            .of(VoidHopperEntity::new, MobCategory.MONSTER)
                             .sized(1.0F, 2.0F).clientTrackingRange(10).updateInterval(2)
                             .build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_needle"))));
 

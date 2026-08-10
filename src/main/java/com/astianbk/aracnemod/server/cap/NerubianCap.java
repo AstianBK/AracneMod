@@ -52,8 +52,7 @@ public class NerubianCap {
     public boolean isDirty = false;
     ServerBossEvent event =  Util.make(
             new ServerBossEvent(UUID.randomUUID(), Component.literal("this.getDisplayName()"), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS),
-            e -> e.setDarkenScreen(false)
-    );
+            e -> e.setDarkenScreen(false));
 
     public String getTimeInMinuteAndSeconds(){
         int seconds = this.timeQuest/20;
@@ -87,7 +86,6 @@ public class NerubianCap {
                     this.progressQuest = 0;
                     this.timeQuest = 0;
                 }
-
             }else {
                 event.removeAllPlayers();
             }
@@ -95,6 +93,14 @@ public class NerubianCap {
             if(this.isDirty){
                 PacketDistributor.sendToPlayer(serverPlayer,new PacketNerubianData(this.save()));
                 this.isDirty = false;
+            }
+
+            if (player.tickCount%100 == 0){
+                if (player.level().dimension() == NRegistry.THE_VOID){
+                    if (player.level().getLightEngine().getRawBrightness(player.blockPosition(),0)==0.0F){
+                        player.hurtServer(serverPlayer.level(),serverPlayer.damageSources().magic(),5.0F);
+                    }
+                }
             }
         }
         Inventory inventory = player.getInventory();

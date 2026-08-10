@@ -2,18 +2,26 @@ package com.astianbk.aracnemod;
 
 import com.astianbk.aracnemod.common.quests.QuestManager;
 import com.astianbk.aracnemod.common.registry.NRegistry;
+import com.astianbk.aracnemod.common.worldgenerator.density.IslandSource;
 import com.astianbk.aracnemod.server.ScarabEntity;
 import com.astianbk.aracnemod.server.VoidNeedleEntity;
 import com.astianbk.aracnemod.server.cap.NerubianCap;
 import com.astianbk.aracnemod.server.network.PacketNerubianData;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.effects.ApplyMobEffect;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
@@ -24,6 +32,7 @@ import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -31,6 +40,8 @@ import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+
+import java.util.Random;
 
 @EventBusSubscriber(modid = AracneMod.MODID)
 public class Events {
@@ -40,6 +51,15 @@ public class Events {
             NerubianCap.get(player).ifPresent(cap->{
                 cap.tick(player);
             });
+        }
+
+    }
+
+    @SubscribeEvent
+    public static void applyEffect(MobEffectEvent.Applicable event){
+        if (!event.getEffectInstance().getEffect().value().isBeneficial())return;
+        if (event.getEntity().hasEffect(NRegistry.SILENT)){
+            event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
         }
     }
 
@@ -103,6 +123,7 @@ public class Events {
     public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(NRegistry.SCARAB.get(), ScarabEntity.createAttributes().build());
         event.put(NRegistry.VOID_NEEDLE.get(), ScarabEntity.createAttributes().build());
+        event.put(NRegistry.VOID_HOPPER.get(), ScarabEntity.createAttributes().build());
     }
 
     @SubscribeEvent
@@ -122,12 +143,24 @@ public class Events {
         NerubianCap.get(event.getEntity()).ifPresent(e->{
             if (event.getLevel().isClientSide())return;
             ServerLevel level = ((ServerLevel)event.getLevel()).getServer().getLevel(ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath("aracnemod", "void")));
-            event.getEntity().teleport(new TeleportTransition(level,new BlockPos(0,252,0).getBottomCenter(), Vec3.ZERO,0.0F,0.0F,(entity)->{
-
+            ChunkPos pos = level.getChunk(event.getEntity().blockPosition()).getPos();
+            event.getEntity().teleport(new TeleportTransition(level,createIsland(level.getSeed(),pos.x(),pos.z()), Vec3.ZERO,0.0F,0.0F,(entity)->{
             }));
         });
     }
 
+    private static Vec3 createIsland(long seed,int cellX, int cellZ) {
+
+        int cellSize = 256;
+
+        Random random = new Random(seed * cellX + seed * cellZ);
+
+        double centerX = cellX * cellSize + random.nextInt(cellSize);
+        double centerZ = cellZ * cellSize + random.nextInt(cellSize);
+
+
+        return new Vec3(centerX,252,centerZ);
+    }
     @SubscribeEvent
     public static void addQuestsData(AddServerReloadListenersEvent event){
         AracneMod.LOGGER.info("AddQuestsData");

@@ -1,33 +1,45 @@
 package com.astianbk.aracnemod;
 
+import com.astianbk.aracnemod.client.layer.MarkSilentLayer;
+import com.astianbk.aracnemod.client.renderer.OrbRenderer;
 import com.astianbk.aracnemod.client.renderer.ScarabRenderer;
 import com.astianbk.aracnemod.client.gui.IdolSpeechGui;
 import com.astianbk.aracnemod.client.model.*;
+import com.astianbk.aracnemod.client.renderer.VoidHopperRenderer;
 import com.astianbk.aracnemod.client.renderer.VoidNeedleRenderer;
 import com.astianbk.aracnemod.common.items.VoidKnightArmorItem;
 import com.astianbk.aracnemod.common.registry.NRegistry;
 import com.astianbk.aracnemod.server.cap.NerubianCap;
 import com.google.common.base.Suppliers;
+import com.google.common.reflect.TypeToken;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.*;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.resources.model.EquipmentAssetManager;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.PlayerModelType;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.material.FogType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -37,17 +49,38 @@ import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
+
+import java.util.function.BiConsumer;
 
 @Mod(value = AracneMod.MODID, dist = Dist.CLIENT)
 @EventBusSubscriber(modid = AracneMod.MODID, value = Dist.CLIENT)
 public class AracneModClient {
     public static final Identifier LOCATION = Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/war_spider/warspider.png");
+    public static final ContextKey<MobEffectInstance> EFFECT = new ContextKey<>(Identifier.fromNamespaceAndPath(AracneMod.MODID,"effect"));
     public AracneModClient(ModContainer container) {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
     @SubscribeEvent
     public static void registerLayer(EntityRenderersEvent.AddLayers event) {
+        AvatarRenderer renderer = event.getPlayerRenderer(PlayerModelType.SLIM);
+
+        if (renderer != null) {
+            renderer.addLayer(new MarkSilentLayer(renderer));
+        }
+    }
+    @SubscribeEvent
+    public static void extractEvent(RegisterRenderStateModifiersEvent event){
+        event.registerEntityModifier(
+                new TypeToken<LivingEntityRenderer<LivingEntity,LivingEntityRenderState,?>>() {},
+                (entity, renderState) -> {
+                    AracneMod.LOGGER.info("lore :{}",entity.hasEffect(NRegistry.MARK_SILENT));
+                    if (entity.hasEffect(NRegistry.MARK_SILENT)){
+                        renderState.setRenderData(EFFECT, entity.getEffect(NRegistry.MARK_SILENT));
+                    }
+                }
+        );
 
     }
 
@@ -60,7 +93,7 @@ public class AracneModClient {
         event.registerLayerDefinition(VoidKnightArmorModel.HELMET_LOCATION,Suppliers.ofInstance(VoidKnightArmorModel.createHelmetLayer()));
         event.registerLayerDefinition(VoidKnightArmorModel.LEGGINGS_LOCATION,Suppliers.ofInstance(VoidKnightArmorModel.createLeggingsLayer()));
         event.registerLayerDefinition(VoidKnightArmorModel.ALL_LOCATION,Suppliers.ofInstance(VoidKnightArmorModel.createBodyLayer()));
-
+        event.registerLayerDefinition(VoidHopperModel.LAYER_LOCATION,Suppliers.ofInstance(VoidHopperModel.createBodyLayer()));
 //        event.registerLayerDefinition(ScarabModel.ARMOR_LOCATION,Suppliers.ofInstance(ScarabModel.createBodyLayer(new CubeDeformation(1.0F))));
     }
 
@@ -271,8 +304,14 @@ public class AracneModClient {
     @SubscribeEvent
     public static void fogRender(ViewportEvent.RenderFog event){
         if (Minecraft.getInstance().player.level().dimension()==NRegistry.THE_VOID){
-
-            event.setFarPlaneDistance(500.0F);
+//            event.getFogData().environmentalStart = 32.0F;
+//            event.getFogData().environmentalEnd = 128.0F;
+//
+//            event.getFogData().renderDistanceStart = 96.0F;
+//            event.getFogData().renderDistanceEnd = 128.0F;
+//
+//            event.getFogData().skyEnd = 128.0F;
+//            event.getFogData().cloudEnd = 128.0F;
         }
     }
 
@@ -285,5 +324,7 @@ public class AracneModClient {
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(NRegistry.VOID_NEEDLE.get(), VoidNeedleRenderer::new);
         event.registerEntityRenderer(NRegistry.SCARAB.get(), ScarabRenderer::new);
+        event.registerEntityRenderer(NRegistry.ORB.get(), OrbRenderer::new);
+        event.registerEntityRenderer(NRegistry.VOID_HOPPER.get(), VoidHopperRenderer::new);
     }
 }

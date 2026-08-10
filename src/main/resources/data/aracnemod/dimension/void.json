@@ -4,7 +4,7 @@
     "type": "aracnemod:void",
     "biome_source": {
       "type": "minecraft:fixed",
-      "biome": "minecraft:plains"
+      "biome": "aracnemod:pilar"
     }
   }
 }
