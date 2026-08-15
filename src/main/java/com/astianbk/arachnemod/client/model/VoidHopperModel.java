@@ -166,8 +166,8 @@ public class VoidHopperModel<T extends VoidHopperRenderState> extends EntityMode
 //		this.walkBody.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
 //		this.walkLegs.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
 		this.idle.apply(state.idle,state.ageInTicks);
-		this.flee.apply(state.emerge,state.ageInTicks);
-		this.emerge.apply(state.flee,state.ageInTicks);
+		this.flee.apply(state.flee,state.ageInTicks);
+		this.emerge.apply(state.emerge,state.ageInTicks);
 		this.casting.apply(state.casting,state.ageInTicks);
 //		this.attack1.apply(state.attack1,state.ageInTicks,0.5F);
 //		this.attack2.apply(state.attack2,state.ageInTicks,0.5F);

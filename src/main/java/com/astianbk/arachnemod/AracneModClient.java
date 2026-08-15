@@ -1,12 +1,9 @@
 package com.astianbk.arachnemod;
 
 import com.astianbk.arachnemod.client.layer.MarkSilentLayer;
-import com.astianbk.arachnemod.client.renderer.OrbRenderer;
-import com.astianbk.arachnemod.client.renderer.ScarabRenderer;
+import com.astianbk.arachnemod.client.renderer.*;
 import com.astianbk.arachnemod.client.gui.IdolSpeechGui;
 import com.astianbk.arachnemod.client.model.*;
-import com.astianbk.arachnemod.client.renderer.VoidHopperRenderer;
-import com.astianbk.arachnemod.client.renderer.VoidNeedleRenderer;
 import com.astianbk.arachnemod.common.items.VoidKnightArmorItem;
 import com.astianbk.arachnemod.common.registry.NRegistry;
 import com.astianbk.arachnemod.server.cap.NerubianCap;
@@ -25,6 +22,7 @@ import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.resources.model.EquipmentAssetManager;
+import net.minecraft.client.telemetry.events.WorldLoadTimesEvent;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -50,6 +48,7 @@ import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import java.util.function.BiConsumer;
 
@@ -58,10 +57,17 @@ import java.util.function.BiConsumer;
 public class AracneModClient {
     public static final Identifier LOCATION = Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/war_spider/warspider.png");
     public static final ContextKey<MobEffectInstance> EFFECT = new ContextKey<>(Identifier.fromNamespaceAndPath(AracneMod.MODID,"effect"));
+
     public AracneModClient(ModContainer container) {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
+    @SubscribeEvent
+    public static void sky(RenderLevelStageEvent.AfterSky event){
+        if (Minecraft.getInstance().level.getData(NRegistry.THE_VOID_ATTACHMENT.get()).flash){
+            Minecraft.getInstance().levelRenderer.skyRenderer.renderEndFlash(event.getPoseStack(),Minecraft.getInstance().level.getData(NRegistry.THE_VOID_ATTACHMENT.get()).getIntensityFlash(Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaTicks()),0,0);
+        }
+    }
     @SubscribeEvent
     public static void registerLayer(EntityRenderersEvent.AddLayers event) {
         AvatarRenderer renderer = event.getPlayerRenderer(PlayerModelType.SLIM);
@@ -93,7 +99,9 @@ public class AracneModClient {
         event.registerLayerDefinition(VoidKnightArmorModel.LEGGINGS_LOCATION,Suppliers.ofInstance(VoidKnightArmorModel.createLeggingsLayer()));
         event.registerLayerDefinition(VoidKnightArmorModel.ALL_LOCATION,Suppliers.ofInstance(VoidKnightArmorModel.createBodyLayer()));
         event.registerLayerDefinition(VoidHopperModel.LAYER_LOCATION,Suppliers.ofInstance(VoidHopperModel.createBodyLayer()));
-//        event.registerLayerDefinition(ScarabModel.ARMOR_LOCATION,Suppliers.ofInstance(ScarabModel.createBodyLayer(new CubeDeformation(1.0F))));
+        event.registerLayerDefinition(VoidVeilmothModel.LAYER_LOCATION,Suppliers.ofInstance(VoidVeilmothModel.createBodyLayer()));
+        event.registerLayerDefinition(VoidBeetleModel.LAYER_LOCATION,Suppliers.ofInstance(VoidBeetleModel.createBodyLayer()));
+        //        event.registerLayerDefinition(ScarabModel.ARMOR_LOCATION,Suppliers.ofInstance(ScarabModel.createBodyLayer(new CubeDeformation(1.0F))));
     }
 
     @SubscribeEvent
@@ -300,30 +308,30 @@ public class AracneModClient {
                 return 0.0F;
         }
     }
+
     @SubscribeEvent
     public static void fogRender(ViewportEvent.RenderFog event){
         if (Minecraft.getInstance().player.level().dimension()==NRegistry.THE_VOID){
-//            event.getFogData().environmentalStart = 32.0F;
-//            event.getFogData().environmentalEnd = 128.0F;
-//
-//            event.getFogData().renderDistanceStart = 96.0F;
-//            event.getFogData().renderDistanceEnd = 128.0F;
-//
-//            event.getFogData().skyEnd = 128.0F;
-//            event.getFogData().cloudEnd = 128.0F;
+            if (Minecraft.getInstance().level.getData(NRegistry.THE_VOID_ATTACHMENT.get()).flash){
+                event.setFarPlaneDistance(256 + 800 * Minecraft.getInstance().level.getData(NRegistry.THE_VOID_ATTACHMENT.get()).getIntensityFlash(1.0F));
+            }
+
         }
     }
-
 
     @SubscribeEvent
     public static void registerOverlays(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.HOTBAR, Identifier.fromNamespaceAndPath(AracneMod.MODID,"idol_speech"),new IdolSpeechGui());
     }
+
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(NRegistry.VOID_NEEDLE.get(), VoidNeedleRenderer::new);
         event.registerEntityRenderer(NRegistry.SCARAB.get(), ScarabRenderer::new);
         event.registerEntityRenderer(NRegistry.ORB.get(), OrbRenderer::new);
         event.registerEntityRenderer(NRegistry.VOID_HOPPER.get(), VoidHopperRenderer::new);
+        event.registerEntityRenderer(NRegistry.VOID_BEETLE.get(), VoidBeetleRenderer::new);
+        event.registerEntityRenderer(NRegistry.VOID_VEILMOTH.get(), VoidVeilmothRenderer::new);
+
     }
 }

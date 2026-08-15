@@ -1,6 +1,5 @@
-package com.astianbk.arachnemod.server;
+package com.astianbk.arachnemod.server.entity;
 
-import com.astianbk.arachnemod.AracneMod;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -11,6 +10,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.ai.control.MoveControl;
@@ -27,8 +28,6 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
@@ -57,6 +56,14 @@ public class VoidNeedleEntity extends Monster {
         this.xpReward = 5;
         this.moveControl = new VoidNeedleEntityMoveControl(this);
         this.lookControl = new VoidNeedleEntityLookControl(this);
+    }
+    public static AttributeSupplier.Builder createAttributes() {
+        return Monster.createMonsterAttributes()
+                .add(Attributes.MOVEMENT_SPEED, 0.35F)
+                .add(Attributes.FOLLOW_RANGE, 40.0)
+                .add(Attributes.ATTACK_KNOCKBACK,10)
+                .add(Attributes.MAX_HEALTH, 24.0)
+                .add(Attributes.ATTACK_DAMAGE, 5.0);
     }
 
     protected BodyRotationControl createBodyControl() {
@@ -466,8 +473,6 @@ public class VoidNeedleEntity extends Monster {
 
     private abstract class VoidNeedleEntityMoveTargetGoal extends Goal {
         public VoidNeedleEntityMoveTargetGoal() {
-            Objects.requireNonNull(VoidNeedleEntity.this);
-            Objects.requireNonNull(VoidNeedleEntity.this);
             this.setFlags(EnumSet.of(Flag.MOVE));
         }
 

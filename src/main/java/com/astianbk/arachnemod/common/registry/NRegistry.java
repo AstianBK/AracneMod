@@ -1,19 +1,25 @@
 package com.astianbk.arachnemod.common.registry;
 
 import com.astianbk.arachnemod.AracneMod;
+import com.astianbk.arachnemod.common.block.GenerateFogBlock;
 import com.astianbk.arachnemod.common.block.PointedUpBlock;
 import com.astianbk.arachnemod.common.block.ArachneIdolBlock;
+import com.astianbk.arachnemod.common.block.TallVeilCrystalBlock;
 import com.astianbk.arachnemod.common.effect.DamnationHexEffect;
 import com.astianbk.arachnemod.common.effect.SilentHexEffect;
 import com.astianbk.arachnemod.common.effect.SilentEffect;
 import com.astianbk.arachnemod.common.items.VoidKnightArmorItem;
 import com.astianbk.arachnemod.common.items.VoidMaterial;
 import com.astianbk.arachnemod.common.worldgenerator.VoidChunkGenerator;
-import com.astianbk.arachnemod.server.OrbEntity;
-import com.astianbk.arachnemod.server.ScarabEntity;
-import com.astianbk.arachnemod.server.VoidHopperEntity;
-import com.astianbk.arachnemod.server.VoidNeedleEntity;
+import com.astianbk.arachnemod.common.worldgenerator.feature.PoitedBedrockFeature;
+import com.astianbk.arachnemod.common.worldgenerator.feature.VoidCrystalFeature;
+import com.astianbk.arachnemod.common.worldgenerator.feature_configuration.VoidCrystalFeatureConfiguration;
+import com.astianbk.arachnemod.common.worldgenerator.structure.VoidZiguratStructure;
+import com.astianbk.arachnemod.common.worldgenerator.structure_piece.VoidZiguratStructurePiece;
+import com.astianbk.arachnemod.common.worldgenerator.structure_placement.VoidZiguratPlacement;
+import com.astianbk.arachnemod.server.entity.*;
 import com.astianbk.arachnemod.server.cap.NerubianCap;
+import com.astianbk.arachnemod.server.cap.TheVoidAttachment;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -29,7 +35,19 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.TransparentBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.configurations.DripstoneClusterConfiguration;
+import net.minecraft.world.level.levelgen.structure.StructureType;
+import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
+import net.minecraft.world.level.levelgen.structure.placement.StructurePlacementType;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.*;
 
@@ -37,29 +55,30 @@ import java.util.function.Supplier;
 
 public class NRegistry {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, AracneMod.MODID);
-    public static final DeferredRegister<AttachmentType<?>> ATTACHMENTS =
-            DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, AracneMod.MODID);
-    public static final DeferredRegister<MobEffect> EFFECTS =
-            DeferredRegister.create(Registries.MOB_EFFECT, AracneMod.MODID);
+    public static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, AracneMod.MODID);
+    public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(Registries.MOB_EFFECT, AracneMod.MODID);
+    public static final DeferredRegister<Feature<?>> FEATURE = DeferredRegister.create(Registries.FEATURE,AracneMod.MODID);
+    public static final DeferredRegister<StructureType<?>> STRUCTURE_TYPE = DeferredRegister.create(Registries.STRUCTURE_TYPE,AracneMod.MODID);
+    public static final DeferredRegister<StructurePlacementType<?>> STRUCTURE_PLACEMENT_TYPE = DeferredRegister.create(Registries.STRUCTURE_PLACEMENT,AracneMod.MODID);
+    public static final Supplier<AttachmentType<TheVoidAttachment>> THE_VOID_ATTACHMENT =
+            ATTACHMENTS.register(
+                    "the_void_attachment",
+                    () -> AttachmentType.builder(TheVoidAttachment::new).serialize(new TheVoidAttachment.TheVoidSerializer()).copyOnDeath().build());
 
     public static final Supplier<AttachmentType<NerubianCap>> ARACNE =
             ATTACHMENTS.register(
                     "aracne",
-                    () -> AttachmentType.builder(NerubianCap::new)
-                            .serialize(new NerubianCap.NerubianCapSerializer())
-                            .copyOnDeath()
-                            .build());
-    public static final DeferredRegister.Blocks BLOCKS =
-            DeferredRegister.createBlocks(AracneMod.MODID);
+                    () -> AttachmentType.builder(NerubianCap::new).serialize(new NerubianCap.NerubianCapSerializer()).copyOnDeath().build());
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(AracneMod.MODID);
 
-    public static final DeferredRegister.Items ITEMS =
-            DeferredRegister.createItems(AracneMod.MODID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(AracneMod.MODID);
+    public static final DeferredRegister<StructurePieceType> PIECES = DeferredRegister.create(Registries.STRUCTURE_PIECE,AracneMod.MODID);
     public static final DeferredHolder<MobEffect, SilentEffect> SILENT = EFFECTS.register("silent",SilentEffect::new);
     public static final DeferredHolder<MobEffect, SilentHexEffect> SILENT_HEX = EFFECTS.register("silent_hex", SilentHexEffect::new);
     public static final DeferredHolder<MobEffect, DamnationHexEffect> DAMNATION_HEX = EFFECTS.register("damnation_hex", DamnationHexEffect::new);
 
     public static final DeferredBlock<Block> WEAVER_IDOL_BLOCK = BLOCKS.registerBlock("arachne_idol", ArachneIdolBlock::new);
-    public static final DeferredBlock<Block> BEDCRUST_BLOCK = BLOCKS.registerBlock("bedcrust", Block::new);
+    public static final DeferredBlock<Block> BEDCRUST_BLOCK = BLOCKS.registerBlock("bedcrust", GenerateFogBlock::new);
     public static final DeferredBlock<Block> BEDSLAG_BLOCK = BLOCKS.registerBlock("bedslag", Block::new);
     public static final DeferredBlock<Block> BEDSTONE_BLOCK = BLOCKS.registerBlock("bedstone", Block::new);
     public static final DeferredBlock<Block> CHISELED_BEDROCK_BLOCK = BLOCKS.registerBlock("chiseled_bedrock", Block::new);
@@ -68,11 +87,25 @@ public class NRegistry {
     public static final DeferredBlock<Block> STONE_BEDROCK_BLOCK = BLOCKS.registerBlock("stone_bedrock", Block::new);
     public static final DeferredBlock<Block> SLATED_BEDROCK_BLOCK = BLOCKS.registerBlock("slated_bedrock", Block::new);
     public static final DeferredBlock<Block> CRACKED_BEDROCK_BLOCK = BLOCKS.registerBlock("cracked_bedrock", Block::new);
+    public static final DeferredBlock<Block> BEDROCK_TRANSPARENT_BLOCK = BLOCKS.registerBlock("bedrock_transparent", (properties)->new TransparentBlock(properties.noOcclusion().isValidSpawn(Blocks::never).isRedstoneConductor((s,e,s1)->false).isSuffocating((s,e,s1)->false).isViewBlocking((s,e,s1)->false)));
 
-    public static final DeferredBlock<Block> POINTED_BEDROCK_BLOCK = BLOCKS.registerBlock("pointed_bedrock", PointedUpBlock::new);
+    public static final DeferredBlock<Block> POINTED_BEDROCK_BLOCK = BLOCKS.registerBlock("pointed_bedrock", (properties)->new PointedUpBlock(properties
+            .mapColor(MapColor.TERRACOTTA_BROWN)
+            .forceSolidOn()
+            .instrument(NoteBlockInstrument.BASEDRUM)
+            .noOcclusion()
+            .sound(SoundType.POINTED_DRIPSTONE)
+            .randomTicks()
+            .strength(1.5F, 3.0F)
+            .dynamicShape()
+            .offsetType(BlockBehaviour.OffsetType.XZ)
+            .pushReaction(PushReaction.DESTROY)
+            .noOcclusion()));
 
-    public static final DeferredBlock<Block> VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("veil_crystal_bedrock", Block::new);
+    public static final DeferredBlock<Block> VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("veil_crystal",(p)->new Block(p.lightLevel(statex -> 3).noOcclusion()));
 
+    public static final DeferredBlock<Block> TALL_VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("tall_veil_crystal",(p)->new TallVeilCrystalBlock(p.lightLevel(statex -> 9).noOcclusion()));
+    public static final DeferredBlock<Block> COCOONCHEST_BLOCK = BLOCKS.registerBlock("cocoonchest",(p)->new Block(p.noOcclusion()));
 
     public static final DeferredItem<BlockItem> WEAVER_IDOL_ITEM = ITEMS.registerSimpleBlockItem("arachne_idol_item",WEAVER_IDOL_BLOCK);
     public static final DeferredItem<BlockItem> BEDCRUST_ITEM = ITEMS.registerSimpleBlockItem("bedcrust_item",BEDCRUST_BLOCK);
@@ -84,6 +117,9 @@ public class NRegistry {
     public static final DeferredItem<BlockItem> BRICKED_BEDROCK_ITEM = ITEMS.registerSimpleBlockItem("bricked_bedrock_item",BRICKED_BEDROCK_BLOCK);
     public static final DeferredItem<BlockItem> STONE_BEDROCK_ITEM = ITEMS.registerSimpleBlockItem("stone_bedrock_item",STONE_BEDROCK_BLOCK);
     public static final DeferredItem<BlockItem> SLATED_BEDROCK_ITEM = ITEMS.registerSimpleBlockItem("slated_bedrock_item",SLATED_BEDROCK_BLOCK);
+    public static final DeferredItem<BlockItem> VEIL_CRYSTAL_ITEM = ITEMS.registerSimpleBlockItem("veil_crystal_item",VEIL_CRYSTAL_BLOCK);
+    public static final DeferredItem<BlockItem> TALL_VEIL_CRYSTAL_ITEM = ITEMS.registerSimpleBlockItem("tall_veil_crystal_item",TALL_VEIL_CRYSTAL_BLOCK);
+    public static final DeferredItem<BlockItem> COCOONCHEST_ITEM = ITEMS.registerSimpleBlockItem("cocoonchest_item",COCOONCHEST_BLOCK);
 
     public static final DeferredItem<BlockItem> POINTED_BEDROCK_ITEM = ITEMS.registerSimpleBlockItem("pointed_bedrock_item",POINTED_BEDROCK_BLOCK);
 
@@ -109,7 +145,9 @@ public class NRegistry {
                 output.accept(BRICKED_BEDROCK_ITEM.get());
                 output.accept(SLATED_BEDROCK_ITEM.get());
                 output.accept(COBBLED_BEDROCK_ITEM.get());
-
+                output.accept(VEIL_CRYSTAL_ITEM.get());
+                output.accept(COCOONCHEST_ITEM.get());
+                output.accept(TALL_VEIL_CRYSTAL_ITEM.get());
             }).build());
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.createEntities(AracneMod.MODID);
     public static final ResourceKey<Level> THE_VOID = ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath(AracneMod.MODID,"void"));
@@ -136,15 +174,34 @@ public class NRegistry {
 
     public static final DeferredHolder<EntityType<?>, EntityType<VoidHopperEntity>> VOID_HOPPER =
             ENTITY_TYPES.register("void_hopper",
-                    () -> EntityType.Builder
-                            .of(VoidHopperEntity::new, MobCategory.MONSTER)
+                    () -> EntityType.Builder.of(VoidHopperEntity::new, MobCategory.MONSTER)
                             .sized(1.0F, 2.0F).clientTrackingRange(10).updateInterval(2)
                             .build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_hopper"))));
+    public static final DeferredHolder<EntityType<?>, EntityType<VoidBeetleEntity>> VOID_BEETLE =
+            ENTITY_TYPES.register("void_beetle",
+                    () -> EntityType.Builder.of(VoidBeetleEntity::new, MobCategory.MONSTER)
+                            .sized(0.25F, 0.5F).clientTrackingRange(10).updateInterval(2)
+                            .build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_beetle"))));
+    public static final DeferredHolder<EntityType<?>, EntityType<VoidVeilmothEntity>> VOID_VEILMOTH =
+            ENTITY_TYPES.register("void_veilmoth",
+                    () -> EntityType.Builder.of(VoidVeilmothEntity::new, MobCategory.MONSTER)
+                            .sized(0.25F, 0.5F).clientTrackingRange(10).updateInterval(2)
+                            .build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_veilmoth"))));
 
+    public static final DeferredHolder<StructurePieceType, StructurePieceType> VOID_ZIGURAT_PIECE =
+            PIECES.register("void_zigurat", () -> (context, tag) -> new VoidZiguratStructurePiece(tag, context.structureTemplateManager()));
     public static final DeferredRegister<MapCodec<? extends ChunkGenerator>> CHUNK_GENERATORS =
             DeferredRegister.create(Registries.CHUNK_GENERATOR,AracneMod.MODID);
 
     public static final DeferredHolder<MapCodec<? extends ChunkGenerator>, MapCodec<VoidChunkGenerator>> VOID =
             CHUNK_GENERATORS.register("void",
                     () -> VoidChunkGenerator.CODEC);
+    public static final DeferredHolder<StructurePlacementType<?>,StructurePlacementType<VoidZiguratPlacement>> VOID_PLACEMENT = STRUCTURE_PLACEMENT_TYPE.register("void_placement",()-> (StructurePlacementType<VoidZiguratPlacement>) () -> VoidZiguratPlacement.CODEC);
+    public static final DeferredHolder<StructureType<?>,StructureType<VoidZiguratStructure>> VOID_ZIGURAT =
+            STRUCTURE_TYPE.register("void_zigurat",()-> () -> VoidZiguratStructure.CODEC);
+    public static final DeferredHolder<Feature<?>,Feature<VoidCrystalFeatureConfiguration>> VOID_CRYSTAL =
+            FEATURE.register("void_crystal",()->new VoidCrystalFeature(VoidCrystalFeatureConfiguration.CODEC));
+    public static final DeferredHolder<Feature<?>,Feature<DripstoneClusterConfiguration>> POINTED_BEDROCK =
+            FEATURE.register("pointed_bedrock",()->new PoitedBedrockFeature(DripstoneClusterConfiguration.CODEC));
+
 }

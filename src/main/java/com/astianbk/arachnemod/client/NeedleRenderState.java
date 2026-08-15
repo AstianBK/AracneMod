@@ -1,6 +1,6 @@
 package com.astianbk.arachnemod.client;
 
-import com.astianbk.arachnemod.server.VoidNeedleEntity;
+import com.astianbk.arachnemod.server.entity.VoidNeedleEntity;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.world.entity.AnimationState;
 

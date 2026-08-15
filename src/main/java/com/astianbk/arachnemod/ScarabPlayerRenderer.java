@@ -1,9 +1,6 @@
 package com.astianbk.arachnemod;
 
-import com.astianbk.arachnemod.client.ScarabRenderState;
-import com.astianbk.arachnemod.client.model.ScarabModel;
 import com.astianbk.arachnemod.client.model.ScarabPlayerModel;
-import com.astianbk.arachnemod.server.ScarabEntity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;

@@ -26,6 +26,7 @@ public class IslandManager {
         generateTerrain(chunk, islands);
 
         generateRoof(chunk);
+        generateGenerateParticle(chunk);
     }
     public List<IslandSource> getNearbyIslands(ChunkPos chunkPos) {
 
@@ -41,12 +42,13 @@ public class IslandManager {
 
         for (int x = cellX - 1; x <= cellX + 1; x++) {
             for (int z = cellZ - 1; z <= cellZ + 1; z++) {
-                Random random = new Random(seed*x+seed*z);
+                Random random = new Random(seed + x * 341873128712L + z * 132897987541L);
+
 
                 double centerX = x * cellSize + random.nextInt(cellSize);
                 double centerZ = z * cellSize + random.nextInt(cellSize);
 
-                double centerY = 200 + random.nextFloat() * 50;
+                double centerY = 250;
 
                 double radius = 30 + random.nextInt(25);
 
@@ -109,7 +111,22 @@ public class IslandManager {
             for (int localZ = 0; localZ < 16; localZ++) {
 
                 pos.set(minX + localX, 399, minZ + localZ);
-                chunk.setBlockState(pos, Blocks.BEDROCK.defaultBlockState());
+                chunk.setBlockState(pos, NRegistry.BEDROCK_TRANSPARENT_BLOCK.get().defaultBlockState());
+            }
+        }
+    }
+    private void generateGenerateParticle(ChunkAccess chunk) {
+
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+
+        int minX = chunk.getPos().getMinBlockX();
+        int minZ = chunk.getPos().getMinBlockZ();
+
+        for (int localX = 0; localX < 16; localX++) {
+            for (int localZ = 0; localZ < 16; localZ++) {
+
+                pos.set(minX + localX, 0, minZ + localZ);
+                chunk.setBlockState(pos, Blocks.END_PORTAL.defaultBlockState());
 
             }
         }

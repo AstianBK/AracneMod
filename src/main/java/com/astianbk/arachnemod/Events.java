@@ -2,26 +2,19 @@ package com.astianbk.arachnemod;
 
 import com.astianbk.arachnemod.common.quests.QuestManager;
 import com.astianbk.arachnemod.common.registry.NRegistry;
-import com.astianbk.arachnemod.common.worldgenerator.density.IslandSource;
-import com.astianbk.arachnemod.server.ScarabEntity;
-import com.astianbk.arachnemod.server.VoidNeedleEntity;
+import com.astianbk.arachnemod.server.entity.*;
 import com.astianbk.arachnemod.server.cap.NerubianCap;
 import com.astianbk.arachnemod.server.network.PacketNerubianData;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.SpawnPlacementTypes;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.effects.ApplyMobEffect;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
@@ -30,13 +23,14 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -55,6 +49,10 @@ public class Events {
 
     }
 
+    @SubscribeEvent
+    public static void onBlock(BlockEvent.EntityPlaceEvent event){
+
+    }
     @SubscribeEvent
     public static void applyEffect(MobEffectEvent.Applicable event){
         if (!event.getEffectInstance().getEffect().value().isBeneficial())return;
@@ -101,15 +99,37 @@ public class Events {
                 cap.init();
             }
 
-
-            //cap.syncNewPlayer((ServerPlayer) newPlayer,oldCap,true);
         });
     }
 
     @SubscribeEvent
     public static void onEquip(LivingEquipmentChangeEvent event) {
+
         if (!(event.getEntity() instanceof Player player)) return;
 
+    }
+    @SubscribeEvent
+    public static void spawnEvent(RegisterSpawnPlacementsEvent event) {
+        event.register(NRegistry.VOID_HOPPER.get(),
+                SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Monster::checkAnyLightMonsterSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+
+        event.register(NRegistry.VOID_NEEDLE.get(),
+                SpawnPlacementTypes.NO_RESTRICTIONS,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Monster::checkAnyLightMonsterSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+
+        event.register(
+                NRegistry.SCARAB.get(),
+                SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Monster::checkMonsterSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 
     @SubscribeEvent
@@ -122,8 +142,10 @@ public class Events {
     @SubscribeEvent
     public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(NRegistry.SCARAB.get(), ScarabEntity.createAttributes().build());
-        event.put(NRegistry.VOID_NEEDLE.get(), ScarabEntity.createAttributes().build());
-        event.put(NRegistry.VOID_HOPPER.get(), ScarabEntity.createAttributes().build());
+        event.put(NRegistry.VOID_NEEDLE.get(), VoidNeedleEntity.createAttributes().build());
+        event.put(NRegistry.VOID_HOPPER.get(), VoidHopperEntity.createAttributes().build());
+        event.put(NRegistry.VOID_BEETLE.get(), VoidBeetleEntity.createAttributes().build());
+        event.put(NRegistry.VOID_VEILMOTH.get(), VoidVeilmothEntity.createAttributes().build());
     }
 
     @SubscribeEvent
@@ -153,7 +175,7 @@ public class Events {
 
         int cellSize = 256;
 
-        Random random = new Random(seed * cellX + seed * cellZ);
+        Random random = new Random(seed + cellX * 341873128712L + cellZ * 132897987541L);
 
         double centerX = cellX * cellSize + random.nextInt(cellSize);
         double centerZ = cellZ * cellSize + random.nextInt(cellSize);
@@ -163,7 +185,6 @@ public class Events {
     }
     @SubscribeEvent
     public static void addQuestsData(AddServerReloadListenersEvent event){
-        AracneMod.LOGGER.info("AddQuestsData");
         event.addListener(Identifier.parse("manager"),new QuestManager());
     }
 

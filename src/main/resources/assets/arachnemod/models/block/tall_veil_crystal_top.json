@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cross",
+  "ambientocclusion": true,
+  "textures": {
+    "cross": "arachnemod:block/tall_veilcrystal_top"
+  }
+}

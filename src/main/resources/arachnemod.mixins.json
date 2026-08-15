@@ -3,7 +3,10 @@
   "package": "com.astianbk.arachnemod.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "HumanoidArmorLayerMixin"
+    "CloudRendererMixin",
+    "HumanoidArmorLayerMixin",
+    "LevelRendererMixin",
+    "LightmapRenderStateExtractorMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "arachnemod:block/weaver_idol"
+    "model": "arachnemod:block/arachne_idol_off"
   }
 }

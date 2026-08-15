@@ -1,7 +1,9 @@
 package com.astianbk.arachnemod.common.block;
 
+import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.common.registry.NRegistry;
 import com.google.common.annotations.VisibleForTesting;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
@@ -9,22 +11,26 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.attribute.EnvironmentAttributes;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.arrow.ThrownTrident;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.PointedDripstoneBlock;
+import net.minecraft.world.level.*;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.DripstoneThickness;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.*;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -34,40 +40,124 @@ import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-public class PointedUpBlock extends PointedDripstoneBlock {
+public class PointedUpBlock extends Block implements SimpleWaterloggedBlock, Fallable {
+    public static final MapCodec<PointedUpBlock> CODEC = simpleCodec(PointedUpBlock::new);
+    public static final EnumProperty<Direction> TIP_DIRECTION;
+    public static final EnumProperty<DripstoneThickness> THICKNESS;
+    public static final BooleanProperty WATERLOGGED;
+    private static final VoxelShape SHAPE_TIP_MERGE;
+    private static final VoxelShape SHAPE_TIP_UP;
+    private static final VoxelShape SHAPE_TIP_DOWN;
+    private static final VoxelShape SHAPE_FRUSTUM;
+    private static final VoxelShape SHAPE_MIDDLE;
+    private static final VoxelShape SHAPE_BASE;
+    private static final double STALACTITE_DRIP_START_PIXEL;
+    private static final float MAX_HORIZONTAL_OFFSET;
+    private static final VoxelShape REQUIRED_SPACE_TO_DRIP_THROUGH_NON_SOLID_BLOCK;
+
+    public MapCodec<PointedUpBlock> codec() {
+        return CODEC;
+    }
 
     public PointedUpBlock(Properties properties) {
         super(properties);
+        this.registerDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateDefinition.any()).setValue(TIP_DIRECTION, Direction.UP)).setValue(THICKNESS, DripstoneThickness.TIP)).setValue(WATERLOGGED, false));
     }
 
-    @Override
-    public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
-        LevelAccessor level = context.getLevel();
-        BlockPos pos = context.getClickedPos();
-        Direction defaultTipDirection = context.getNearestLookingVerticalDirection().getOpposite();
-        Direction tipDirection = calculateTipDirection(level, pos, defaultTipDirection);
-        if (tipDirection == Direction.DOWN){
-            return null;
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(new Property[]{TIP_DIRECTION, THICKNESS, WATERLOGGED});
+    }
+
+    protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+        return isValidPointedDripstonePlacement(level, pos, (Direction)state.getValue(TIP_DIRECTION));
+    }
+
+    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
+        if ((Boolean)state.getValue(WATERLOGGED)) {
+            ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
-        if (tipDirection == null) {
-            return null;
+
+        if (directionToNeighbour != Direction.UP && directionToNeighbour != Direction.DOWN) {
+            return state;
         } else {
-            boolean mergeOpposingTips = !context.isSecondaryUseActive();
-            DripstoneThickness thickness = calculateDripstoneThickness(level, pos, tipDirection, mergeOpposingTips);
-            return (BlockState)((BlockState)((BlockState)this.defaultBlockState().setValue(TIP_DIRECTION, tipDirection)).setValue(THICKNESS, thickness)).setValue(WATERLOGGED, level.getFluidState(pos).is(Fluids.WATER));
+            Direction tipDirection = (Direction)state.getValue(TIP_DIRECTION);
+            if (tipDirection == Direction.DOWN && ticks.getBlockTicks().hasScheduledTick(pos, this)) {
+                return state;
+            } else if (directionToNeighbour == tipDirection.getOpposite() && !this.canSurvive(state, level, pos)) {
+                if (tipDirection == Direction.DOWN) {
+                    ticks.scheduleTick(pos, this, 2);
+                } else {
+                    ticks.scheduleTick(pos, this, 1);
+                }
+
+                return state;
+            } else {
+                boolean mergeOpposingTips = state.getValue(THICKNESS) == DripstoneThickness.TIP_MERGE;
+                DripstoneThickness newThickness = calculateDripstoneThickness(level, pos, tipDirection, mergeOpposingTips);
+                return (BlockState)state.setValue(THICKNESS, newThickness);
+            }
         }
     }
 
-    private static boolean isPointedDripstoneWithDirection(BlockState blockState, Direction tipDirection) {
-        return blockState.is(NRegistry.POINTED_BEDROCK_BLOCK.get()) && blockState.getValue(TIP_DIRECTION) == tipDirection;
+    protected void onProjectileHit(Level level, BlockState state, BlockHitResult blockHit, Projectile projectile) {
+        if (!level.isClientSide()) {
+            BlockPos blockPos = blockHit.getBlockPos();
+            if (level instanceof ServerLevel) {
+                ServerLevel serverLevel = (ServerLevel)level;
+                if (projectile.mayInteract(serverLevel, blockPos) && projectile.mayBreak(serverLevel) && projectile instanceof ThrownTrident && projectile.getDeltaMovement().length() > 0.6) {
+                    level.destroyBlock(blockPos, true);
+                }
+            }
+        }
+
+    }
+
+    public void fallOn(Level level, BlockState state, BlockPos pos, Entity entity, double fallDistance) {
+        if (state.getValue(TIP_DIRECTION) == Direction.UP && state.getValue(THICKNESS) == DripstoneThickness.TIP) {
+            entity.causeFallDamage(fallDistance + 2.5, 2.0F, level.damageSources().stalagmite());
+        } else {
+            super.fallOn(level, state, pos, entity, fallDistance);
+        }
+
+    }
+
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        if (canDrip(state)) {
+            float randomValue = random.nextFloat();
+            if (!(randomValue > 0.12F)) {
+                getFluidAboveStalactite(level, pos, state).filter((fluidAbove) -> {
+                    return randomValue < 0.02F || canFillCauldron(fluidAbove.fluid);
+                }).ifPresent((fluidAbove) -> {
+                    spawnDripParticle(level, pos, state, fluidAbove.fluid, fluidAbove.pos);
+                });
+            }
+        }
+
+    }
+
+    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        if (isStalagmite(state) && !this.canSurvive(state, level, pos)) {
+            level.destroyBlock(pos, true);
+        } else {
+            spawnFallingStalactite(state, level, pos);
+        }
+
+    }
+
+    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        maybeTransferFluid(state, level, pos, random.nextFloat());
+        if (random.nextFloat() < 0.011377778F && isStalactiteStartPos(state, level, pos)) {
+            growStalactiteOrStalagmiteIfPossible(state, level, pos, random);
+        }
+
     }
 
     @VisibleForTesting
     public static void maybeTransferFluid(BlockState state, ServerLevel level, BlockPos pos, float randomValue) {
         if (isStalactiteStartPos(state, level, pos)) {
-            Optional<FluidInfo> fluidInfo = getFluidAboveStalactite(level, pos, state);
+            Optional<PointedUpBlock.FluidInfo> fluidInfo = getFluidAboveStalactite(level, pos, state);
             if (!fluidInfo.isEmpty()) {
-                Fluid fluid = ((FluidInfo)fluidInfo.get()).fluid;
+                Fluid fluid = ((PointedUpBlock.FluidInfo)fluidInfo.get()).fluid;
                 float transferProbability;
                 if (fluid == Fluids.WATER) {
                     transferProbability = 0.17578125F;
@@ -79,11 +169,11 @@ public class PointedUpBlock extends PointedDripstoneBlock {
                 if (dripInfo != null && !(randomValue >= dripInfo.chance())) {
                     BlockPos stalactiteTipPos = findTip(state, level, pos, 11, false);
                     if (stalactiteTipPos != null) {
-                        if (((FluidInfo)fluidInfo.get()).sourceState.is(Blocks.MUD) && fluid == Fluids.WATER) {
+                        if (((PointedUpBlock.FluidInfo)fluidInfo.get()).sourceState.is(Blocks.MUD) && fluid == Fluids.WATER) {
                             BlockState newState = Blocks.CLAY.defaultBlockState();
-                            level.setBlockAndUpdate(((FluidInfo)fluidInfo.get()).pos, newState);
-                            Block.pushEntitiesUp(((FluidInfo)fluidInfo.get()).sourceState, newState, level, ((FluidInfo)fluidInfo.get()).pos);
-                            level.gameEvent(GameEvent.BLOCK_CHANGE, ((FluidInfo)fluidInfo.get()).pos, GameEvent.Context.of(newState));
+                            level.setBlockAndUpdate(((PointedUpBlock.FluidInfo)fluidInfo.get()).pos, newState);
+                            Block.pushEntitiesUp(((PointedUpBlock.FluidInfo)fluidInfo.get()).sourceState, newState, level, ((PointedUpBlock.FluidInfo)fluidInfo.get()).pos);
+                            level.gameEvent(GameEvent.BLOCK_CHANGE, ((PointedUpBlock.FluidInfo)fluidInfo.get()).pos, GameEvent.Context.of(newState));
                             level.levelEvent(1504, stalactiteTipPos, 0);
                         } else {
                             BlockPos cauldronPos = findFillableCauldronBelowStalactiteTip(level, stalactiteTipPos, fluid);
@@ -102,6 +192,68 @@ public class PointedUpBlock extends PointedDripstoneBlock {
 
     }
 
+    public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
+        LevelAccessor level = context.getLevel();
+        BlockPos pos = context.getClickedPos();
+        Direction defaultTipDirection = context.getNearestLookingVerticalDirection().getOpposite();
+        Direction tipDirection = calculateTipDirection(level, pos, defaultTipDirection);
+        if (tipDirection == null) {
+            return null;
+        } else {
+            boolean mergeOpposingTips = !context.isSecondaryUseActive();
+            DripstoneThickness thickness = calculateDripstoneThickness(level, pos, tipDirection, mergeOpposingTips);
+            return (BlockState)((BlockState)((BlockState)this.defaultBlockState().setValue(TIP_DIRECTION, tipDirection)).setValue(THICKNESS, thickness)).setValue(WATERLOGGED, level.getFluidState(pos).is(Fluids.WATER));
+        }
+    }
+
+    protected FluidState getFluidState(BlockState state) {
+        return (Boolean)state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+    }
+
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        VoxelShape var10000;
+        switch ((DripstoneThickness)state.getValue(THICKNESS)) {
+            case TIP_MERGE:
+                var10000 = SHAPE_TIP_MERGE;
+                break;
+            case TIP:
+                var10000 = state.getValue(TIP_DIRECTION) == Direction.DOWN ? SHAPE_TIP_DOWN : SHAPE_TIP_UP;
+                break;
+            case FRUSTUM:
+                var10000 = SHAPE_FRUSTUM;
+                break;
+            case MIDDLE:
+                var10000 = SHAPE_MIDDLE;
+                break;
+            case BASE:
+                var10000 = SHAPE_BASE;
+                break;
+            default:
+                throw new MatchException((String)null, (Throwable)null);
+        }
+
+        VoxelShape shape = var10000;
+        return shape.move(state.getOffset(pos));
+    }
+
+    protected boolean isCollisionShapeFullBlock(BlockState state, BlockGetter level, BlockPos pos) {
+        return false;
+    }
+
+    protected float getMaxHorizontalOffset() {
+        return MAX_HORIZONTAL_OFFSET;
+    }
+
+    public void onBrokenAfterFall(Level level, BlockPos pos, FallingBlockEntity entity) {
+        if (!entity.isSilent()) {
+            level.levelEvent(1045, pos, 0);
+        }
+
+    }
+
+    public DamageSource getFallDamageSource(Entity entity) {
+        return entity.damageSources().fallingStalactite(entity);
+    }
 
     private static void spawnFallingStalactite(BlockState state, ServerLevel level, BlockPos pos) {
         BlockPos.MutableBlockPos fallPos = pos.mutable();
@@ -179,7 +331,7 @@ public class PointedUpBlock extends PointedDripstoneBlock {
     }
 
     private static void createDripstone(LevelAccessor level, BlockPos pos, Direction direction, DripstoneThickness thickness) {
-        BlockState state = (BlockState)((BlockState)((BlockState)Blocks.POINTED_DRIPSTONE.defaultBlockState().setValue(TIP_DIRECTION, direction)).setValue(THICKNESS, thickness)).setValue(WATERLOGGED, level.getFluidState(pos).is(Fluids.WATER));
+        BlockState state = (BlockState)((BlockState)((BlockState)NRegistry.POINTED_BEDROCK_BLOCK.get().defaultBlockState().setValue(TIP_DIRECTION, direction)).setValue(THICKNESS, thickness)).setValue(WATERLOGGED, level.getFluidState(pos).is(Fluids.WATER));
         level.setBlock(pos, state, 3);
     }
 
@@ -198,6 +350,21 @@ public class PointedUpBlock extends PointedDripstoneBlock {
         createDripstone(level, stalagmitePos, Direction.UP, DripstoneThickness.TIP_MERGE);
     }
 
+    public static void spawnDripParticle(Level level, BlockPos stalactiteTipPos, BlockState stalactiteTipState) {
+        getFluidAboveStalactite(level, stalactiteTipPos, stalactiteTipState).ifPresent((fluidAbove) -> {
+            spawnDripParticle(level, stalactiteTipPos, stalactiteTipState, fluidAbove.fluid, fluidAbove.pos);
+        });
+    }
+
+    private static void spawnDripParticle(Level level, BlockPos stalactiteTipPos, BlockState stalactiteTipState, Fluid fluidAbove, BlockPos posAbove) {
+        Vec3 offset = stalactiteTipState.getOffset(stalactiteTipPos);
+        double PIXEL_SIZE = 0.0625;
+        double x = (double)stalactiteTipPos.getX() + 0.5 + offset.x;
+        double y = (double)stalactiteTipPos.getY() + STALACTITE_DRIP_START_PIXEL - 0.0625;
+        double z = (double)stalactiteTipPos.getZ() + 0.5 + offset.z;
+        ParticleOptions dripParticle = getDripParticle(level, fluidAbove, posAbove);
+        level.addParticle(dripParticle, x, y, z, 0.0, 0.0, 0.0);
+    }
 
     private static @Nullable BlockPos findTip(BlockState dripstoneState, LevelAccessor level, BlockPos dripstonePos, int maxSearchLength, boolean includeMergedTip) {
         if (isTip(dripstoneState, includeMergedTip)) {
@@ -266,10 +433,10 @@ public class PointedUpBlock extends PointedDripstoneBlock {
     private static Optional<BlockPos> findRootBlock(Level level, BlockPos pos, BlockState dripStoneState, int maxSearchLength) {
         Direction tipDirection = (Direction)dripStoneState.getValue(TIP_DIRECTION);
         BiPredicate<BlockPos, BlockState> pathPredicate = (pathPos, state) -> {
-            return state.is(Blocks.POINTED_DRIPSTONE) && state.getValue(TIP_DIRECTION) == tipDirection;
+            return state.is(NRegistry.POINTED_BEDROCK_BLOCK.get()) && state.getValue(TIP_DIRECTION) == tipDirection;
         };
         return findBlockVertical(level, pos, tipDirection.getOpposite().getAxisDirection(), pathPredicate, (state) -> {
-            return !state.is(Blocks.POINTED_DRIPSTONE);
+            return !state.is(NRegistry.POINTED_BEDROCK_BLOCK.get());
         }, maxSearchLength);
     }
 
@@ -280,10 +447,10 @@ public class PointedUpBlock extends PointedDripstoneBlock {
     }
 
     private static boolean isTip(BlockState state, boolean includeMergedTip) {
-        if (!state.is(Blocks.POINTED_DRIPSTONE)) {
+        if (!state.is(NRegistry.POINTED_BEDROCK_BLOCK.get())) {
             return false;
         } else {
-            DripstoneThickness thickness = (DripstoneThickness)state.getValue(THICKNESS);
+            DripstoneThickness thickness = state.getValue(THICKNESS);
             return thickness == DripstoneThickness.TIP || includeMergedTip && thickness == DripstoneThickness.TIP_MERGE;
         }
     }
@@ -301,20 +468,32 @@ public class PointedUpBlock extends PointedDripstoneBlock {
     }
 
     private static boolean isStalactiteStartPos(BlockState state, LevelReader level, BlockPos pos) {
-        return isStalactite(state) && !level.getBlockState(pos.above()).is(Blocks.POINTED_DRIPSTONE);
+        return isStalactite(state) && !level.getBlockState(pos.above()).is(NRegistry.POINTED_BEDROCK_BLOCK.get());
     }
 
+    protected boolean isPathfindable(BlockState state, PathComputationType type) {
+        return false;
+    }
 
+    private static boolean isPointedDripstoneWithDirection(BlockState blockState, Direction tipDirection) {
+        return blockState.is(NRegistry.POINTED_BEDROCK_BLOCK.get()) && blockState.getValue(TIP_DIRECTION) == tipDirection;
+    }
 
     private static @Nullable BlockPos findFillableCauldronBelowStalactiteTip(Level level, BlockPos stalactiteTipPos, Fluid fluid) {
-        return null;
+        Predicate<BlockState> cauldronPredicate = (state) -> {
+            return state.getBlock() instanceof AbstractCauldronBlock;
+        };
+        BiPredicate<BlockPos, BlockState> pathPredicate = (pos, state) -> {
+            return canDripThrough(level, pos, state);
+        };
+        return (BlockPos)findBlockVertical(level, stalactiteTipPos, Direction.DOWN.getAxisDirection(), pathPredicate, cauldronPredicate, 11).orElse((BlockPos) null);
     }
 
     public static @Nullable BlockPos findStalactiteTipAboveCauldron(Level level, BlockPos cauldronPos) {
         BiPredicate<BlockPos, BlockState> pathPredicate = (pos, state) -> {
             return canDripThrough(level, pos, state);
         };
-        return (BlockPos)findBlockVertical(level, cauldronPos, Direction.UP.getAxisDirection(), pathPredicate, PointedDripstoneBlock::canDrip, 11).orElse((BlockPos) null);
+        return (BlockPos)findBlockVertical(level, cauldronPos, Direction.UP.getAxisDirection(), pathPredicate, PointedUpBlock::canDrip, 11).orElse((BlockPos) null);
     }
 
     public static Fluid getCauldronFillFluidType(ServerLevel level, BlockPos stalactitePos) {
@@ -323,7 +502,7 @@ public class PointedUpBlock extends PointedDripstoneBlock {
         }).filter(PointedUpBlock::canFillCauldron).orElse(Fluids.EMPTY);
     }
 
-    private static Optional<FluidInfo> getFluidAboveStalactite(Level level, BlockPos stalactitePos, BlockState stalactiteState) {
+    private static Optional<PointedUpBlock.FluidInfo> getFluidAboveStalactite(Level level, BlockPos stalactitePos, BlockState stalactiteState) {
         return !isStalactite(stalactiteState) ? Optional.empty() : findRootBlock(level, stalactitePos, stalactiteState, 11).map((rootPos) -> {
             BlockPos abovePos = rootPos.above();
             BlockState aboveState = level.getBlockState(abovePos);
@@ -334,7 +513,7 @@ public class PointedUpBlock extends PointedDripstoneBlock {
                 fluid = level.getFluidState(abovePos).getType();
             }
 
-            return new FluidInfo(abovePos, (Fluid)fluid, aboveState);
+            return new PointedUpBlock.FluidInfo(abovePos, (Fluid)fluid, aboveState);
         });
     }
 
@@ -388,10 +567,26 @@ public class PointedUpBlock extends PointedDripstoneBlock {
             return false;
         } else {
             VoxelShape collisionShape = state.getCollisionShape(level, pos);
-            return !Shapes.joinIsNotEmpty(Block.column(4.0, 0.0, 16.0), collisionShape, BooleanOp.AND);
+            return !Shapes.joinIsNotEmpty(REQUIRED_SPACE_TO_DRIP_THROUGH_NON_SOLID_BLOCK, collisionShape, BooleanOp.AND);
         }
     }
-    record FluidInfo(BlockPos pos, Fluid fluid, BlockState sourceState) {
+
+    static {
+        TIP_DIRECTION = BlockStateProperties.VERTICAL_DIRECTION;
+        THICKNESS = BlockStateProperties.DRIPSTONE_THICKNESS;
+        WATERLOGGED = BlockStateProperties.WATERLOGGED;
+        SHAPE_TIP_MERGE = Block.column(6.0, 0.0, 16.0);
+        SHAPE_TIP_UP = Block.column(6.0, 0.0, 11.0);
+        SHAPE_TIP_DOWN = Block.column(6.0, 5.0, 16.0);
+        SHAPE_FRUSTUM = Block.column(8.0, 0.0, 16.0);
+        SHAPE_MIDDLE = Block.column(10.0, 0.0, 16.0);
+        SHAPE_BASE = Block.column(12.0, 0.0, 16.0);
+        STALACTITE_DRIP_START_PIXEL = SHAPE_TIP_DOWN.min(Direction.Axis.Y);
+        MAX_HORIZONTAL_OFFSET = (float)SHAPE_BASE.min(Direction.Axis.X);
+        REQUIRED_SPACE_TO_DRIP_THROUGH_NON_SOLID_BLOCK = Block.column(4.0, 0.0, 16.0);
+    }
+
+    static record FluidInfo(BlockPos pos, Fluid fluid, BlockState sourceState) {
         FluidInfo(BlockPos pos, Fluid fluid, BlockState sourceState) {
             this.pos = pos;
             this.fluid = fluid;
@@ -409,7 +604,8 @@ public class PointedUpBlock extends PointedDripstoneBlock {
         public BlockState sourceState() {
             return this.sourceState;
         }
-    }
 
 
+
+    } 
 }

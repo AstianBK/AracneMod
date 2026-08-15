@@ -3,18 +3,26 @@ package com.astianbk.arachnemod.client.renderer;
 import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.client.ScarabRenderState;
 import com.astianbk.arachnemod.client.model.ScarabModel;
-import com.astianbk.arachnemod.server.ScarabEntity;
+import com.astianbk.arachnemod.server.entity.ScarabEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.layers.EyesLayer;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.phys.Vec3;
 
 public class ScarabRenderer<T extends ScarabEntity,R extends ScarabRenderState,M extends ScarabModel<R>> extends LivingEntityRenderer<T,R,M> {
     public ScarabRenderer(EntityRendererProvider.Context context) {
         super(context, (M) new ScarabModel<>(context.bakeLayer(ScarabModel.LAYER_LOCATION)), 1.0F);
+        this.addLayer(new EyesLayer<R, M>(this) {
+            @Override
+            public RenderType renderType() {
+                return RenderTypes.eyes(Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/scarab_eyes.png"));
+            }
+        });
     }
 
 

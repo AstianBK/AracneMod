@@ -6,7 +6,7 @@ package com.astianbk.arachnemod.client.model;// Made with Blockbench 5.1.6
 import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.client.NeedleRenderState;
 import com.astianbk.arachnemod.client.anim.VoidNeedleAnim;
-import com.astianbk.arachnemod.server.VoidNeedleEntity;
+import com.astianbk.arachnemod.server.entity.VoidNeedleEntity;
 import net.minecraft.client.animation.KeyframeAnimation;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;

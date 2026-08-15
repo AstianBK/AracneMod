@@ -1,5 +1,6 @@
-package com.astianbk.arachnemod.server;
+package com.astianbk.arachnemod.server.entity;
 
+import com.astianbk.arachnemod.AracneMod;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -35,6 +36,15 @@ public class OrbEntity extends Entity {
     public Type getOrbType(){
         return this.type;
     }
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
+        super.onSyncedDataUpdated(accessor);
+        if (TYPE.equals(accessor)){
+            this.type=Type.valueOf(entityData.get(TYPE));
+        }
+    }
+
     @Override
     public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float v) {
         return false;
@@ -52,7 +62,7 @@ public class OrbEntity extends Entity {
 
     @Override
     public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
-
+        AracneMod.LOGGER.info("lol :{}",getOrbType());
         return super.interact(player, hand, location);
     }
 

@@ -1,19 +1,25 @@
 package com.astianbk.arachnemod.client.renderer;
 
 import com.astianbk.arachnemod.AracneMod;
-import com.astianbk.arachnemod.client.NeedleRenderState;
 import com.astianbk.arachnemod.client.VoidHopperRenderState;
 import com.astianbk.arachnemod.client.model.VoidHopperModel;
-import com.astianbk.arachnemod.client.model.VoidNeedleModel;
-import com.astianbk.arachnemod.server.VoidHopperEntity;
-import com.astianbk.arachnemod.server.VoidNeedleEntity;
+import com.astianbk.arachnemod.server.entity.VoidHopperEntity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.layers.EyesLayer;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 
 public class VoidHopperRenderer<T extends VoidHopperEntity,R extends VoidHopperRenderState,M extends VoidHopperModel<R>> extends LivingEntityRenderer<T,R,M> {
     public VoidHopperRenderer(EntityRendererProvider.Context context) {
         super(context, (M) new VoidHopperModel<>(context.bakeLayer(VoidHopperModel.LAYER_LOCATION)),1.0F);
+        this.addLayer(new EyesLayer<R, M>(this) {
+            @Override
+            public RenderType renderType() {
+                return RenderTypes.eyes(Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/void_hopper/voidhopper_eyes.png"));
+            }
+        });
     }
 
     @Override

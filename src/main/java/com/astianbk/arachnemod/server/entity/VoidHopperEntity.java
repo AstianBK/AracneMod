@@ -1,7 +1,7 @@
-package com.astianbk.arachnemod.server;
+package com.astianbk.arachnemod.server.entity;
 
-import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.common.registry.NRegistry;
+import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -18,21 +18,24 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-public class VoidHopperEntity extends Mob {
+public class VoidHopperEntity extends Monster {
+
     public AnimationState idle = new AnimationState();
     public AnimationState flee = new AnimationState();
     public AnimationState emerge = new AnimationState();
     public AnimationState casting = new AnimationState();
     public int idleResetTimer = 0;
-
+    public int emergeAnimationTimer = 0;
+    public int diggingAnimationTimer = 0;
     public Blessing prevBlessing = Blessing.NONE;
-    public VoidHopperEntity(EntityType<? extends Mob> type, Level level) {
+    public Vec3 fleePos = null;
+    public VoidHopperEntity(EntityType<? extends Monster> type, Level level) {
         super(type, level);
     }
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes()
                 .add(Attributes.KNOCKBACK_RESISTANCE,10.0F)
-                .add(Attributes.FOLLOW_RANGE, 12.0)
+                .add(Attributes.FOLLOW_RANGE, 40.0)
                 .add(Attributes.MAX_HEALTH, 24.0);
     }
     @Override
@@ -42,7 +45,7 @@ public class VoidHopperEntity extends Mob {
         this.goalSelector.addGoal(5,new LookAtPlayerGoal(this, Player.class,30.0F));
         this.goalSelector.addGoal(3,new SilentCastingGoal());
         this.goalSelector.addGoal(4,new DamnationCastingGoal());
-
+        this.goalSelector.addGoal(1,new FleeGoal());
     }
 
     @Override
@@ -50,6 +53,22 @@ public class VoidHopperEntity extends Mob {
         super.tick();
         if (this.level().isClientSide()){
             this.setupAnimation();
+        }
+        if (this.diggingAnimationTimer > 0){
+            this.diggingAnimationTimer--;
+            if (this.diggingAnimationTimer ==0){
+                if (this.fleePos != null){
+                    this.setPose(Pose.EMERGING);
+                    this.teleportTo(fleePos.x,fleePos.y,fleePos.z);
+                }
+            }
+        }
+        if (this.emergeAnimationTimer>0){
+            this.emergeAnimationTimer--;
+            if (this.emergeAnimationTimer==0){
+                this.setPose(Pose.STANDING);
+
+            }
         }
     }
 
@@ -90,14 +109,13 @@ public class VoidHopperEntity extends Mob {
     }
     public void criSilent(){
         for (LivingEntity living : this.level().getEntitiesOfClass(LivingEntity.class,this.getHitbox().inflate(30.0F))){
-            AracneMod.LOGGER.info("cri {}",living);
             if (!living.is(EntityTypeTags.ARTHROPOD)){
                 addMarkSilent(living);
             }
         }
     }
     public void criDamnation(){
-        for (Mob living : this.level().getEntitiesOfClass(Mob.class,this.getHitbox().inflate(30.0F))){
+        for (LivingEntity living : this.level().getEntitiesOfClass(LivingEntity.class,this.getHitbox().inflate(30.0F))){
             if (!living.is(EntityTypeTags.ARTHROPOD)){
                 addDamnationHex(living);
             }
@@ -114,16 +132,33 @@ public class VoidHopperEntity extends Mob {
             this.idleResetTimer = 100;
             this.idle.stop();
             this.casting.start(this.tickCount);
-        }else if (id == 6){
-            this.idleResetTimer = 50;
-            this.idle.stop();
-            this.flee.start(this.tickCount);
-        }else if (id == 8){
-            this.idleResetTimer = 50;
-            this.idle.stop();
-            this.emerge.start(this.tickCount);
         }
         super.handleEntityEvent(id);
+    }
+
+    public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
+        if (DATA_POSE.equals(accessor)) {
+            switch (this.getPose()) {
+                case EMERGING:
+                    this.idle.stop();
+                    this.flee.stop();
+                    this.casting.stop();
+                    this.idleResetTimer = 50;
+                    this.emergeAnimationTimer = 50;
+                    this.emerge.start(this.tickCount);
+                    break;
+                case DIGGING:
+                    this.idle.stop();
+                    this.emerge.stop();
+                    this.casting.stop();
+                    this.idleResetTimer = 60;
+                    this.diggingAnimationTimer = 60;
+                    this.flee.start(this.tickCount);
+                    break;
+            }
+        }
+
+        super.onSyncedDataUpdated(accessor);
     }
 
     @Override
@@ -134,6 +169,47 @@ public class VoidHopperEntity extends Mob {
 
             }
         };
+    }
+    public class FleeGoal extends Goal{
+
+        public FleeGoal(){
+
+        }
+
+        @Override
+        public void tick() {
+            super.tick();
+            flee();
+            if (VoidHopperEntity.this.fleePos != null){
+                VoidHopperEntity.this.setPose(Pose.DIGGING);
+            }
+        }
+        public void flee(){
+            double dist = 15.0D;
+            while (dist > 3){
+                double r = VoidHopperEntity.this.level().getRandom().nextInt(0,24) * 15.0D;
+                for (int radius = 0; radius <360 ; radius+=15){
+                    radius = (int) (radius + r);
+                    double x = Math.sin(radius) * dist + VoidHopperEntity.this.getX();
+                    double y = VoidHopperEntity.this.getY();
+                    double z = Math.cos(radius) * dist  + VoidHopperEntity.this.getZ();
+                    if (validPos(x,y,z)){
+                        VoidHopperEntity.this.fleePos = new Vec3(x,y,z);
+                        return;
+                    }
+                }
+                dist-=3;
+            }
+
+        }
+        public boolean validPos(double x , double y, double z){
+            return true;
+        }
+
+        @Override
+        public boolean canUse() {
+            return VoidHopperEntity.this.getTarget() != null && VoidHopperEntity.this.distanceToSqr(VoidHopperEntity.this.getTarget()) < 15.0F;
+        }
     }
     public abstract class BlessingGoal extends Goal{
         public int castingTime = 0;
@@ -175,7 +251,7 @@ public class VoidHopperEntity extends Mob {
         abstract Blessing getType();
         @Override
         public boolean canUse() {
-            return VoidHopperEntity.this.getTarget() != null && VoidHopperEntity.this.prevBlessing != getType();
+            return !VoidHopperEntity.this.hasPose(Pose.DIGGING) && !VoidHopperEntity.this.hasPose(Pose.EMERGING) && VoidHopperEntity.this.getTarget() != null && VoidHopperEntity.this.prevBlessing != getType();
         }
     }
     public class SilentCastingGoal extends BlessingGoal{
@@ -210,6 +286,11 @@ public class VoidHopperEntity extends Mob {
         void blessing() {
             VoidHopperEntity.this.criDamnation();
         }
+        @Override
+        public boolean chargeBlessing() {
+            return true;
+        }
+
 
         @Override
         Blessing getType() {
