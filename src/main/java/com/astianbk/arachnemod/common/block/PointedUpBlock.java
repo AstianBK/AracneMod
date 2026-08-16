@@ -197,9 +197,13 @@ public class PointedUpBlock extends Block implements SimpleWaterloggedBlock, Fal
         BlockPos pos = context.getClickedPos();
         Direction defaultTipDirection = context.getNearestLookingVerticalDirection().getOpposite();
         Direction tipDirection = calculateTipDirection(level, pos, defaultTipDirection);
+
         if (tipDirection == null) {
             return null;
         } else {
+            if (defaultTipDirection == Direction.DOWN){
+                return null;
+            }
             boolean mergeOpposingTips = !context.isSecondaryUseActive();
             DripstoneThickness thickness = calculateDripstoneThickness(level, pos, tipDirection, mergeOpposingTips);
             return (BlockState)((BlockState)((BlockState)this.defaultBlockState().setValue(TIP_DIRECTION, tipDirection)).setValue(THICKNESS, thickness)).setValue(WATERLOGGED, level.getFluidState(pos).is(Fluids.WATER));
