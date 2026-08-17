@@ -1,0 +1,14 @@
+{
+  "chicken_cyborg_speech": {
+    "subtitle": "sounds.arachnemod.chicken_cyborg_speech",
+    "sounds": [
+      "arachnemod:chicken_cyborg_speech"
+    ]
+  },
+  "upgrade_table_use": {
+    "subtitle": "sounds.arachnemod.upgrade_table_use",
+    "sounds": [
+      "arachnemod:upgrade_table_use"
+    ]
+  }
+}
