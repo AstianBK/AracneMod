@@ -1,14 +1,86 @@
 {
-  "chicken_cyborg_speech": {
-    "subtitle": "sounds.arachnemod.chicken_cyborg_speech",
+  "arachne_talk1": {
+    "subtitle": "sounds.arachnemod.arachne_talk1",
     "sounds": [
-      "arachnemod:chicken_cyborg_speech"
+      "arachnemod:arachne_talk1"
     ]
   },
-  "upgrade_table_use": {
-    "subtitle": "sounds.arachnemod.upgrade_table_use",
+    "arachne_talk2": {
+    "subtitle": "sounds.arachnemod.arachne_talk2",
     "sounds": [
-      "arachnemod:upgrade_table_use"
+      "arachnemod:arachne_talk2"
+    ]
+  },
+    "arachne_talk3": {
+    "subtitle": "sounds.arachnemod.arachne_talk3",
+    "sounds": [
+      "arachnemod:arachne_talk3"
+    ]
+  },
+    "hopper_hex": {
+    "subtitle": "sounds.arachnemod.hopper_hex",
+    "sounds": [
+      "arachnemod:hopper_hex"
+    ]
+  },
+  "hopper_channel": {
+    "subtitle": "sounds.arachnemod.hopper_channel",
+    "sounds": [
+      "arachnemod:hopper_channel"
+    ]
+  },
+    "scarab_idle1": {
+    "subtitle": "sounds.arachnemod.scarab_idle1",
+    "sounds": [
+      "arachnemod:scarab_idle1"
+    ]
+  },
+	"scarab_idle2": {
+    "subtitle": "sounds.arachnemod.scarab_idle2",
+    "sounds": [
+      "arachnemod:scarab_idle2"
+    ]
+  },
+	"veil_crystal_shimmer": {
+    "subtitle": "sounds.arachnemod.veil_crystal_shimmer",
+    "sounds": [
+      "arachnemod:veil_crystal_shimmer"
+    ]
+  },
+    "needle_loop": {
+    "subtitle": "sounds.arachnemod.needle_loop",
+    "sounds": [
+      "arachnemod:needle_loop"
+    ]
+  },
+    "ambience_0": {
+    "subtitle": "sounds.arachnemod.ambience_0",
+    "sounds": [
+      "arachnemod:ambience_0"
+    ]
+  },
+    "ambience_1": {
+    "subtitle": "sounds.arachnemod.ambience_1",
+    "sounds": [
+      "arachnemod:ambience_1"
+    ]
+  },
+    "ambience_2": {
+    "subtitle": "sounds.arachnemod.ambience_2",
+    "sounds": [
+      "arachnemod:ambience_2"
+    ]
+  },
+    "ambience_3": {
+    "subtitle": "sounds.arachnemod.ambience_3",
+    "sounds": [
+      "arachnemod:ambience_3"
+    ]
+  },
+    "ambience_loop": {
+    "subtitle": "sounds.arachnemod.ambience_loop",
+    "sounds": [
+      "arachnemod:ambience_loop"
     ]
   }
 }
