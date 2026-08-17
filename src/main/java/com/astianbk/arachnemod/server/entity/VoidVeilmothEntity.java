@@ -28,10 +28,10 @@ public class VoidVeilmothEntity extends PathfinderMob {
 
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MOVEMENT_SPEED, 0.35F)
+                .add(Attributes.MOVEMENT_SPEED, 0.20F)
                 .add(Attributes.FOLLOW_RANGE, 40.0)
-                .add(Attributes.MAX_HEALTH, 5.0)
-                .add(Attributes.ATTACK_DAMAGE, 5.0);
+                .add(Attributes.MAX_HEALTH, 2.0)
+                .add(Attributes.ATTACK_DAMAGE, 1.0);
     }
 
     @Override

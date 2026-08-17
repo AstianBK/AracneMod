@@ -34,9 +34,11 @@ public class ScarabEntity extends PathfinderMob {
 
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MOVEMENT_SPEED, 0.35F)
-                .add(Attributes.FOLLOW_RANGE, 40.0)
-                .add(Attributes.MAX_HEALTH, 24.0)
+                .add(Attributes.MOVEMENT_SPEED, 0.26F)
+                .add(Attributes.FOLLOW_RANGE, 35.0)
+                .add(Attributes.MAX_HEALTH, 20.0)
+                .add(Attributes.ARMOR, 10.0)
+                .add(Attributes.ARMOR_TOUGHNESS, 5.0)
                 .add(Attributes.ATTACK_DAMAGE, 5.0);
     }
 

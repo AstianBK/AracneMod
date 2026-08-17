@@ -36,7 +36,7 @@ public class VoidHopperEntity extends Monster {
         return Monster.createMonsterAttributes()
                 .add(Attributes.KNOCKBACK_RESISTANCE,10.0F)
                 .add(Attributes.FOLLOW_RANGE, 40.0)
-                .add(Attributes.MAX_HEALTH, 24.0);
+                .add(Attributes.MAX_HEALTH, 15.0);
     }
     @Override
     protected void registerGoals() {
