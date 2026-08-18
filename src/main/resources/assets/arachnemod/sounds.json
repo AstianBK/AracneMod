@@ -82,5 +82,17 @@
     "sounds": [
       "arachnemod:ambience_loop"
     ]
+  },
+    "orb_select": {
+    "subtitle": "sounds.arachnemod.orb_select",
+    "sounds": [
+      "arachnemod:orb_select"
+    ]
+  },
+    "darkness_constrict": {
+    "subtitle": "sounds.arachnemod.darkness_constrict",
+    "sounds": [
+      "arachnemod:darkness_constrict"
+    ]
   }
 }
