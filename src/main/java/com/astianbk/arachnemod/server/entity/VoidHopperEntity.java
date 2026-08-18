@@ -90,7 +90,7 @@ public class VoidHopperEntity extends Monster {
         if (amplifier+1 == 3){
             living.addEffect(new MobEffectInstance(NRegistry.SILENT,500,0));
         }else {
-            living.addEffect(new MobEffectInstance(NRegistry.SILENT_HEX,100,amplifier));
+            living.addEffect(new MobEffectInstance(NRegistry.SILENT_HEX,100,amplifier,false,false));
         }
     }
 
@@ -104,7 +104,7 @@ public class VoidHopperEntity extends Monster {
             living.addEffect(new MobEffectInstance(MobEffects.WEAKNESS,250,0));
 
         }else {
-            living.addEffect(new MobEffectInstance(NRegistry.DAMNATION_HEX,100,amplifier));
+            living.addEffect(new MobEffectInstance(NRegistry.DAMNATION_HEX,100,amplifier,false,false));
         }
     }
     public void criSilent(){

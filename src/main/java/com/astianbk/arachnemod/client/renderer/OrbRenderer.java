@@ -1,7 +1,7 @@
 package com.astianbk.arachnemod.client.renderer;
 
 import com.astianbk.arachnemod.AracneMod;
-import com.astianbk.arachnemod.client.OrbRenderState;
+import com.astianbk.arachnemod.client.render_state.OrbRenderState;
 import com.astianbk.arachnemod.server.entity.OrbEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

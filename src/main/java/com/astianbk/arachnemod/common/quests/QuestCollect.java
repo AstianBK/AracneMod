@@ -2,11 +2,10 @@ package com.astianbk.arachnemod.common.quests;
 
 import com.astianbk.arachnemod.QuestsType;
 import com.astianbk.arachnemod.TierQuest;
-import com.astianbk.arachnemod.server.cap.NerubianCap;
+import com.astianbk.arachnemod.server.cap.ArachneAttachment;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.network.FriendlyByteBuf;
 
 public class QuestCollect extends Quest{
     public static final MapCodec<QuestCollect> CODEC =
@@ -38,7 +37,7 @@ public class QuestCollect extends Quest{
         return this.itemId.equals(idTarget);
     }
 
-    public boolean isComplete(NerubianCap cap) {
+    public boolean isComplete(ArachneAttachment cap) {
         return cap.progressQuest==this.toCollect;
     }
 }

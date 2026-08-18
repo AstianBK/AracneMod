@@ -1,7 +1,7 @@
 package com.astianbk.arachnemod.client.renderer;
 
 import com.astianbk.arachnemod.AracneMod;
-import com.astianbk.arachnemod.client.NeedleRenderState;
+import com.astianbk.arachnemod.client.render_state.NeedleRenderState;
 import com.astianbk.arachnemod.client.model.VoidNeedleModel;
 import com.astianbk.arachnemod.server.entity.VoidNeedleEntity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;

@@ -4,17 +4,15 @@ package com.astianbk.arachnemod.client.model;// Made with Blockbench 5.1.5
 
 
 import com.astianbk.arachnemod.AracneMod;
-import com.astianbk.arachnemod.client.ScarabRenderState;
+import com.astianbk.arachnemod.client.render_state.ScarabRenderState;
+import com.astianbk.arachnemod.client.anim.ScarabAnimation;
 import net.minecraft.client.animation.KeyframeAnimation;
-import net.minecraft.client.animation.KeyframeAnimations;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class ScarabModel<T extends ScarabRenderState> extends EntityModel<T> {
 	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Identifier.fromNamespaceAndPath(AracneMod.MODID, "scarab_entity"), "main");

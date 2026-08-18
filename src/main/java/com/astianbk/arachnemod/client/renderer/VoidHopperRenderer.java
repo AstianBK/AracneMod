@@ -1,7 +1,7 @@
 package com.astianbk.arachnemod.client.renderer;
 
 import com.astianbk.arachnemod.AracneMod;
-import com.astianbk.arachnemod.client.VoidHopperRenderState;
+import com.astianbk.arachnemod.client.render_state.VoidHopperRenderState;
 import com.astianbk.arachnemod.client.model.VoidHopperModel;
 import com.astianbk.arachnemod.server.entity.VoidHopperEntity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;

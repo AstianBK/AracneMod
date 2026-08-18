@@ -1,4 +1,4 @@
-package com.astianbk.arachnemod.client;
+package com.astianbk.arachnemod.client.render_state;
 
 import com.astianbk.arachnemod.server.entity.VoidNeedleEntity;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;

@@ -1,10 +1,35 @@
 {
   "variants": {
-    "lit=true": {
-      "model":"arachnemod:block/arachne_idol_on"
+    "lit=true,facing=east": {
+      "model":"arachnemod:block/arachne_idol_on",
+      "y": 90
     },
-    "lit=false": {
+    "lit=false,facing=east": {
+      "model":"arachnemod:block/arachne_idol_off",
+      "y": 90
+    },
+    "lit=true,facing=west": {
+      "model":"arachnemod:block/arachne_idol_on",
+      "y": -90
+    },
+    "lit=false,facing=west": {
+      "model":"arachnemod:block/arachne_idol_off",
+      "y": -90
+    },
+    "lit=true,facing=north": {
+      "model":"arachnemod:block/arachne_idol_on"
+
+    },
+    "lit=false,facing=north": {
       "model":"arachnemod:block/arachne_idol_off"
+    },
+    "lit=true,facing=south": {
+      "model":"arachnemod:block/arachne_idol_on",
+      "y": 180
+    },
+    "lit=false,facing=south": {
+      "model":"arachnemod:block/arachne_idol_off",
+      "y": 180
     }
   }
 }

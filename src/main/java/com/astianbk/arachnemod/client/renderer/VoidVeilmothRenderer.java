@@ -1,9 +1,8 @@
 package com.astianbk.arachnemod.client.renderer;
 
 import com.astianbk.arachnemod.AracneMod;
-import com.astianbk.arachnemod.client.VoidVeilmothRenderState;
+import com.astianbk.arachnemod.client.render_state.VoidVeilmothRenderState;
 import com.astianbk.arachnemod.client.model.VoidVeilmothModel;
-import com.astianbk.arachnemod.server.entity.ScarabEntity;
 import com.astianbk.arachnemod.server.entity.VoidVeilmothEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -18,12 +17,12 @@ import net.minecraft.resources.Identifier;
 public class VoidVeilmothRenderer<T extends VoidVeilmothEntity,R extends VoidVeilmothRenderState,M extends VoidVeilmothModel<R>> extends LivingEntityRenderer<T,R,M> {
     public VoidVeilmothRenderer(EntityRendererProvider.Context context) {
         super(context, (M) new VoidVeilmothModel<>(context.bakeLayer(VoidVeilmothModel.LAYER_LOCATION)), 1.0F);
-//        this.addLayer(new EyesLayer<R, M>(this) {
-//            @Override
-//            public RenderType renderType() {
-//                return RenderTypes.eyes(Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/scarab_eyes.png"));
-//            }
-//        });
+        this.addLayer(new EyesLayer<R, M>(this) {
+            @Override
+            public RenderType renderType() {
+                return RenderTypes.eyes(Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/void_veilmoth/void_veilmoth.png"));
+            }
+        });
     }
 
 

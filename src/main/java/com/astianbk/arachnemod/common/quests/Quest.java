@@ -3,10 +3,8 @@ package com.astianbk.arachnemod.common.quests;
 import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.QuestsType;
 import com.astianbk.arachnemod.TierQuest;
-import com.astianbk.arachnemod.server.cap.NerubianCap;
+import com.astianbk.arachnemod.server.cap.ArachneAttachment;
 import com.mojang.serialization.Codec;
-
-import static com.astianbk.arachnemod.QuestsType.*;
 
 
 public abstract class Quest {
@@ -71,7 +69,7 @@ public abstract class Quest {
         AracneMod.LOGGER.debug("can add ");
         return false;
     }
-    public boolean isComplete(NerubianCap cap) {
+    public boolean isComplete(ArachneAttachment cap) {
         return false;
     }
 }

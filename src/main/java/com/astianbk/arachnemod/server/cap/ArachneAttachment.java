@@ -6,6 +6,7 @@ import com.astianbk.arachnemod.common.quests.Quest;
 import com.astianbk.arachnemod.common.quests.QuestManager;
 import com.astianbk.arachnemod.common.registry.NRegistry;
 import com.astianbk.arachnemod.server.network.PacketNerubianData;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -31,7 +32,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 
-public class NerubianCap {
+public class ArachneAttachment {
     public AnimationState idle = new AnimationState();
     public AnimationState crouching = new AnimationState();
     public AnimationState attack = new AnimationState();
@@ -50,6 +51,10 @@ public class NerubianCap {
     public int currentReputation = 0;
     public int previousTimesChanged = 0;
     public boolean isDirty = false;
+    public int timeDarkness = 0;
+    public int prevTimeDarkness = 0;
+    public boolean prevIsDark = false;
+    public BlockPos teleportBack = null;
     ServerBossEvent event =  Util.make(
             new ServerBossEvent(UUID.randomUUID(), Component.literal("this.getDisplayName()"), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS),
             e -> e.setDarkenScreen(false));
@@ -95,11 +100,29 @@ public class NerubianCap {
                 this.isDirty = false;
             }
 
-            if (player.tickCount%100 == 0){
-                if (player.level().dimension() == NRegistry.THE_VOID){
-                    if (player.level().getLightEngine().getRawBrightness(player.blockPosition(),0)==0.0F){
+
+        }
+        if (player.level().dimension() == NRegistry.THE_VOID){
+            this.prevTimeDarkness = this.timeDarkness;
+
+            boolean isDark = player.level().getLightEngine().getRawBrightness(player.blockPosition(),15)==0.0F && !player.level().getData(NRegistry.THE_VOID_ATTACHMENT).flash;
+
+            if (prevIsDark != isDark){
+                prevIsDark = isDark;
+            }
+            if (prevIsDark){
+                this.timeDarkness++;
+                if (this.timeDarkness > 100){
+                    if (player instanceof ServerPlayer serverPlayer){
                         player.hurtServer(serverPlayer.level(),serverPlayer.damageSources().magic(),5.0F);
                     }
+                    this.timeDarkness = 0;
+                }
+            }else {
+                if (timeDarkness > 0){
+                    timeDarkness--;
+                }else {
+                    timeDarkness = 0;
                 }
             }
         }
@@ -128,8 +151,14 @@ public class NerubianCap {
             this.block.animateWhen(player.getUseItem().getItem() instanceof ShieldItem,player.tickCount);
         }
     }
+    public void setTeleportBackPos(BlockPos pos){
+        this.teleportBack = pos;
+    }
+    public float getAnimDarkness (float partialTick){
+        return (Mth.lerp(partialTick,(float)prevTimeDarkness,(float)timeDarkness)) / 100.0F;
+    }
 
-    public void copyFrom(NerubianCap cap){
+    public void copyFrom(ArachneAttachment cap){
         this.transformComplete = cap.transformComplete;
         if(this.currentQuest!=null){
             this.currentQuest = null;
@@ -207,20 +236,20 @@ public class NerubianCap {
         currentQuest = QuestManager.getQuestForTittle(tag.getStringOr("quest"," "));
     }
 
-    public static Optional<NerubianCap> get(Player player){
+    public static Optional<ArachneAttachment> get(Player player){
         return Optional.of(player.getData(NRegistry.ARACNE.get()));
     }
-    public static class NerubianCapSerializer implements IAttachmentSerializer<NerubianCap> {
+    public static class NerubianCapSerializer implements IAttachmentSerializer<ArachneAttachment> {
 
         @Override
-        public NerubianCap read(IAttachmentHolder holder, ValueInput input) {
-            NerubianCap cap = new NerubianCap();
+        public ArachneAttachment read(IAttachmentHolder holder, ValueInput input) {
+            ArachneAttachment cap = new ArachneAttachment();
             cap.load(input);
             return cap;
         }
 
         @Override
-        public boolean write(NerubianCap attachment, ValueOutput output) {
+        public boolean write(ArachneAttachment attachment, ValueOutput output) {
             output.putBoolean("drop", attachment.itemTransformDrop);
             output.putBoolean("transform", attachment.transformComplete);
             output.putInt("progress", attachment.progressQuest);

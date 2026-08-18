@@ -4,7 +4,7 @@ package com.astianbk.arachnemod.client.model;// Made with Blockbench 5.1.5
 
 
 import com.astianbk.arachnemod.AracneMod;
-import com.astianbk.arachnemod.client.ScarabRenderState;
+import com.astianbk.arachnemod.client.anim.ScarabAnimation;
 import net.minecraft.client.animation.KeyframeAnimation;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;

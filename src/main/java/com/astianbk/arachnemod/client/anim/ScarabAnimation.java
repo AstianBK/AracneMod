@@ -1,4 +1,4 @@
-package com.astianbk.arachnemod.client.model;// Save this class in your mod and generate all required imports
+package com.astianbk.arachnemod.client.anim;// Save this class in your mod and generate all required imports
 
 import net.minecraft.client.animation.AnimationChannel;
 import net.minecraft.client.animation.AnimationDefinition;

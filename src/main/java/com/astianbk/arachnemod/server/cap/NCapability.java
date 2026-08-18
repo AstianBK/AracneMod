@@ -5,5 +5,5 @@ import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.capabilities.EntityCapability;
 
 public class NCapability {
-    public static final EntityCapability<NerubianCap,Void> NERUBIAN_CAP = EntityCapability.createVoid(Identifier.fromNamespaceAndPath(AracneMod.MODID,"aracne_cap"), NerubianCap.class);
+    public static final EntityCapability<ArachneAttachment,Void> NERUBIAN_CAP = EntityCapability.createVoid(Identifier.fromNamespaceAndPath(AracneMod.MODID,"aracne_cap"), ArachneAttachment.class);
 }

@@ -2,7 +2,7 @@ package com.astianbk.arachnemod.client.screen;
 
 import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.common.quests.Quest;
-import com.astianbk.arachnemod.server.cap.NerubianCap;
+import com.astianbk.arachnemod.server.cap.ArachneAttachment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.ARGB;
@@ -128,7 +127,7 @@ public class IdolScreen extends Screen {
     }
 
     private void refreshQuest(Player player) {
-        NerubianCap.get(player).ifPresent(cap->{
+        ArachneAttachment.get(player).ifPresent(cap->{
             currentQuest = cap.currentQuest;
         });
     }

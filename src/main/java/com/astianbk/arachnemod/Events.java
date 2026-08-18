@@ -2,19 +2,24 @@ package com.astianbk.arachnemod;
 
 import com.astianbk.arachnemod.common.quests.QuestManager;
 import com.astianbk.arachnemod.common.registry.NRegistry;
+import com.astianbk.arachnemod.server.cap.ArachneAttachment;
 import com.astianbk.arachnemod.server.entity.*;
-import com.astianbk.arachnemod.server.cap.NerubianCap;
 import com.astianbk.arachnemod.server.network.PacketNerubianData;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
@@ -42,7 +47,7 @@ public class Events {
     @SubscribeEvent
     public static void tickEvent(PlayerTickEvent.Post event){
         if(event.getEntity() instanceof Player player){
-            NerubianCap.get(player).ifPresent(cap->{
+            ArachneAttachment.get(player).ifPresent(cap->{
                 cap.tick(player);
             });
         }
@@ -65,7 +70,7 @@ public class Events {
     public static void onDie(LivingDeathEvent event){
         Entity entity = event.getSource().getEntity();
         if(entity instanceof Player player){
-            NerubianCap.get(player).ifPresent(e->{
+            ArachneAttachment.get(player).ifPresent(e->{
                 if(e.currentQuest!=null && !e.currentQuest.isComplete(e)){
                     if(e.currentQuest.canAddProgress(event.getEntity().getEncodeId())){
                         e.progressQuest++;
@@ -79,7 +84,7 @@ public class Events {
     public static void onDie(EntityJoinLevelEvent event){
         Entity entity = event.getEntity();
         if(entity instanceof Player player){
-            NerubianCap.get(player).ifPresent(NerubianCap::init);
+            ArachneAttachment.get(player).ifPresent(ArachneAttachment::init);
         }
     }
 
@@ -92,8 +97,8 @@ public class Events {
         Player newPlayer = event.getEntity();
 
 
-        NerubianCap.get(oldPlayer).ifPresent(oldCap->{
-            NerubianCap cap = NerubianCap.get(newPlayer).orElse(null);
+        ArachneAttachment.get(oldPlayer).ifPresent(oldCap->{
+            ArachneAttachment cap = ArachneAttachment.get(newPlayer).orElse(null);
             if(cap!=null){
                 cap.copyFrom(oldCap);
                 cap.init();
@@ -116,6 +121,19 @@ public class Events {
                 Monster::checkAnyLightMonsterSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.REPLACE
         );
+        event.register(NRegistry.VOID_VEILMOTH.get(),
+                SpawnPlacementTypes.NO_RESTRICTIONS,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+        event.register(NRegistry.VOID_BEETLE.get(),
+                SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+
 
         event.register(NRegistry.VOID_NEEDLE.get(),
                 SpawnPlacementTypes.NO_RESTRICTIONS,
@@ -150,7 +168,7 @@ public class Events {
 
     @SubscribeEvent
     public static void onPick(ItemEntityPickupEvent.Pre event){
-        NerubianCap.get(event.getPlayer()).ifPresent(e->{
+        ArachneAttachment.get(event.getPlayer()).ifPresent(e->{
             if(e.currentQuest!=null && !e.currentQuest.isComplete(e)){
                 if(e.currentQuest.canAddProgress(event.getItemEntity().getItem().getItem().toString())){
                     e.refreshQuest(event.getPlayer());
@@ -162,25 +180,27 @@ public class Events {
     @SubscribeEvent
     public static void onUse(PlayerInteractEvent.RightClickItem event){
         if (!event.getItemStack().getItem().equals(Items.STICK))return;
-        NerubianCap.get(event.getEntity()).ifPresent(e->{
-            if (event.getLevel().isClientSide())return;
-            ServerLevel level = ((ServerLevel)event.getLevel()).getServer().getLevel(ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath("arachnemod", "void")));
-            ChunkPos pos = level.getChunk(event.getEntity().blockPosition()).getPos();
-            event.getEntity().teleport(new TeleportTransition(level,createIsland(level.getSeed(),pos.x(),pos.z()), Vec3.ZERO,0.0F,0.0F,(entity)->{
-            }));
-        });
+
     }
 
+    public static void teleportToVoid(Vec3 position, Level level, LivingEntity living){
+        ServerLevel serverLevel = ((ServerLevel)level).getServer().getLevel(ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath("arachnemod", "void")));
+        ChunkPos pos = serverLevel.getChunk(living.blockPosition()).getPos();
+        living.teleport(new TeleportTransition(serverLevel,createIsland(serverLevel.getSeed(),pos.x(),pos.z()), Vec3.ZERO,0.0F,0.0F,(entity)->{
+            if (entity instanceof ServerPlayer serverPlayer){
+                ArachneAttachment.get(serverPlayer).ifPresent(arachneAttachment -> {
+                    arachneAttachment.setTeleportBackPos(new BlockPos((int) position.x, (int) position.y, (int) position.z));
+                });
+            }
+        }));
+    }
     private static Vec3 createIsland(long seed,int cellX, int cellZ) {
-
         int cellSize = 256;
 
         Random random = new Random(seed + cellX * 341873128712L + cellZ * 132897987541L);
 
         double centerX = cellX * cellSize + random.nextInt(cellSize);
         double centerZ = cellZ * cellSize + random.nextInt(cellSize);
-
-
         return new Vec3(centerX,252,centerZ);
     }
     @SubscribeEvent

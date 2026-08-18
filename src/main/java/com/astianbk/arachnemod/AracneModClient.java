@@ -6,29 +6,25 @@ import com.astianbk.arachnemod.client.gui.IdolSpeechGui;
 import com.astianbk.arachnemod.client.model.*;
 import com.astianbk.arachnemod.common.items.VoidKnightArmorItem;
 import com.astianbk.arachnemod.common.registry.NRegistry;
-import com.astianbk.arachnemod.server.cap.NerubianCap;
+import com.astianbk.arachnemod.server.cap.ArachneAttachment;
 import com.google.common.base.Suppliers;
 import com.google.common.reflect.TypeToken;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.*;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.resources.model.EquipmentAssetManager;
-import net.minecraft.client.telemetry.events.WorldLoadTimesEvent;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
@@ -36,8 +32,6 @@ import net.minecraft.world.entity.player.PlayerModelType;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUseAnimation;
-import net.minecraft.world.level.dimension.DimensionType;
-import net.minecraft.world.level.material.FogType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -48,9 +42,6 @@ import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
-
-import java.util.function.BiConsumer;
 
 @Mod(value = AracneMod.MODID, dist = Dist.CLIENT)
 @EventBusSubscriber(modid = AracneMod.MODID, value = Dist.CLIENT)
@@ -101,6 +92,10 @@ public class AracneModClient {
         event.registerLayerDefinition(VoidHopperModel.LAYER_LOCATION,Suppliers.ofInstance(VoidHopperModel.createBodyLayer()));
         event.registerLayerDefinition(VoidVeilmothModel.LAYER_LOCATION,Suppliers.ofInstance(VoidVeilmothModel.createBodyLayer()));
         event.registerLayerDefinition(VoidBeetleModel.LAYER_LOCATION,Suppliers.ofInstance(VoidBeetleModel.createBodyLayer()));
+        event.registerLayerDefinition(EnterDimensionModel.LAYER_LOCATION,Suppliers.ofInstance(EnterDimensionModel.createBodyLayer()));
+        event.registerLayerDefinition(WebElevatorModel.LAYER_LOCATION,Suppliers.ofInstance(WebElevatorModel.createBodyLayer()));
+        event.registerLayerDefinition(WebPartModel.LAYER_LOCATION,Suppliers.ofInstance(WebPartModel.createBodyLayer()));
+
         //        event.registerLayerDefinition(ScarabModel.ARMOR_LOCATION,Suppliers.ofInstance(ScarabModel.createBodyLayer(new CubeDeformation(1.0F))));
     }
 
@@ -112,7 +107,7 @@ public class AracneModClient {
     public static void renderModel(RenderLivingEvent.Pre event){
         if (event.getRenderState().entityType == EntityType.PLAYER){
             AbstractClientPlayer player = Minecraft.getInstance().player;
-            NerubianCap.get(player).ifPresent(nerubianCap -> {
+            ArachneAttachment.get(player).ifPresent(nerubianCap -> {
                 ((HumanoidModel)event.getRenderer().getModel()).head.visible = !(player.getItemBySlot(EquipmentSlot.HEAD).getItem() instanceof VoidKnightArmorItem);
 
                 ((HumanoidModel)event.getRenderer().getModel()).rightArm.visible = !(player.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof VoidKnightArmorItem);
@@ -332,6 +327,7 @@ public class AracneModClient {
         event.registerEntityRenderer(NRegistry.VOID_HOPPER.get(), VoidHopperRenderer::new);
         event.registerEntityRenderer(NRegistry.VOID_BEETLE.get(), VoidBeetleRenderer::new);
         event.registerEntityRenderer(NRegistry.VOID_VEILMOTH.get(), VoidVeilmothRenderer::new);
-
+        event.registerEntityRenderer(NRegistry.ENTER_DIMENSION.get(),EnterDimensionRenderer::new);
+        event.registerEntityRenderer(NRegistry.WEB_ELEVATOR.get(),WebElevatorRenderer::new);
     }
 }

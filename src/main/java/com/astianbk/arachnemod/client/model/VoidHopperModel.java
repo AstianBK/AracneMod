@@ -4,8 +4,7 @@ package com.astianbk.arachnemod.client.model;// Made with Blockbench 5.1.5
 
 
 import com.astianbk.arachnemod.AracneMod;
-import com.astianbk.arachnemod.client.ScarabRenderState;
-import com.astianbk.arachnemod.client.VoidHopperRenderState;
+import com.astianbk.arachnemod.client.render_state.VoidHopperRenderState;
 import com.astianbk.arachnemod.client.anim.VoidHopperAnim;
 import net.minecraft.client.animation.KeyframeAnimation;
 import net.minecraft.client.model.EntityModel;

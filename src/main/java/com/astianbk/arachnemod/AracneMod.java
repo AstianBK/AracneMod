@@ -45,6 +45,7 @@ public class AracneMod {
     public AracneMod(IEventBus modEventBus, ModContainer modContainer) {
 
         NRegistry.ATTACHMENTS.register(modEventBus);
+        NRegistry.BLOCK_ENTITY_TYPE.register(modEventBus);
         NRegistry.CHUNK_GENERATORS.register(modEventBus);
         NRegistry.BLOCKS.register(modEventBus);
         NRegistry.ITEMS.register(modEventBus);

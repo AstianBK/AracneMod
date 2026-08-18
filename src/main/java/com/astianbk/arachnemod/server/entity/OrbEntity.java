@@ -1,6 +1,8 @@
 package com.astianbk.arachnemod.server.entity;
 
 import com.astianbk.arachnemod.AracneMod;
+import com.astianbk.arachnemod.common.ArachneIdolBlockEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -19,6 +21,7 @@ import net.minecraft.world.phys.Vec3;
 public class OrbEntity extends Entity {
     private static final EntityDataAccessor<String> TYPE = SynchedEntityData.defineId(OrbEntity.class, EntityDataSerializers.STRING);
     private Type type=Type.CANCEL;
+    public BlockPos sourceBlock = null;
     public OrbEntity(EntityType<?> type, Level level) {
         super(type, level);
     }
@@ -45,6 +48,8 @@ public class OrbEntity extends Entity {
         }
     }
 
+
+
     @Override
     public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float v) {
         return false;
@@ -53,16 +58,54 @@ public class OrbEntity extends Entity {
     @Override
     protected void readAdditionalSaveData(ValueInput valueInput) {
         setType(Type.valueOf(valueInput.getStringOr("type","CANCEL")));
+        if (valueInput.getInt("x").isPresent()){
+            this.sourceBlock = new BlockPos(valueInput.getInt("x").get(),valueInput.getInt("y").get(),valueInput.getInt("z").get());
+        }
     }
 
     @Override
     protected void addAdditionalSaveData(ValueOutput valueOutput) {
         valueOutput.putString("type",entityData.get(TYPE));
+        if (this.sourceBlock!=null){
+            valueOutput.putInt("x",this.sourceBlock.getX());
+            valueOutput.putInt("y",this.sourceBlock.getY());
+            valueOutput.putInt("z",this.sourceBlock.getZ());
+        }
+    }
+
+
+
+    @Override
+    public boolean isPickable() {
+        return true;
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (!level().isClientSide()){
+            if (this.sourceBlock==null){
+                AracneMod.LOGGER.info("discard xd.");
+                discard();
+            }else {
+                if (level().getBlockEntity(this.sourceBlock) instanceof ArachneIdolBlockEntity arachneIdolBlockEntity){
+                    if (!arachneIdolBlockEntity.orbs.contains(this)){
+                        arachneIdolBlockEntity.addOrb(this);
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
         AracneMod.LOGGER.info("lol :{}",getOrbType());
+        if (sourceBlock!=null && level().getBlockEntity(sourceBlock) instanceof ArachneIdolBlockEntity arachneIdol){
+            if (arachneIdol.orbs.contains(this)){
+                arachneIdol.selectOrb(player, getOrbType(),level(),sourceBlock);
+            }
+        }
+
         return super.interact(player, hand, location);
     }
 

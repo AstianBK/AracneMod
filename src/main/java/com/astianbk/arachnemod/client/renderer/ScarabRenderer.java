@@ -1,7 +1,7 @@
 package com.astianbk.arachnemod.client.renderer;
 
 import com.astianbk.arachnemod.AracneMod;
-import com.astianbk.arachnemod.client.ScarabRenderState;
+import com.astianbk.arachnemod.client.render_state.ScarabRenderState;
 import com.astianbk.arachnemod.client.model.ScarabModel;
 import com.astianbk.arachnemod.server.entity.ScarabEntity;
 import com.mojang.blaze3d.vertex.PoseStack;

@@ -1,0 +1,15 @@
+{
+  "structures": [
+    {
+      "structure": "arachnemod:bone_remains",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "arachnemod:void_placement",
+    "salt": 123456789,
+    "frequency_reduction_method": "default",
+    "frequency": 0.4,
+    "cell_size": 256
+  }
+}

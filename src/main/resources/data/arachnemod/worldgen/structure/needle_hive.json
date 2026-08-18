@@ -1,0 +1,8 @@
+{
+  "type": "arachnemod:needle_hive",
+  "biomes": [
+    "arachnemod:pilar"
+  ],
+  "spawn_overrides": {},
+  "step": "surface_structures"
+}

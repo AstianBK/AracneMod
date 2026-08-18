@@ -1,0 +1,8 @@
+{
+  "type": "arachnemod:bone_remains",
+  "biomes": [
+    "arachnemod:pilar"
+  ],
+  "spawn_overrides": {},
+  "step": "surface_structures"
+}

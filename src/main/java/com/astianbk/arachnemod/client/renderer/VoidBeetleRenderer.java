@@ -2,9 +2,8 @@
 package com.astianbk.arachnemod.client.renderer;
 
 import com.astianbk.arachnemod.AracneMod;
-import com.astianbk.arachnemod.client.VoidBeetleRenderState;
+import com.astianbk.arachnemod.client.render_state.VoidBeetleRenderState;
 import com.astianbk.arachnemod.client.model.VoidBeetleModel;
-import com.astianbk.arachnemod.server.entity.ScarabEntity;
 import com.astianbk.arachnemod.server.entity.VoidBeetleEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -19,12 +18,12 @@ import net.minecraft.resources.Identifier;
 public class VoidBeetleRenderer<T extends VoidBeetleEntity,R extends VoidBeetleRenderState,M extends VoidBeetleModel<R>> extends LivingEntityRenderer<T,R,M> {
     public VoidBeetleRenderer(EntityRendererProvider.Context context) {
         super(context, (M) new VoidBeetleModel<>(context.bakeLayer(VoidBeetleModel.LAYER_LOCATION)), 1.0F);
-//        this.addLayer(new EyesLayer<R, M>(this) {
-//            @Override
-//            public RenderType renderType() {
-//                return RenderTypes.eyes(Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/scarab_eyes.png"));
-//            }
-//        });
+        this.addLayer(new EyesLayer<>(this) {
+            @Override
+            public RenderType renderType() {
+                return RenderTypes.eyes(Identifier.fromNamespaceAndPath(AracneMod.MODID, "textures/entity/void_beetle/void_beetle_eyes.png"));
+            }
+        });
     }
 
 

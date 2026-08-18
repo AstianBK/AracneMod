@@ -7,4 +7,6 @@ public class SilentHexEffect extends MobEffect {
     public SilentHexEffect() {
         super(MobEffectCategory.NEUTRAL, 745784);
     }
+
+
 }
