@@ -132,7 +132,7 @@ public class NRegistry {
     public static final DeferredBlock<Block> VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("veil_crystal",(p)->new Block(p.lightLevel(statex -> 4).noOcclusion()));
     public static final DeferredBlock<Block> TALL_VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("tall_veil_crystal",(p)->new TallVeilCrystalBlock(p.lightLevel(statex -> 8).noOcclusion()));
 
-    public static final DeferredBlock<Block> COCOONCHEST_BLOCK = BLOCKS.registerBlock("cocoonchest",(p)->new Block(p.noOcclusion()));
+    public static final DeferredBlock<Block> COCOONCHEST_BLOCK = BLOCKS.registerBlock("cocoonchest",(p)->new Block(p.noOcclusion().strength(4.0F)));
     public static final DeferredItem<BlockItem> WEAVER_IDOL_ITEM = ITEMS.registerSimpleBlockItem("arachne_idol_item",WEAVER_IDOL_BLOCK);
     public static final DeferredItem<BlockItem> BEDCRUST_ITEM = ITEMS.registerSimpleBlockItem("bedcrust_item",BEDCRUST_BLOCK);
     public static final DeferredItem<BlockItem> BEDSLAG_ITEM = ITEMS.registerSimpleBlockItem("bedslag_item",BEDSLAG_BLOCK);
@@ -146,7 +146,6 @@ public class NRegistry {
     public static final DeferredItem<BlockItem> VEIL_CRYSTAL_ITEM = ITEMS.registerSimpleBlockItem("veil_crystal_item",VEIL_CRYSTAL_BLOCK);
     public static final DeferredItem<BlockItem> TALL_VEIL_CRYSTAL_ITEM = ITEMS.registerSimpleBlockItem("tall_veil_crystal_item",TALL_VEIL_CRYSTAL_BLOCK);
     public static final DeferredItem<BlockItem> VOID_WEB_ITEM = ITEMS.registerSimpleBlockItem("void_web_item",VOID_WEB_BLOCK);
-
     public static final DeferredItem<BlockItem> COCOONCHEST_ITEM = ITEMS.registerSimpleBlockItem("cocoonchest_item",COCOONCHEST_BLOCK);
 
     public static final DeferredItem<BlockItem> POINTED_BEDROCK_ITEM = ITEMS.registerSimpleBlockItem("pointed_bedrock_item",POINTED_BEDROCK_BLOCK);
