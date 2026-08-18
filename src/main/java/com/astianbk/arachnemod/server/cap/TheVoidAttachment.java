@@ -24,7 +24,7 @@ public class TheVoidAttachment {
             }
         }else {
             checkTick++;
-            if (checkTick>=200){
+            if (checkTick>=2600){
                 startFlash();
                 checkTick=0;
             }

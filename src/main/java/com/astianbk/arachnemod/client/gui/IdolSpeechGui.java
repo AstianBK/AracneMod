@@ -19,12 +19,13 @@ public class IdolSpeechGui implements GuiLayer {
         int height = guiGraphics.guiHeight();
         int width = guiGraphics.guiWidth();
         Player player = Minecraft.getInstance().player;
-        assert player != null && !player.isCreative() && !player.isSpectator();
-        ArachneAttachment.get(player).ifPresent(arachnePlayer->{
-
-            float alpha = arachnePlayer.getAnimDarkness(deltaTracker.getGameTimeDeltaTicks());
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED,LOCATION, (int) 0, (int) 0,0,0,width,height,width,height,ARGB.white(alpha));
-        });
+        assert player != null;
+        if (!player.isCreative() && !player.isSpectator()){
+            ArachneAttachment.get(player).ifPresent(arachnePlayer->{
+                float alpha = arachnePlayer.getAnimDarkness(deltaTracker.getGameTimeDeltaTicks());
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED,LOCATION, (int) 0, (int) 0,0,0,width,height,width,height,ARGB.white(alpha));
+            });
+        }
 
     }
 }
