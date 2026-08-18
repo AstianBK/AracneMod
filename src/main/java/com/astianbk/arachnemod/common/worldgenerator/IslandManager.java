@@ -3,6 +3,7 @@ package com.astianbk.arachnemod.common.worldgenerator;
 import com.astianbk.arachnemod.common.registry.NRegistry;
 import com.astianbk.arachnemod.common.worldgenerator.density.IslandSource;
 import com.astianbk.arachnemod.common.worldgenerator.density.BridgeSource;
+import com.astianbk.arachnemod.common.worldgenerator.density.SpikesSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
@@ -20,14 +21,45 @@ public class IslandManager {
     }
 
     public void generate(ChunkAccess chunk) {
-
+        List<SpikesSource> spikes = getNearbySpikes(chunk.getPos());
         List<IslandSource> islands = getNearbyIslands(chunk.getPos());
 
-        generateTerrain(chunk, islands);
+
+        generateTerrain(chunk, islands,spikes);
 
         generateRoof(chunk);
         generateGenerateParticle(chunk);
     }
+    public List<SpikesSource> getNearbySpikes(ChunkPos chunkPos) {
+
+        List<SpikesSource> islands = new ArrayList<>();
+
+        int cellSize = 256;
+
+        int chunkCenterX = chunkPos.getMiddleBlockX();
+        int chunkCenterZ = chunkPos.getMiddleBlockZ();
+
+        int cellX = Math.floorDiv(chunkCenterX, cellSize);
+        int cellZ = Math.floorDiv(chunkCenterZ, cellSize);
+
+        for (int x = cellX - 1; x <= cellX + 1; x++) {
+            for (int z = cellZ - 1; z <= cellZ + 1; z++) {
+                Random random = new Random(seed + x + z);
+
+
+                double centerX = x * cellSize + random.nextInt(cellSize);
+                double centerZ = z * cellSize + random.nextInt(cellSize);
+
+                double centerY = 250;
+
+                double radius = 30 + random.nextInt(25);
+
+                islands.add(new SpikesSource(centerX, centerY, centerZ, radius,300,noise));
+            }
+        }
+        return islands;
+    }
+
     public List<IslandSource> getNearbyIslands(ChunkPos chunkPos) {
 
         List<IslandSource> islands = new ArrayList<>();
@@ -57,7 +89,8 @@ public class IslandManager {
         }
         return islands;
     }
-    private void generateTerrain(ChunkAccess chunk, List<IslandSource> islands) {
+
+    private void generateTerrain(ChunkAccess chunk, List<IslandSource> islands,List<SpikesSource> spikes) {
 
         ChunkPos pos = chunk.getPos();
 
@@ -69,6 +102,28 @@ public class IslandManager {
 
         int maxY = 250;
 
+        for (SpikesSource spike : spikes) {
+            double r = spike.radius;
+
+            int minX = (int)Math.max(chunkMinX, Math.floor(spike.centerX - r));
+            int maxX = (int)Math.min(chunkMaxX, Math.ceil(spike.centerX + r));
+
+            int minZ = (int)Math.max(chunkMinZ, Math.floor(spike.centerZ - r));
+            int maxZ = (int)Math.min(chunkMaxZ, Math.ceil(spike.centerZ + r));
+
+            int y0 = Math.max(0, (int) Math.floor(spike.centerY - r));
+            int y1 = Math.min(maxY, (int) Math.ceil(spike.centerY + r));
+
+            for (int x = minX; x <= maxX; x++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    for (int y = y0; y <= y1; y++) {
+                        if (spike.sample(x, y, z) > 0) {
+                            chunk.setBlockState(new BlockPos(x, y, z), NRegistry.STONE_BEDROCK_BLOCK.get().defaultBlockState());
+                        }
+                    }
+                }
+            }
+        }
         for (IslandSource island : islands) {
             double r = island.radius;
 

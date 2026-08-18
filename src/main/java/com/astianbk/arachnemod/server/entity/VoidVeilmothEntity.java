@@ -25,6 +25,7 @@ import net.minecraft.world.entity.animal.bee.Bee;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
@@ -66,6 +67,12 @@ public class VoidVeilmothEntity extends PathfinderMob {
         super.registerGoals();
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(4,new VoidVeilmothEntityWanderGoal());
+    }
+
+
+    @Override
+    protected void checkFallDamage(double ya, boolean onGround, BlockState onState, BlockPos pos) {
+
     }
 
 
