@@ -19,6 +19,7 @@ import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.phys.Vec3;
 
 public class BonesFeature extends Feature<VoidCrystalFeatureConfiguration> {
+
     public BonesFeature(Codec<VoidCrystalFeatureConfiguration> codec) {
         super(codec);
     }
@@ -43,22 +44,22 @@ public class BonesFeature extends Feature<VoidCrystalFeatureConfiguration> {
             Vec3 offset = axis.getPositive().getUnitVec3();
             level.setBlock(pos, crystal.setValue(RotatedPillarBlock.AXIS, Direction.Axis.X), 3);
 
-            for (int i = 0 ; i < random.nextInt(2,5); i++){
-                level.setBlock(pos.offset((int) (offset.x*i),0, (int) (offset.z *i)), crystal.setValue(RotatedPillarBlock.AXIS, Direction.Axis.X), 3);
-
+            for (int i = 0 ; i < random.nextInt(3,5); i++){
+                level.setBlock(pos.offset((int) (offset.x*i),0, (int) (offset.z *i)), crystal.setValue(RotatedPillarBlock.AXIS, axis), 3);
             }
 
         }else {
 
             BlockState crystal = Blocks.BONE_BLOCK.defaultBlockState();
             level.setBlock(pos,crystal,3);
-            for (int i = 0 ; i < random.nextInt(2,5);i++){
+            for (int i = 0 ; i < random.nextInt(3,5);i++){
                 level.setBlock(pos.above(),crystal,3);
             }
         }
 
         return true;
     }
+
     private BlockPos findPlacementPosition(WorldGenLevel level, BlockPos origin, RandomSource random) {
         int x = origin.getX();
         int z = origin.getZ();

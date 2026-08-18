@@ -129,7 +129,6 @@ public class ArachneAttachment {
                     timeDarkness = 0;
                 }
             }
-            AracneMod.LOGGER.info("time :{}",timeDarkness);
         }
         Inventory inventory = player.getInventory();
         if (inventory.getTimesChanged() != previousTimesChanged) {

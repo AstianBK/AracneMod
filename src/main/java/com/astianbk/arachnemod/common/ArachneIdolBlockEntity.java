@@ -26,7 +26,6 @@ import java.util.Map;
 public class ArachneIdolBlockEntity extends BlockEntity {
     public List<OrbEntity> orbs = new ArrayList<>();
     public State currentState = State.NONE;
-    public Map<State, Vec3i> offsetForState = Map.of(State.MENU,new Vec3i(0,0,2),State.SELECT_QUEST,new Vec3i(0,0,0));
     public ArachneIdolBlockEntity(BlockPos worldPosition, BlockState blockState) {
         super(NRegistry.ARACHNE_IDOL_BLOCK_ENTITY.get(), worldPosition, blockState);
     }
