@@ -129,9 +129,9 @@ public class NRegistry {
             .pushReaction(PushReaction.DESTROY)
             .noOcclusion()));
 
-    public static final DeferredBlock<Block> VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("veil_crystal",(p)->new Block(p.lightLevel(statex -> 3).noOcclusion()));
+    public static final DeferredBlock<Block> VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("veil_crystal",(p)->new Block(p.lightLevel(statex -> 4).noOcclusion()));
+    public static final DeferredBlock<Block> TALL_VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("tall_veil_crystal",(p)->new TallVeilCrystalBlock(p.lightLevel(statex -> 8).noOcclusion()));
 
-    public static final DeferredBlock<Block> TALL_VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("tall_veil_crystal",(p)->new TallVeilCrystalBlock(p.lightLevel(statex -> 9).noOcclusion()));
     public static final DeferredBlock<Block> COCOONCHEST_BLOCK = BLOCKS.registerBlock("cocoonchest",(p)->new Block(p.noOcclusion()));
     public static final DeferredItem<BlockItem> WEAVER_IDOL_ITEM = ITEMS.registerSimpleBlockItem("arachne_idol_item",WEAVER_IDOL_BLOCK);
     public static final DeferredItem<BlockItem> BEDCRUST_ITEM = ITEMS.registerSimpleBlockItem("bedcrust_item",BEDCRUST_BLOCK);
@@ -152,7 +152,6 @@ public class NRegistry {
     public static final DeferredItem<BlockItem> POINTED_BEDROCK_ITEM = ITEMS.registerSimpleBlockItem("pointed_bedrock_item",POINTED_BEDROCK_BLOCK);
 
     public static final DeferredItem<Item> VOID_HELMET = ITEMS.registerItem("void_helmet",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.HELMET).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_helmet" )))));
-
     public static final DeferredItem<Item> VOID_CHESTPLATE = ITEMS.registerItem("void_chestplate",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.CHESTPLATE).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_chestplate" )))));
     public static final DeferredItem<Item> VOID_LEGGINGS = ITEMS.registerItem("void_leggings",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.LEGGINGS).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_leggings" )))));
     public static final DeferredItem<Item> VOID_BOOTS = ITEMS.registerItem("void_boots",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.BOOTS).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_boots" )))));
@@ -164,18 +163,19 @@ public class NRegistry {
             .displayItems((parameters, output) -> {
                 output.accept(WEAVER_IDOL_ITEM.get());
                 output.accept(BEDCRUST_ITEM.get());
-                output.accept(BEDSLAG_ITEM.get());
-                output.accept(BEDSTONE_ITEM.get());
                 output.accept(CRACKED_BEDROCK_ITEM.get());
-                output.accept(POINTED_BEDROCK_ITEM.get());
+                output.accept(BEDSTONE_ITEM.get());
+                output.accept(BEDSLAG_ITEM.get());
                 output.accept(STONE_BEDROCK_ITEM.get());
                 output.accept(CHISELED_BEDROCK_ITEM.get());
                 output.accept(BRICKED_BEDROCK_ITEM.get());
                 output.accept(SLATED_BEDROCK_ITEM.get());
                 output.accept(COBBLED_BEDROCK_ITEM.get());
+                output.accept(POINTED_BEDROCK_ITEM.get());
                 output.accept(VEIL_CRYSTAL_ITEM.get());
-                output.accept(COCOONCHEST_ITEM.get());
                 output.accept(TALL_VEIL_CRYSTAL_ITEM.get());
+                output.accept(COCOONCHEST_ITEM.get());
+                output.accept(VOID_WEB_ITEM.get());
             }).build());
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.createEntities(AracneMod.MODID);
     public static final ResourceKey<Level> THE_VOID = ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath(AracneMod.MODID,"void"));

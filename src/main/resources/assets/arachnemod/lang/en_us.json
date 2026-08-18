@@ -1,13 +1,58 @@
 {
-  "itemGroup.arachnemod": "Example Mod Tab",
-  "block.arachnemod.example_block": "Example Block",
+  "itemGroup.arachnemod": "Voidweaver",
+
+  "entity.arachnemod.void_beetle": "Voidrunt",
+  "entity.arachnemod.void_grub": "Voidsnub",
+  "entity.arachnemod.void_veilmoth": "Veil Moth",
+  "entity.arachnemod.scarab": "VoidReaver",
+  "entity.arachnemod.void_needle": "VoidNeedle",
+  "entity.arachnemod.void_hopper": "VoidHexer",
+
+
+  "block.arachnemod.arachne_idol_item": "Forgotten Idol",
+  "block.arachnemod.cracked_bedrock_item": "Shattered Bedrock",
+  "block.arachnemod.bedcrust_item": "Cracked Bedrock",
+  "block.arachnemod.bedstone_item": "Voidshapen Bedrock",
+  "block.arachnemod.bedslag_item": "Voidtaken Bedrock",
+
+  "block.arachnemod.stone_bedrock_item": "Bedstone",
+  "block.arachnemod.chiseled_bedrock_item": "Chiseled Bedstone",
+  "block.arachnemod.bricked_bedrock_item": "Bedstone Bricks",
+  "block.arachnemod.slated_bedrock_item": "Slated Bricks",
+  "block.arachnemod.cobbled_bedrock_item": "Cobbled Bedstone",
+  "block.arachnemod.pointed_bedrock_item": "Pointed Bedrock",
+  "block.arachnemod.veil_crystal_item": "Veil Crystal",
+  "block.arachnemod.tall_veil_crystal_item": "Tall Veil Crystal",
+  "block.arachnemod.cocoonchest_item": "Void Cocoon",
+  "block.arachnemod.void_web_item": "Voidweb",
+
+  "sounds.arachnemod.arachne_talk1":"Arachne Talking",
+  "sounds.arachnemod.arachne_talk2":"Arachne Talking",
+  "sounds.arachnemod.arachne_talk3":"Arachne Talking",
+
+  "sounds.arachnemod.hopper_hex":"Getting Hexed",
+  "sounds.arachnemod.hopper_channel":"VoidHexer Praying",
+
+  "sounds.arachnemod.scarab_idle1":"VoidReaver Clicks",
+  "sounds.arachnemod.scarab_idle2":"VoidReaver Clicks",
+
+  "sounds.arachnemod.needle_loop":"VoidNeedle Flapping Wings",
+
+  "sounds.arachnemod.veil_crystal_shimmer":"Veil Crystal Shimmering",
+
+  "sounds.arachnemod.ambience_0":"It Laments",
+  "sounds.arachnemod.ambience_1":"It Beckons",
+  "sounds.arachnemod.ambience_2":"It Groans",
+  "sounds.arachnemod.ambience_3":"It Yearns",
+
+  "sounds.arachnemod.orb_select":"Orb Selected",
+
+  "sounds.arachnemod.darkness_constrict":"Darkness Constricts You",
+
   "item.arachnemod.example_item": "Example Item",
 
   "arachnemod.configuration.title": "Nerubian Mod Configs",
   "arachnemod.configuration.section.arachnemod.common.toml": "Nerubian Mod Configs",
   "arachnemod.configuration.section.arachnemod.common.toml.title": "Nerubian Mod Configs",
-  "arachnemod.configuration.items": "Item List",
-  "arachnemod.configuration.logDirtBlock": "Log Dirt Block",
-  "arachnemod.configuration.magicNumberIntroduction": "Magic Number Text",
-  "arachnemod.configuration.magicNumber": "Magic Number"
+  "arachnemod.configuration.items": "Item List"
 }
