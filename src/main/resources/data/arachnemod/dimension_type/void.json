@@ -1,7 +1,9 @@
 {
   "ambient_light": 0.10,
   "attributes": {
+
     "minecraft:audio/ambient_sounds": {
+      "loop": "arachnemod:ambience_loop",
       "mood": {
         "block_search_extent": 8,
         "offset": 2.0,

@@ -6,11 +6,12 @@ import com.astianbk.arachnemod.QuestsType;
 import com.astianbk.arachnemod.common.quests.Quest;
 import com.astianbk.arachnemod.common.quests.QuestManager;
 import com.astianbk.arachnemod.common.registry.NRegistry;
-import com.astianbk.arachnemod.server.network.PacketNerubianData;
+import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,14 +24,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
-import net.neoforged.neoforge.network.PacketDistributor;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 
 public class ArachneAttachment {
@@ -49,6 +49,7 @@ public class ArachneAttachment {
     public int timeQuest=0;
     public int progressQuest=0;
     public int idleTimer = 0;
+    public int timeHex = 0;
     public int currentReputation = 0;
     public int previousTimesChanged = 0;
     public boolean isDirty = false;
@@ -56,9 +57,8 @@ public class ArachneAttachment {
     public int prevTimeDarkness = 0;
     public boolean prevIsDark = false;
     public BlockPos teleportBack = null;
-    ServerBossEvent event =  Util.make(
-            new ServerBossEvent(UUID.randomUUID(), Component.literal("this.getDisplayName()"), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS),
-            e -> e.setDarkenScreen(false));
+    public List<Hex> hexes = new ArrayList<>();
+    ServerBossEvent event =  Util.make(new ServerBossEvent(UUID.randomUUID(), Component.literal("this.getDisplayName()"), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS), e -> e.setDarkenScreen(false));
 
     public String getTimeInMinuteAndSeconds(){
         int seconds = this.timeQuest/20;
@@ -97,11 +97,15 @@ public class ArachneAttachment {
             }
 
             if(this.isDirty){
-                PacketDistributor.sendToPlayer(serverPlayer,new PacketNerubianData(this.save()));
                 this.isDirty = false;
             }
 
-
+            if (this.timeHex > 0){
+                this.timeHex--;
+                if (this.timeHex == 0){
+                    clearHexes(player);
+                }
+            }
         }
         if (player.level().dimension() == NRegistry.THE_VOID){
             this.prevTimeDarkness = this.timeDarkness;
@@ -136,18 +140,21 @@ public class ArachneAttachment {
             this.refreshQuest(player);
         }
 
+
         if(player.level().isClientSide()){
             this.speechTimeO = this.speechTime;
 
             if(this.speechTime>0){
                 this.speechTime--;
             }
+
             if(this.idleTimer<=0){
                 this.idle.start(player.tickCount);
                 this.idleTimer = 20;
             }else {
                 this.idleTimer--;
             }
+
 
             this.crouching.animateWhen(player.isCrouching(),player.tickCount);
             //this.attack.animateWhen(player.getAttackAnim(1.0F)>0,player.tickCount);
@@ -185,6 +192,18 @@ public class ArachneAttachment {
         return Mth.lerp(partialTick,this.speechTimeO,this.speechTime) / 160.0F;
     }
 
+    public void addHex(Level level,Player player){
+
+        if (hexes.size()==3)return;
+        hexes.add(Hex.values()[level.getRandom().nextInt(0,3)]);
+
+        this.timeHex = 100;
+        player.syncData(NRegistry.ARACNE);
+    }
+    public void clearHexes(Player player){
+        hexes.clear();
+        player.syncData(NRegistry.ARACNE);
+    }
     public void refreshQuest(Player player){
         if(this.currentQuest==null || this.currentQuest.getType() != QuestsType.COLLECT)return;
         Item itemQuest = BuiltInRegistries.ITEM.get(Identifier.parse(this.currentQuest.getTargetId())).get().value();
@@ -214,21 +233,7 @@ public class ArachneAttachment {
         return BossEvent.BossBarColor.WHITE;
     }
 
-    public CompoundTag save() {
-        CompoundTag tag = new CompoundTag();
 
-        tag.putBoolean("drop", itemTransformDrop);
-        tag.putBoolean("transform", transformComplete);
-        tag.putInt("progress", progressQuest);
-        tag.putInt("reputation", currentReputation);
-        tag.putInt("timeQuest", timeQuest);
-
-        if(currentQuest != null) {
-            tag.putString("quest", currentQuest.getTitle());
-        }
-
-        return tag;
-    }
 
     public void load(ValueInput tag) {
         itemTransformDrop = tag.getBooleanOr("drop",false);
@@ -238,12 +243,44 @@ public class ArachneAttachment {
         timeQuest = tag.getIntOr("timeQuest",0);
 
         currentQuest = QuestManager.getQuestForTittle(tag.getStringOr("quest"," "));
+        hexes = new ArrayList<>(tag.read("hexes", Hex.CODEC.listOf()).orElseGet(List::of));
+        timeHex = tag.getIntOr("timeHex",0);
     }
 
     public static Optional<ArachneAttachment> get(Player player){
         return Optional.of(player.getData(NRegistry.ARACNE.get()));
     }
     public static class NerubianCapSerializer implements IAttachmentSerializer<ArachneAttachment> {
+        public static final StreamCodec<RegistryFriendlyByteBuf, ArachneAttachment> STREAM_CODEC =
+                new StreamCodec<>() {
+
+                    @Override
+                    public void encode(RegistryFriendlyByteBuf buf, ArachneAttachment attachment) {
+                        buf.writeInt(attachment.hexes.size());
+
+                        for (Hex hex : attachment.hexes) {
+                            buf.writeEnum(hex);
+                            AracneMod.LOGGER.info("addHex :{}",hex);
+                        }
+
+                        buf.writeInt(attachment.timeHex);
+                    }
+
+                    @Override
+                    public ArachneAttachment decode(RegistryFriendlyByteBuf buf) {ArachneAttachment attachment = new ArachneAttachment();
+
+                        int size = buf.readInt();
+
+                        for (int i = 0; i < size; i++) {
+                            attachment.hexes.add(buf.readEnum(Hex.class));
+                            AracneMod.LOGGER.info("addHex :{}",attachment.hexes);
+                        }
+
+                        attachment.timeHex = buf.readInt();
+
+                        return attachment;
+                    }
+                };
 
         @Override
         public ArachneAttachment read(IAttachmentHolder holder, ValueInput input) {
@@ -251,6 +288,7 @@ public class ArachneAttachment {
             cap.load(input);
             return cap;
         }
+
 
         @Override
         public boolean write(ArachneAttachment attachment, ValueOutput output) {
@@ -260,11 +298,32 @@ public class ArachneAttachment {
             output.putInt("reputation", attachment.currentReputation);
             output.putInt("timeQuest", attachment.timeQuest);
 
+            output.store("hexes",Hex.CODEC.listOf(), attachment.hexes);
             if (attachment.currentQuest != null) {
                 output.putString("quest", attachment.currentQuest.getTitle());
             }
 
+            output.putInt("timeHex", attachment.timeHex);
+
             return true;
+        }
+    }
+
+    public enum Hex {
+
+        HEX_0(Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/hex/hex_0.png")),
+        HEX_1(Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/hex/hex_1.png")),
+        HEX_2(Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/hex/hex_2.png")),
+        HEX_3(Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/hex/hex_3.png"));
+        private final Identifier location;
+        public static final Codec<Hex> CODEC = Codec.STRING.xmap(Hex::valueOf, Hex::name);
+
+        Hex(Identifier identifier) {
+            this.location = identifier;
+        }
+
+        public Identifier getLocation() {
+            return location;
         }
     }
 }

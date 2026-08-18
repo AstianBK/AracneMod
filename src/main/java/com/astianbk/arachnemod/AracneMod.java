@@ -56,6 +56,7 @@ public class AracneMod {
         NRegistry.PIECES.register(modEventBus);
         NRegistry.FEATURE.register(modEventBus);
         NRegistry.STRUCTURE_PLACEMENT_TYPE.register(modEventBus);
+        NRegistry.SOUNDS.register(modEventBus);
 
         NeoForge.EVENT_BUS.addListener(this::skyRender);
         NeoForge.EVENT_BUS.addListener(this::clientLevel);
@@ -68,7 +69,7 @@ public class AracneMod {
         }
     }
     public void clientLevel(LevelTickEvent.Post event){
-        event.getLevel().getData(NRegistry.THE_VOID_ATTACHMENT).tick();
+        event.getLevel().getData(NRegistry.THE_VOID_ATTACHMENT).tick(event.getLevel());
     }
 
 

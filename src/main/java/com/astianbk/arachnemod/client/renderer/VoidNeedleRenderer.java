@@ -6,12 +6,13 @@ import com.astianbk.arachnemod.client.model.VoidNeedleModel;
 import com.astianbk.arachnemod.server.entity.VoidNeedleEntity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.EyesLayer;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 
-public class VoidNeedleRenderer<T extends VoidNeedleEntity,R extends NeedleRenderState,M extends VoidNeedleModel<R>> extends LivingEntityRenderer<T,R,M> {
+public class VoidNeedleRenderer<T extends VoidNeedleEntity,R extends NeedleRenderState,M extends VoidNeedleModel<R>> extends MobRenderer<T,R,M> {
     public VoidNeedleRenderer(EntityRendererProvider.Context context) {
         super(context, (M) new VoidNeedleModel<>(context.bakeLayer(VoidNeedleModel.LAYER_LOCATION)),1.0F);
         this.addLayer(new EyesLayer<R, M>(this) {

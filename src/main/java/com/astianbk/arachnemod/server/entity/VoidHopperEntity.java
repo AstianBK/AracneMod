@@ -1,6 +1,8 @@
 package com.astianbk.arachnemod.server.entity;
 
+import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.common.registry.NRegistry;
+import com.astianbk.arachnemod.server.cap.ArachneAttachment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.tags.EntityTypeTags;
@@ -17,6 +19,7 @@ import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 
 public class VoidHopperEntity extends Monster {
@@ -28,8 +31,10 @@ public class VoidHopperEntity extends Monster {
     public int idleResetTimer = 0;
     public int emergeAnimationTimer = 0;
     public int diggingAnimationTimer = 0;
+    public int sleepCastingTime = 0;
     public Blessing prevBlessing = Blessing.NONE;
     public Vec3 fleePos = null;
+
     public VoidHopperEntity(EntityType<? extends Monster> type, Level level) {
         super(type, level);
     }
@@ -71,6 +76,15 @@ public class VoidHopperEntity extends Monster {
 
             }
         }
+        if (this.prevBlessing==Blessing.NONE){
+            if (this.sleepCastingTime > 0){
+                this.sleepCastingTime--;
+            }
+            if (this.sleepCastingTime==0){
+                this.prevBlessing = random.nextFloat() > 0.5F ? Blessing.SILENT : Blessing.DAMNATION;
+                this.sleepCastingTime = 200;
+            }
+        }
     }
 
     public void setupAnimation(){
@@ -84,28 +98,31 @@ public class VoidHopperEntity extends Monster {
 
     }
     public void addMarkSilent(LivingEntity living){
-        int amplifier = 0;
-        if (living.hasEffect(NRegistry.SILENT_HEX)){
-            amplifier = living.getEffect(NRegistry.SILENT_HEX).getAmplifier()+1;
-        }
-        if (amplifier+1 == 3){
-            living.addEffect(new MobEffectInstance(NRegistry.SILENT,500,0));
-        }else {
-            living.addEffect(new MobEffectInstance(NRegistry.SILENT_HEX,100,amplifier,false,false));
+        if (living instanceof Player player){
+            ArachneAttachment.get(player).ifPresent(arachneAttachment -> {
+                int size = arachneAttachment.hexes.size();
+                if (size==3){
+                    arachneAttachment.clearHexes(player);
+                    living.addEffect(new MobEffectInstance(NRegistry.SILENT,500,0));
+                }else  {
+                    arachneAttachment.addHex(level(), player);
+                }
+            });
         }
     }
 
     public void addDamnationHex(LivingEntity living){
-        int amplifier = 0;
-        if (living.hasEffect(NRegistry.DAMNATION_HEX)){
-            amplifier = living.getEffect(NRegistry.DAMNATION_HEX).getAmplifier()+1;
-        }
-        if (amplifier+1 == 3){
-            living.addEffect(new MobEffectInstance(MobEffects.DARKNESS,250,0));
-            living.addEffect(new MobEffectInstance(MobEffects.WEAKNESS,250,0));
-
-        }else {
-            living.addEffect(new MobEffectInstance(NRegistry.DAMNATION_HEX,100,amplifier,false,false));
+        if (living instanceof Player player){
+            ArachneAttachment.get(player).ifPresent(arachneAttachment -> {
+                int size = arachneAttachment.hexes.size();
+                if (size==3){
+                    arachneAttachment.clearHexes(player);
+                    living.addEffect(new MobEffectInstance(MobEffects.DARKNESS,250,0));
+                    living.addEffect(new MobEffectInstance(MobEffects.WEAKNESS,250,0));
+                }else  {
+                    arachneAttachment.addHex(level(), player);
+                }
+            });
         }
     }
     public void criSilent(){
@@ -194,8 +211,8 @@ public class VoidHopperEntity extends Monster {
                 for (int radius = 0; radius <360 ; radius+=15){
                     radius = (int) (radius + r);
                     double x = Math.sin(radius) * dist + VoidHopperEntity.this.getX();
-                    double y = VoidHopperEntity.this.getY();
                     double z = Math.cos(radius) * dist  + VoidHopperEntity.this.getZ();
+                    double y = VoidHopperEntity.this.level().getHeight(Heightmap.Types.MOTION_BLOCKING, (int) x, (int) z);
                     if (validPos(x,y,z)){
                         VoidHopperEntity.this.fleePos = new Vec3(x,y,z);
                         return;
@@ -221,7 +238,7 @@ public class VoidHopperEntity extends Monster {
         public int chargeTime = 0;
         public BlessingGoal(int durationTime){
             this.durationTime = durationTime;
-            this.chargeTime = this.durationTime/3;
+            this.chargeTime = this.durationTime/4;
         }
 
         @Override
@@ -234,11 +251,15 @@ public class VoidHopperEntity extends Monster {
         @Override
         public void tick() {
             super.tick();
-            if (this.chargeBlessing()){
-                if ((this.castingTime % chargeTime)==0){
-                    blessing();
+            if (!VoidHopperEntity.this.level().isClientSide()){
+                if (this.chargeBlessing()){
+                    if ((this.castingTime % chargeTime)==0){
+                        AracneMod.LOGGER.info("castingTime : {}",this.castingTime);
+                        blessing();
+                    }
                 }
             }
+
 
             if (this.castingTime == this.durationTime){
                 finalBlessing();
@@ -249,13 +270,14 @@ public class VoidHopperEntity extends Monster {
             return false;
         }
         private void finalBlessing(){
-            VoidHopperEntity.this.prevBlessing = getType();
+            VoidHopperEntity.this.prevBlessing =Blessing.NONE;
         }
         abstract void blessing();
         abstract Blessing getType();
+
         @Override
         public boolean canUse() {
-            return !VoidHopperEntity.this.hasPose(Pose.DIGGING) && !VoidHopperEntity.this.hasPose(Pose.EMERGING) && VoidHopperEntity.this.getTarget() != null && VoidHopperEntity.this.prevBlessing != getType();
+            return !VoidHopperEntity.this.hasPose(Pose.DIGGING) && !VoidHopperEntity.this.hasPose(Pose.EMERGING) && VoidHopperEntity.this.getTarget() != null && VoidHopperEntity.this.prevBlessing == getType();
         }
     }
     public class SilentCastingGoal extends BlessingGoal{

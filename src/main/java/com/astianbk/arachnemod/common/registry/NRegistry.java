@@ -28,9 +28,12 @@ import com.astianbk.arachnemod.server.entity.*;
 import com.astianbk.arachnemod.server.cap.TheVoidAttachment;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -52,8 +55,11 @@ import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraft.world.level.levelgen.structure.placement.StructurePlacementType;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
+import net.neoforged.neoforge.attachment.AttachmentSyncHandler;
 import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.registries.*;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Set;
 import java.util.function.Supplier;
@@ -66,6 +72,18 @@ public class NRegistry {
     public static final DeferredRegister<Feature<?>> FEATURE = DeferredRegister.create(Registries.FEATURE,AracneMod.MODID);
     public static final DeferredRegister<StructureType<?>> STRUCTURE_TYPE = DeferredRegister.create(Registries.STRUCTURE_TYPE,AracneMod.MODID);
     public static final DeferredRegister<StructurePlacementType<?>> STRUCTURE_PLACEMENT_TYPE = DeferredRegister.create(Registries.STRUCTURE_PLACEMENT,AracneMod.MODID);
+    public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT,AracneMod.MODID);
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_AMBIENCE =
+            SOUNDS.register("ambience_loop", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "ambience_loop")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> AMBIENCE_0 =
+            SOUNDS.register("ambience_0", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "ambience_0")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> AMBIENCE_1 =
+            SOUNDS.register("ambience_1", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "ambience_1")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> AMBIENCE_2 =
+            SOUNDS.register("ambience_2", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "ambience_2")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> AMBIENCE_3 =
+            SOUNDS.register("ambience_3", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "ambience_3")));
+
     public static final Supplier<AttachmentType<TheVoidAttachment>> THE_VOID_ATTACHMENT =
             ATTACHMENTS.register(
                     "the_void_attachment",
@@ -74,7 +92,7 @@ public class NRegistry {
     public static final Supplier<AttachmentType<ArachneAttachment>> ARACNE =
             ATTACHMENTS.register(
                     "aracne",
-                    () -> AttachmentType.builder(ArachneAttachment::new).serialize(new ArachneAttachment.NerubianCapSerializer()).copyOnDeath().build());
+                    () -> AttachmentType.builder(ArachneAttachment::new).serialize(new ArachneAttachment.NerubianCapSerializer()).sync(ArachneAttachment.NerubianCapSerializer.STREAM_CODEC).copyOnDeath().build());
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(AracneMod.MODID);
 
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(AracneMod.MODID);
