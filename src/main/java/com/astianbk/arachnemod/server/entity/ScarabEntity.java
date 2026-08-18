@@ -39,7 +39,7 @@ public class ScarabEntity extends PathfinderMob {
                 .add(Attributes.MAX_HEALTH, 20.0)
                 .add(Attributes.ARMOR, 10.0)
                 .add(Attributes.ARMOR_TOUGHNESS, 5.0)
-                .add(Attributes.ATTACK_DAMAGE, 5.0);
+                .add(Attributes.ATTACK_DAMAGE, 8.0);
     }
 
     @Override
