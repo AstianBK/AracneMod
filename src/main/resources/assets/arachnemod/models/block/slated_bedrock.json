@@ -1,6 +1,6 @@
 {
 	"parent": "minecraft:block/cube_all",
 	"textures": {
-		"all": "arachnemod:block/bricked_bedrock"
+		"all": "arachnemod:block/slated_bedrock"
 	}
 }

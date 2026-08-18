@@ -1,13 +1,31 @@
 {
-  "itemGroup.arachnemod": "Example Mod Tab",
-  "block.arachnemod.example_block": "Example Block",
+  "itemGroup.arachnemod": "Voidweaver",
+
+  "block.arachnemod.arachne_idol_item": "Forgotten Idol",
+  "block.arachnemod.cracked_bedrock_item": "Shattered Bedrock",
+  "block.arachnemod.bedcrust_item": "Cracked Bedrock",
+  "block.arachnemod.bedstone_item": "Voidshapen Bedrock",
+  "block.arachnemod.bedslag_item": "Voidtaken Bedrock",
+
+  "block.arachnemod.stone_bedrock_item": "Bedstone",
+  "block.arachnemod.chiseled_bedrock_item": "Chiseled Bedstone",
+  "block.arachnemod.bricked_bedrock_item": "Bedstone Bricks",
+  "block.arachnemod.slated_bedrock_item": "Slated Bricks",
+  "block.arachnemod.cobbled_bedrock_item": "Cobbled Bedstone",
+  "block.arachnemod.pointed_bedrock_item": "Pointed Bedrock",
+  "block.arachnemod.veil_crystal_item": "Veil Crystal",
+  "block.arachnemod.tall_veil_crystal_item": "Tall Veil Crystal",
+  "block.arachnemod.cocoonchest_item": "Void Cocoon",
+  "block.arachnemod.void_web_item": "Voidweb",
+
+
+
   "item.arachnemod.example_item": "Example Item",
+
+
 
   "arachnemod.configuration.title": "Nerubian Mod Configs",
   "arachnemod.configuration.section.arachnemod.common.toml": "Nerubian Mod Configs",
   "arachnemod.configuration.section.arachnemod.common.toml.title": "Nerubian Mod Configs",
-  "arachnemod.configuration.items": "Item List",
-  "arachnemod.configuration.logDirtBlock": "Log Dirt Block",
-  "arachnemod.configuration.magicNumberIntroduction": "Magic Number Text",
-  "arachnemod.configuration.magicNumber": "Magic Number"
+  "arachnemod.configuration.items": "Item List"
 }

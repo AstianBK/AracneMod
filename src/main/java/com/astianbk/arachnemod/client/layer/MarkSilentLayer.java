@@ -57,7 +57,7 @@ public class MarkSilentLayer extends RenderLayer<LivingEntityRenderState, Entity
                     poseStack.translate(-1.25*sin,0,1.25*cos);
                     poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
 
-                    drawSlash(poseStack.last(), Minecraft.getInstance().renderBuffers().bufferSource(),0,2,livingEntityRenderState.ageInTicks);
+                    drawSlash(poseStack.last(), Minecraft.getInstance().renderBuffers().bufferSource(),0,1,livingEntityRenderState.ageInTicks);
                     renderState.submit(poseStack,submitNodeCollector,i, OverlayTexture.NO_OVERLAY,livingEntityRenderState.outlineColor);
                     poseStack.popPose();
                 }
