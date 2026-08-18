@@ -1,6 +1,14 @@
 {
   "itemGroup.arachnemod": "Voidweaver",
 
+  "entity.arachnemod.void_beetle": "Voidrunt",
+  "entity.arachnemod.void_grub": "Voidsnub",
+  "entity.arachnemod.veilmoth": "Veil Moth",
+  "entity.arachnemod.scarab": "VoidReaver",
+  "entity.arachnemod.void_needle": "VoidNeedle",
+  "entity.arachnemod.void_hopper": "VoidHexer",
+
+
   "block.arachnemod.arachne_idol_item": "Forgotten Idol",
   "block.arachnemod.cracked_bedrock_item": "Shattered Bedrock",
   "block.arachnemod.bedcrust_item": "Cracked Bedrock",
