@@ -43,12 +43,14 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 
+import java.util.List;
+
 @Mod(value = AracneMod.MODID, dist = Dist.CLIENT)
 @EventBusSubscriber(modid = AracneMod.MODID, value = Dist.CLIENT)
 public class AracneModClient {
     public static final Identifier LOCATION = Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/war_spider/warspider.png");
     public static final ContextKey<MobEffectInstance> EFFECT = new ContextKey<>(Identifier.fromNamespaceAndPath(AracneMod.MODID,"effect"));
-
+    public static final ContextKey<List<ArachneAttachment.Hex>> HEXS = new ContextKey<>(Identifier.fromNamespaceAndPath(AracneMod.MODID,"hexs"));
     public AracneModClient(ModContainer container) {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
@@ -72,12 +74,12 @@ public class AracneModClient {
         event.registerEntityModifier(
                 new TypeToken<LivingEntityRenderer<LivingEntity,LivingEntityRenderState,?>>() {},
                 (entity, renderState) -> {
-                    if (entity.hasEffect(NRegistry.SILENT_HEX)){
-                        renderState.setRenderData(EFFECT, entity.getEffect(NRegistry.SILENT_HEX));
+                    if (entity instanceof Player player){
+                        ArachneAttachment.get(player).ifPresent(arachneAttachment -> {
+                            renderState.setRenderData(HEXS, arachneAttachment.hexes);
+                        });
                     }
-                }
-        );
-
+                });
     }
 
     @SubscribeEvent

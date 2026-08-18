@@ -32,9 +32,7 @@ public record PacketNerubianData(CompoundTag tag) implements CustomPacketPayload
 
     public static <T extends CustomPacketPayload> void handle(PacketNerubianData msg, IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
-            if (ctx.player() != null) {
-                AracneMod.LOGGER.debug("Power synced: " + msg.tag);
-            }
+
         });
     }
 }

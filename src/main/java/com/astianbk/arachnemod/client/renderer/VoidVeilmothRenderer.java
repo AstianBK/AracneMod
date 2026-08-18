@@ -8,13 +8,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.EyesLayer;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.resources.Identifier;
 
-public class VoidVeilmothRenderer<T extends VoidVeilmothEntity,R extends VoidVeilmothRenderState,M extends VoidVeilmothModel<R>> extends LivingEntityRenderer<T,R,M> {
+public class VoidVeilmothRenderer<T extends VoidVeilmothEntity,R extends VoidVeilmothRenderState,M extends VoidVeilmothModel<R>> extends MobRenderer<T,R,M> {
     public VoidVeilmothRenderer(EntityRendererProvider.Context context) {
         super(context, (M) new VoidVeilmothModel<>(context.bakeLayer(VoidVeilmothModel.LAYER_LOCATION)), 0.25F);
         this.addLayer(new EyesLayer<R, M>(this) {

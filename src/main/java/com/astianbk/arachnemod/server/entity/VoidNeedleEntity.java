@@ -192,6 +192,11 @@ public class VoidNeedleEntity extends Monster {
         entityData.define(CHARGE,false);
     }
 
+    @Override
+    public boolean canCollideWith(Entity entity) {
+        return !this.entityData.get(CHARGE) && super.canCollideWith(entity);
+    }
+
     private boolean canAttack(ServerLevel level, LivingEntity target, TargetingConditions targetConditions) {
         return targetConditions.test(level, this, target);
     }

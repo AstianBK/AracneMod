@@ -28,6 +28,7 @@ public class BonesFeature extends Feature<VoidCrystalFeatureConfiguration> {
     public boolean place(FeaturePlaceContext<VoidCrystalFeatureConfiguration> context) {
         WorldGenLevel level = context.level();
         RandomSource random = context.random();
+        if (random.nextFloat() > 0.15F)return false;
         BlockPos origin = context.origin();
 
         BlockPos pos = findPlacementPosition(level, origin, random);
