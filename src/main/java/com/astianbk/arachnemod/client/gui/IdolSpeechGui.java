@@ -19,6 +19,7 @@ public class IdolSpeechGui implements GuiLayer {
         int height = guiGraphics.guiHeight();
         int width = guiGraphics.guiWidth();
         Player player = Minecraft.getInstance().player;
+        assert player != null && !player.isCreative() && !player.isSpectator();
         ArachneAttachment.get(player).ifPresent(arachnePlayer->{
 
             float alpha = arachnePlayer.getAnimDarkness(deltaTracker.getGameTimeDeltaTicks());

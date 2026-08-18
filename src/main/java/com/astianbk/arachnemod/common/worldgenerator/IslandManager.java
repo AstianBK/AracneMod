@@ -50,11 +50,11 @@ public class IslandManager {
                 double centerX = x * cellSize + random.nextInt(cellSize);
                 double centerZ = z * cellSize + random.nextInt(cellSize);
 
-                double centerY = 250;
+                double centerY = 0;
 
-                double radius = 30 + random.nextInt(25);
+                double radius = 30 ;
 
-                islands.add(new SpikesSource(centerX, centerY, centerZ, radius,300,noise));
+                islands.add(new SpikesSource(centerX, centerY, centerZ, radius,200 + random.nextInt(150),noise));
             }
         }
         return islands;
@@ -111,8 +111,8 @@ public class IslandManager {
             int minZ = (int)Math.max(chunkMinZ, Math.floor(spike.centerZ - r));
             int maxZ = (int)Math.min(chunkMaxZ, Math.ceil(spike.centerZ + r));
 
-            int y0 = Math.max(0, (int) Math.floor(spike.centerY - r));
-            int y1 = Math.min(maxY, (int) Math.ceil(spike.centerY + r));
+            int y0 = Math.max(0, (int) Math.floor(spike.centerY));
+            int y1 = (int) (spike.centerY + spike.height);
 
             for (int x = minX; x <= maxX; x++) {
                 for (int z = minZ; z <= maxZ; z++) {

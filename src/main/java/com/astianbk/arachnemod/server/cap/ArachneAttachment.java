@@ -1,6 +1,7 @@
 package com.astianbk.arachnemod.server.cap;
 
 
+import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.QuestsType;
 import com.astianbk.arachnemod.common.quests.Quest;
 import com.astianbk.arachnemod.common.quests.QuestManager;
@@ -113,10 +114,13 @@ public class ArachneAttachment {
             if (prevIsDark){
                 this.timeDarkness++;
                 if (this.timeDarkness > 100){
-                    if (player instanceof ServerPlayer serverPlayer){
-                        player.hurtServer(serverPlayer.level(),serverPlayer.damageSources().magic(),5.0F);
+                    if (player.tickCount%100 == 0){
+                        if (player instanceof ServerPlayer serverPlayer){
+                            player.hurtServer(serverPlayer.level(),serverPlayer.damageSources().magic(),5.0F);
+                        }
                     }
-                    this.timeDarkness = 0;
+
+                    this.timeDarkness = 100;
                 }
             }else {
                 if (timeDarkness > 0){
@@ -125,6 +129,7 @@ public class ArachneAttachment {
                     timeDarkness = 0;
                 }
             }
+            AracneMod.LOGGER.info("time :{}",timeDarkness);
         }
         Inventory inventory = player.getInventory();
         if (inventory.getTimesChanged() != previousTimesChanged) {

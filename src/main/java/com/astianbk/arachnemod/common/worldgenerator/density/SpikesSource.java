@@ -24,7 +24,6 @@ public class SpikesSource implements DensitySource{
 
     @Override
     public double sample(double x, double y, double z) {
-
         double dx = x - centerX;
         double dz = z - centerZ;
 
@@ -33,16 +32,13 @@ public class SpikesSource implements DensitySource{
         double relativeY = (y - centerY) / height;
 
         if (relativeY < 0.0 || relativeY > 1.0) {
-            return -horizontalDistance;
+            return -1.0;
         }
 
         double currentRadius = radius * (1.0 - relativeY);
 
         double shapeNoise = noise.terrain(x, y, z);
-
-        double deformation = shapeNoise * 20.0;
-
-        currentRadius += deformation;
+        currentRadius += shapeNoise * 5.0;
 
         return currentRadius - horizontalDistance;
     }
