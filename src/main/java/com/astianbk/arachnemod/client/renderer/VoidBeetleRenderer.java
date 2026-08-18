@@ -17,7 +17,7 @@ import net.minecraft.resources.Identifier;
 
 public class VoidBeetleRenderer<T extends VoidBeetleEntity,R extends VoidBeetleRenderState,M extends VoidBeetleModel<R>> extends LivingEntityRenderer<T,R,M> {
     public VoidBeetleRenderer(EntityRendererProvider.Context context) {
-        super(context, (M) new VoidBeetleModel<>(context.bakeLayer(VoidBeetleModel.LAYER_LOCATION)), 1.0F);
+        super(context, (M) new VoidBeetleModel<>(context.bakeLayer(VoidBeetleModel.LAYER_LOCATION)), 0.25F);
         this.addLayer(new EyesLayer<>(this) {
             @Override
             public RenderType renderType() {

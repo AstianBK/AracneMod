@@ -1,6 +1,7 @@
 package com.astianbk.arachnemod.server.entity;
 
 import com.astianbk.arachnemod.common.registry.NRegistry;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -131,6 +132,8 @@ public class VoidHopperEntity extends Monster {
         if (id == 4){
             this.idleResetTimer = 100;
             this.idle.stop();
+            this.flee.stop();
+            this.emerge.stop();
             this.casting.start(this.tickCount);
         }
         super.handleEntityEvent(id);
@@ -203,7 +206,8 @@ public class VoidHopperEntity extends Monster {
 
         }
         public boolean validPos(double x , double y, double z){
-            return true;
+            BlockPos pos = new BlockPos((int) x, (int) y, (int) z);
+            return !level().getBlockState(pos.below()).isAir();
         }
 
         @Override

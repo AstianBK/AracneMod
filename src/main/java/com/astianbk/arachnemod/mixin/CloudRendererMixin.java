@@ -21,13 +21,7 @@ public abstract class CloudRendererMixin {
                     "textures/sky/cloud.png"
             );
 
-    @Redirect(
-            method = "prepare",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/server/packs/resources/ResourceManager;open(Lnet/minecraft/resources/Identifier;)Ljava/io/InputStream;"
-            )
-    )
+    @Redirect(method = "prepare", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/resources/ResourceManager;open(Lnet/minecraft/resources/Identifier;)Ljava/io/InputStream;"))
     private InputStream aracnemod$replaceCloudTexture(ResourceManager manager, Identifier original) throws IOException {
         return manager.open(ARACNE_CLOUD_TEXTURE);
     }

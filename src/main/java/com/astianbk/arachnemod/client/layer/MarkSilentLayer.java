@@ -33,10 +33,10 @@ import org.joml.Matrix4f;
 
 public class MarkSilentLayer extends RenderLayer<LivingEntityRenderState, EntityModel<LivingEntityRenderState>> {
     protected static final Identifier[] FRAMES_HEX = new Identifier[]{
-            Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/gui/hex_0.png"),
-            Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/gui/hex_1.png"),
-            Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/gui/hex_2.png"),
-            Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/gui/hex_3.png")
+            Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/hex/hex_0.png"),
+            Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/hex/hex_1.png"),
+            Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/hex/hex_2.png"),
+            Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/hex/hex_3.png")
     };
     public MarkSilentLayer(RenderLayerParent<LivingEntityRenderState, EntityModel<LivingEntityRenderState>> renderer) {
         super(renderer);

@@ -103,7 +103,6 @@ public class Events {
                 cap.copyFrom(oldCap);
                 cap.init();
             }
-
         });
     }
 
@@ -118,35 +117,32 @@ public class Events {
         event.register(NRegistry.VOID_HOPPER.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                Monster::checkAnyLightMonsterSpawnRules,
-                RegisterSpawnPlacementsEvent.Operation.REPLACE
-        );
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
+
         event.register(NRegistry.VOID_VEILMOTH.get(),
                 SpawnPlacementTypes.NO_RESTRICTIONS,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Mob::checkMobSpawnRules,
-                RegisterSpawnPlacementsEvent.Operation.REPLACE
-        );
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
+
         event.register(NRegistry.VOID_BEETLE.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Mob::checkMobSpawnRules,
-                RegisterSpawnPlacementsEvent.Operation.REPLACE
-        );
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
 
         event.register(NRegistry.VOID_NEEDLE.get(),
                 SpawnPlacementTypes.NO_RESTRICTIONS,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                Monster::checkAnyLightMonsterSpawnRules,
-                RegisterSpawnPlacementsEvent.Operation.REPLACE
-        );
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
-        event.register(
-                NRegistry.SCARAB.get(),
+        event.register(NRegistry.SCARAB.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                Monster::checkMonsterSpawnRules,
+                Mob::checkMobSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 

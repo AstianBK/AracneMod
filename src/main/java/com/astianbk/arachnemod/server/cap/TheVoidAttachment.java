@@ -28,9 +28,7 @@ public class TheVoidAttachment {
                 startFlash();
                 checkTick=0;
             }
-
         }
-
     }
     public void startFlash(){
         flash = true;

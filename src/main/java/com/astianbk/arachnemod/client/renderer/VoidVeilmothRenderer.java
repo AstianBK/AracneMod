@@ -16,7 +16,7 @@ import net.minecraft.resources.Identifier;
 
 public class VoidVeilmothRenderer<T extends VoidVeilmothEntity,R extends VoidVeilmothRenderState,M extends VoidVeilmothModel<R>> extends LivingEntityRenderer<T,R,M> {
     public VoidVeilmothRenderer(EntityRendererProvider.Context context) {
-        super(context, (M) new VoidVeilmothModel<>(context.bakeLayer(VoidVeilmothModel.LAYER_LOCATION)), 1.0F);
+        super(context, (M) new VoidVeilmothModel<>(context.bakeLayer(VoidVeilmothModel.LAYER_LOCATION)), 0.25F);
         this.addLayer(new EyesLayer<R, M>(this) {
             @Override
             public RenderType renderType() {
