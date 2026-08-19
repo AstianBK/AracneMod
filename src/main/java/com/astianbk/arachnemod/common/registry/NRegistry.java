@@ -113,12 +113,12 @@ public class NRegistry {
     public static final DeferredBlock<Block> WEAVER_IDOL_BLOCK = BLOCKS.registerBlock("arachne_idol", (ArachneIdolBlock::new));
     public static final DeferredBlock<Block> BEDCRUST_BLOCK = BLOCKS.registerBlock("bedcrust", properties -> new Block(properties.strength(-1.0F, 3600000.0F)));
     public static final DeferredBlock<Block> BEDSLAG_BLOCK = BLOCKS.registerBlock("bedslag", properties -> new Block(properties.strength(-1.0F, 3600000.0F)));
-    public static final DeferredBlock<Block> BEDSTONE_BLOCK = BLOCKS.registerBlock("bedstone", properties -> new Block(properties.strength(-1.0F, 3600000.0F)));
-    public static final DeferredBlock<Block> CHISELED_BEDROCK_BLOCK = BLOCKS.registerBlock("chiseled_bedrock", properties -> new Block(properties.strength(-1.0F, 3600000.0F)));
-    public static final DeferredBlock<Block> COBBLED_BEDROCK_BLOCK = BLOCKS.registerBlock("cobbled_bedrock", properties -> new Block(properties.strength(-1.0F, 3600000.0F)));
-    public static final DeferredBlock<Block> BRICKED_BEDROCK_BLOCK = BLOCKS.registerBlock("bricked_bedrock", properties -> new Block(properties.strength(-1.0F, 3600000.0F)));
-    public static final DeferredBlock<Block> STONE_BEDROCK_BLOCK = BLOCKS.registerBlock("stone_bedrock", properties -> new Block(properties.strength(-1.0F, 3600000.0F)));
-    public static final DeferredBlock<Block> SLATED_BEDROCK_BLOCK = BLOCKS.registerBlock("slated_bedrock", properties -> new Block(properties.strength(-1.0F, 3600000.0F)));
+    public static final DeferredBlock<Block> BEDSTONE_BLOCK = BLOCKS.registerBlock("bedstone", properties -> new Block(properties.sound(SoundType.DEEPSLATE).strength(-1.0F, 3600000.0F)));
+    public static final DeferredBlock<Block> CHISELED_BEDROCK_BLOCK = BLOCKS.registerBlock("chiseled_bedrock", properties -> new Block(properties.sound(SoundType.DEEPSLATE_BRICKS).strength(-1.0F, 3600000.0F)));
+    public static final DeferredBlock<Block> COBBLED_BEDROCK_BLOCK = BLOCKS.registerBlock("cobbled_bedrock", properties -> new Block(properties.sound(SoundType.BASALT).strength(-1.0F, 3600000.0F)));
+    public static final DeferredBlock<Block> BRICKED_BEDROCK_BLOCK = BLOCKS.registerBlock("bricked_bedrock", properties -> new Block(properties.sound(SoundType.DEEPSLATE_BRICKS).strength(-1.0F, 3600000.0F)));
+    public static final DeferredBlock<Block> STONE_BEDROCK_BLOCK = BLOCKS.registerBlock("stone_bedrock", properties -> new Block(properties.sound(SoundType.DEEPSLATE).strength(-1.0F, 3600000.0F)));
+    public static final DeferredBlock<Block> SLATED_BEDROCK_BLOCK = BLOCKS.registerBlock("slated_bedrock", properties -> new Block(properties.sound(SoundType.BASALT).strength(-1.0F, 3600000.0F)));
     public static final DeferredBlock<Block> CRACKED_BEDROCK_BLOCK = BLOCKS.registerBlock("cracked_bedrock", properties -> new Block(properties.strength(-1.0F, 3600000.0F)));
     public static final DeferredBlock<Block> VOID_WEB_BLOCK = BLOCKS.registerBlock("void_web", (properties -> new WebBlock(properties.noOcclusion().noCollision().strength(-1.0F, 3600000.0F))));
 
