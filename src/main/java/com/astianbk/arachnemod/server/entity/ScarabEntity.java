@@ -1,10 +1,15 @@
 package com.astianbk.arachnemod.server.entity;
 
+import com.astianbk.arachnemod.common.registry.NRegistry;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,6 +22,8 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import org.jspecify.annotations.Nullable;
 
 public class ScarabEntity extends PathfinderMob {
     public static final EntityDataAccessor<Boolean> ATTACKING = SynchedEntityData.defineId(ScarabEntity.class,EntityDataSerializers.BOOLEAN);
@@ -132,4 +139,20 @@ public class ScarabEntity extends PathfinderMob {
         entityData.define(ATTACKING,false);
     }
 
+    @Override
+    protected void playStepSound(BlockPos pos, BlockState block) {
+        this.playSound(SoundEvents.SPIDER_STEP, 0.5F, -2.0F);
+    }
+
+    @Override
+    protected @Nullable SoundEvent getHurtSound(DamageSource damageSource) {
+        return SoundEvents.ZOMBIE_NAUTILUS_AMBIENT_ON_LAND;
+    }
+
+    @Override
+    protected @Nullable SoundEvent getAmbientSound() {
+        return this.random.nextBoolean()
+                ? NRegistry.SCARAB_IDLE1.get()
+                : NRegistry.SCARAB_IDLE2.get();
+    }
 }

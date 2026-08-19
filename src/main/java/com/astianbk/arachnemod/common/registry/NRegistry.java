@@ -72,6 +72,7 @@ public class NRegistry {
     public static final DeferredRegister<Feature<?>> FEATURE = DeferredRegister.create(Registries.FEATURE,AracneMod.MODID);
     public static final DeferredRegister<StructureType<?>> STRUCTURE_TYPE = DeferredRegister.create(Registries.STRUCTURE_TYPE,AracneMod.MODID);
     public static final DeferredRegister<StructurePlacementType<?>> STRUCTURE_PLACEMENT_TYPE = DeferredRegister.create(Registries.STRUCTURE_PLACEMENT,AracneMod.MODID);
+
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT,AracneMod.MODID);
     public static final DeferredHolder<SoundEvent, SoundEvent> VOID_AMBIENCE =
             SOUNDS.register("ambience_loop", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "ambience_loop")));
@@ -83,6 +84,14 @@ public class NRegistry {
             SOUNDS.register("ambience_2", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "ambience_2")));
     public static final DeferredHolder<SoundEvent, SoundEvent> AMBIENCE_3 =
             SOUNDS.register("ambience_3", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "ambience_3")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> SCARAB_IDLE1 =
+            SOUNDS.register("scarab_idle1", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "scarab_idle1")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> SCARAB_IDLE2 =
+            SOUNDS.register("scarab_idle2", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "scarab_idle2")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> NEEDLE_LOOP =
+            SOUNDS.register("needle_loop", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "needle_loop")));
+
+
 
     public static final Supplier<AttachmentType<TheVoidAttachment>> THE_VOID_ATTACHMENT =
             ATTACHMENTS.register(
@@ -117,19 +126,19 @@ public class NRegistry {
 
     public static final DeferredHolder<BlockEntityType<?>,BlockEntityType<ArachneIdolBlockEntity>> ARACHNE_IDOL_BLOCK_ENTITY = BLOCK_ENTITY_TYPE.register("arachne_idol_block_entity", () -> new BlockEntityType<>(ArachneIdolBlockEntity::new, Set.of(WEAVER_IDOL_BLOCK.get())));
     public static final DeferredBlock<Block> POINTED_BEDROCK_BLOCK = BLOCKS.registerBlock("pointed_bedrock", (properties)->new PointedUpBlock(properties
-            .mapColor(MapColor.TERRACOTTA_BROWN)
+            .mapColor(MapColor.TERRACOTTA_GRAY)
             .forceSolidOn()
             .instrument(NoteBlockInstrument.BASEDRUM)
             .noOcclusion()
             .sound(SoundType.POINTED_DRIPSTONE)
             .randomTicks()
-            .strength(1.5F, 3.0F)
+            .strength(4.5F, 5.0F)
             .dynamicShape()
             .offsetType(BlockBehaviour.OffsetType.XZ)
             .pushReaction(PushReaction.DESTROY)
             .noOcclusion()));
 
-    public static final DeferredBlock<Block> VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("veil_crystal",(p)->new Block(p.lightLevel(statex -> 4).noOcclusion()));
+    public static final DeferredBlock<Block> VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("veil_crystal",(p)->new Block(p.lightLevel(statex -> 5).noOcclusion()));
     public static final DeferredBlock<Block> TALL_VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("tall_veil_crystal",(p)->new TallVeilCrystalBlock(p.lightLevel(statex -> 8).noOcclusion()));
 
     public static final DeferredBlock<Block> COCOONCHEST_BLOCK = BLOCKS.registerBlock("cocoonchest",(p)->new Block(p.noOcclusion().strength(4.0F)));

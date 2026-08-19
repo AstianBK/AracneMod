@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "sanguinaire:item/sanguine_stone"
+    "layer0": "arachnemod:item/power_fragment"
   }
 }

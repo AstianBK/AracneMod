@@ -1,14 +1,17 @@
 package com.astianbk.arachnemod.server.entity;
 
+import com.astianbk.arachnemod.common.registry.NRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -42,9 +45,11 @@ public class VoidNeedleEntity extends Monster {
     private AttackPhase attackPhase;
     public int idleResetTimer = 0;
     public Vec3 direction = Vec3.ZERO;
-   
+
     public AnimationState idle = new AnimationState();
     public AnimationState change = new AnimationState();
+
+    private int needleSoundTimer = 0;
 
     private int changeTick = 0;
     private int chargeTick = 0;
@@ -82,6 +87,16 @@ public class VoidNeedleEntity extends Monster {
     @Override
     public void tick() {
         super.tick();
+
+        if (!this.level().isClientSide()) {
+            if (this.needleSoundTimer <= 0) {
+                this.playSound(NRegistry.NEEDLE_LOOP.get(), 1.0F, 1.0F);
+                this.needleSoundTimer = 80;
+            } else {
+                this.needleSoundTimer--;
+            }
+        }
+
         if (this.level().isClientSide()) {
             float anim = Mth.cos((double)((float)(this.getUniqueFlapTickOffset() + this.tickCount) * 7.448451F * 0.017453292F + 3.1415927F));
             float nextAnim = Mth.cos((double)((float)(this.getUniqueFlapTickOffset() + this.tickCount + 1) * 7.448451F * 0.017453292F + 3.1415927F));
@@ -505,7 +520,6 @@ public class VoidNeedleEntity extends Monster {
                 this.speed = 0.1F;
             }
 
-
             double tdx = VoidNeedleEntity.this.moveTargetPoint.x - VoidNeedleEntity.this.getX();
             double tdy = VoidNeedleEntity.this.moveTargetPoint.y - VoidNeedleEntity.this.getY();
             double tdz = VoidNeedleEntity.this.moveTargetPoint.z - VoidNeedleEntity.this.getZ();
@@ -549,6 +563,11 @@ public class VoidNeedleEntity extends Monster {
                 VoidNeedleEntity.this.setDeltaMovement(VoidNeedleEntity.this.attackPhase == AttackPhase.SWOOP ? new Vec3(VoidNeedleEntity.this.direction.x,-chargeYVelocity,VoidNeedleEntity.this.direction.z).scale(1.5F) :  movement.add((new Vec3(txd, tyd, tzd))).subtract(movement).scale(0.2));
             }
         }
+    }
+
+    @Override
+    protected @Nullable SoundEvent getHurtSound(DamageSource damageSource) {
+        return SoundEvents.BABY_NAUTILUS_HURT_ON_LAND;
     }
 
 }

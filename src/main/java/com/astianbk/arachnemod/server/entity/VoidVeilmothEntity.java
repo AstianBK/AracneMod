@@ -1,11 +1,15 @@
 package com.astianbk.arachnemod.server.entity;
 
+import com.astianbk.arachnemod.common.registry.NRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -138,5 +142,15 @@ public class VoidVeilmothEntity extends PathfinderMob {
             int distanceReduction = 16;
             return 48 - distanceReduction;
         }
+    }
+
+    @Override
+    protected @Nullable SoundEvent getHurtSound(DamageSource damageSource) {
+        return SoundEvents.ALLAY_HURT;
+    }
+
+    @Override
+    protected @Nullable SoundEvent getAmbientSound() {
+        return  SoundEvents.ALLAY_AMBIENT_WITHOUT_ITEM;
     }
 }
