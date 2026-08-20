@@ -2,6 +2,7 @@ package com.astianbk.arachnemod.server.entity;
 
 import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.common.ArachneIdolBlockEntity;
+import com.astianbk.arachnemod.common.registry.NRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -99,14 +100,19 @@ public class OrbEntity extends Entity {
 
     @Override
     public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
-        AracneMod.LOGGER.info("lol :{}",getOrbType());
         if (sourceBlock!=null && level().getBlockEntity(sourceBlock) instanceof ArachneIdolBlockEntity arachneIdol){
             if (arachneIdol.orbs.contains(this)){
+
                 arachneIdol.selectOrb(player, getOrbType(),level(),sourceBlock);
             }
         }
 
         return super.interact(player, hand, location);
+    }
+
+    @Override
+    public void handleEntityEvent(byte id) {
+        super.handleEntityEvent(id);
     }
 
     public enum Type {

@@ -1,10 +1,13 @@
 package com.astianbk.arachnemod.server.entity;
 
 import com.astianbk.arachnemod.common.registry.NRegistry;
+import com.astianbk.arachnemod.server.goal.FleeBlockLightGoal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -19,9 +22,11 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jspecify.annotations.Nullable;
 
@@ -52,7 +57,28 @@ public class ScarabEntity extends PathfinderMob {
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.targetSelector.addGoal(1,new NearestAttackableTargetGoal<>(this, Player.class,true));
+        this.targetSelector.addGoal(1,new NearestAttackableTargetGoal<>(this, Player.class,true){
+            @Override
+            public boolean canUse() {
+                return super.canUse();
+            }
+            protected void findTarget() {
+                ServerLevel level = getServerLevel(this.mob);
+                if (this.targetType != Player.class) {
+                    this.target = level.getNearestEntity(this.mob.level().getEntitiesOfClass(this.targetType, this.getTargetSearchArea(this.getFollowDistance()), (entity) -> {
+                        return true;
+                    }), this.getTargetConditions(), this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
+                } else {
+                    this.target = level.getNearestPlayer(this.getTargetConditions(), this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
+                }
+
+            }
+            private TargetingConditions getTargetConditions() {
+                return this.targetConditions.range(this.getFollowDistance()).selector((living,level)->{
+                    return level.getBrightness(LightLayer.BLOCK,living.blockPosition())<=0;
+                });
+            }
+        });
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(4,new MeleeAttackGoal(this,1.0D,false){
             @Override
@@ -69,10 +95,19 @@ public class ScarabEntity extends PathfinderMob {
             }
 
             @Override
+            public void tick() {
+                if (this.mob.getTarget()!=null && level().getBrightness(LightLayer.BLOCK,this.mob.getTarget().blockPosition())>0){
+                    this.mob.setTarget(null);
+                }
+                super.tick();
+            }
+
+            @Override
             public boolean canUse() {
-                return !entityData.get(ATTACKING) && super.canUse();
+                return !entityData.get(ATTACKING) && super.canUse() && level().getBrightness(LightLayer.BLOCK,this.mob.getTarget().blockPosition())<=0;
             }
         });
+        this.goalSelector.addGoal(1,new FleeBlockLightGoal(this,2.0F));
     }
 
 
@@ -151,8 +186,5 @@ public class ScarabEntity extends PathfinderMob {
 
     @Override
     protected @Nullable SoundEvent getAmbientSound() {
-        return this.random.nextBoolean()
-                ? NRegistry.SCARAB_IDLE1.get()
-                : NRegistry.SCARAB_IDLE2.get();
-    }
+        return this.random.nextBoolean() ? NRegistry.SCARAB_IDLE1.get() : NRegistry.SCARAB_IDLE2.get();}
 }

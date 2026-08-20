@@ -32,48 +32,21 @@ import java.util.Iterator;
 
 public class VoidZiguratStructurePiece extends TemplateStructurePiece {
 
-
-    public VoidZiguratStructurePiece( int genDepth, StructureTemplateManager structureTemplateManager, StructurePlaceSettings placeSettings, BlockPos position) {
-        super(NRegistry.VOID_ZIGURAT_PIECE.get(), genDepth, structureTemplateManager, Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_zigurat"), "arachnemod:void_zigurat", placeSettings, position);
-        this.templatePosition = position.offset(
-                -this.template.getSize().getX() / 2,
-                1,
-                -this.template.getSize().getZ() / 2
-        );
-
-        this.boundingBox = this.template.getBoundingBox(
-                new StructurePlaceSettings(),
-                this.templatePosition
-        );    }
+    public int type = 0;
+    public VoidZiguratStructurePiece( int genDepth,int type, StructureTemplateManager structureTemplateManager, StructurePlaceSettings placeSettings, BlockPos position) {
+        super(NRegistry.VOID_ZIGURAT_PIECE.get(), genDepth, structureTemplateManager, Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_zigurat_"+type), "arachnemod:void_zigurat_"+type, placeSettings, position);
+        this.templatePosition = position.offset(-this.template.getSize().getX() / 2, 1, -this.template.getSize().getZ() / 2);
+        this.boundingBox = this.template.getBoundingBox(new StructurePlaceSettings(), this.templatePosition);
+    }
 
     public VoidZiguratStructurePiece(CompoundTag tag, StructureTemplateManager structureTemplateManager) {
         super(NRegistry.VOID_ZIGURAT_PIECE.get(),tag,structureTemplateManager,location -> new StructurePlaceSettings());
     }
     public void postProcess(WorldGenLevel level, StructureManager structureManager, ChunkGenerator generator, RandomSource random, BoundingBox chunkBB, ChunkPos chunkPos, BlockPos referencePos) {
-        AracneMod.LOGGER.info(
-                "ZIGURAT: pieceBB={} chunkBB={} templatePos={} referencePos={} chunk={}",
-                this.boundingBox,
-                chunkBB,
-                this.templatePosition,
-                referencePos,
-                chunkPos
-        );
-        AracneMod.LOGGER.info(
-                "TEMPLATE: size={}x{}x{}",
-                this.template.getSize().getX(),
-                this.template.getSize().getY(),
-                this.template.getSize().getZ()
-        );
+
         this.placeSettings.setBoundingBox(chunkBB);
         this.boundingBox = this.template.getBoundingBox(this.placeSettings, this.templatePosition);
 
-        AracneMod.LOGGER.info(
-                "PLACE: chunk={} chunkBB={} pieceBB={} templatePos={}",
-                chunkPos,
-                chunkBB,
-                this.boundingBox,
-                this.templatePosition
-        );
         if (this.template.placeInWorld(level, this.templatePosition, referencePos, this.placeSettings, random, 2)) {
 
         }

@@ -11,25 +11,19 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
-import net.minecraft.world.entity.ai.util.AirAndWaterRandomPos;
-import net.minecraft.world.entity.ai.util.HoverRandomPos;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-import java.util.EnumSet;
-
-public class VoidBeetleEntity extends PathfinderMob {
+public class VoidGrubEntity extends PathfinderMob {
     public int idleResetTimer = 0;
     public AnimationState idle = new AnimationState();
 
-    public VoidBeetleEntity(EntityType<? extends PathfinderMob> type, Level level) {
+    public VoidGrubEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
     }
 
