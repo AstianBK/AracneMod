@@ -1,12 +1,16 @@
 package com.astianbk.arachnemod.common.block;
 
+import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.common.ArachneIdolBlockEntity;
 import com.astianbk.arachnemod.common.registry.NRegistry;
 import com.astianbk.arachnemod.server.entity.OrbEntity;
 import com.astianbk.arachnemod.server.cap.ArachneAttachment;
+import com.astianbk.arachnemod.server.network.PacketPlayDialog;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -23,6 +27,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -57,16 +62,20 @@ public class ArachneIdolBlock extends BaseEntityBlock {
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         ArachneAttachment.get(player).ifPresent(e->{
             ArachneIdolBlockEntity arachneIdol = (ArachneIdolBlockEntity) level.getBlockEntity(pos);
-            if (arachneIdol.currentState == ArachneIdolBlockEntity.State.NONE){
-                if (e.currentQuest==null){
-                    arachneIdol.startMenu(player,level,pos,typesForState.get(ArachneIdolBlockEntity.State.MENU));
-                    level.setBlock(pos,state.setValue(LIT,true),3);
-                }else {
-                    e.currentReputation = Math.min(100,e.currentReputation+e.currentQuest.getReputation());
-                    e.currentQuest = null;
-                    level.setBlock(pos,state.setValue(LIT,false),3);
+            if (!level.isClientSide()){
+                if (arachneIdol.currentState == ArachneIdolBlockEntity.State.NONE && !state.getValue(LIT)){
+                    if (e.currentQuest==null){
+                        PacketDistributor.sendToPlayer((ServerPlayer) player,new PacketPlayDialog(Identifier.fromNamespaceAndPath(AracneMod.MODID,"arachne_dialog1"),player.getId()));
+                        arachneIdol.startMenu(player,level,pos,typesForState.get(ArachneIdolBlockEntity.State.MENU));
+                        level.setBlock(pos,state.setValue(LIT,true),3);
+                    }else {
+                        e.currentReputation = Math.min(100,e.currentReputation+e.currentQuest.getReputation());
+                        e.currentQuest = null;
+                        level.setBlock(pos,state.setValue(LIT,false),3);
+                    }
                 }
             }
+
         });
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }

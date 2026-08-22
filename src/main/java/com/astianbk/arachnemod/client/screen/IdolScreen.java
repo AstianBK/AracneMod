@@ -47,6 +47,7 @@ public class IdolScreen extends Screen {
         this.currentQuest = quest;
     }
 
+
     @Override
     public boolean isPauseScreen() {
         return false;

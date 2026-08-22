@@ -66,13 +66,15 @@ public class WebElevatorRenderer<T extends WebElevatorEntity,R extends WebElevat
         poseStack.pushPose();
         poseStack.mulPose(Axis.XN.rotationDegrees(180.0F));
         poseStack.translate(0,-1.5F,0);
-        this.model.renderToBuffer(poseStack, Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderTypes.entityCutout(getTextureLocation(state))),state.lightCoords, OverlayTexture.NO_OVERLAY);
+        submitNodeCollector.submitModel(this.model,state,poseStack,RenderTypes.entityCutout(getTextureLocation(state)),state.lightCoords, OverlayTexture.NO_OVERLAY,state.outlineColor,null);
+
         poseStack.popPose();
         for (int i = 0 ; i < 100 ; i ++){
             WebPartModel model1 = new WebPartModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(WebPartModel.LAYER_LOCATION));
             poseStack.pushPose();
             poseStack.translate(0,2+i,0);
-            model1.renderToBuffer(poseStack,Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderTypes.entityCutout(Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/web_elevator/web_elevator.png"))),state.lightCoords, OverlayTexture.NO_OVERLAY);
+            submitNodeCollector.submitModel(model1,state,poseStack,RenderTypes.entityCutout(Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/web_elevator/web_elevator.png")),state.lightCoords, OverlayTexture.NO_OVERLAY,state.outlineColor,null);
+
             poseStack.popPose();
         }
     }

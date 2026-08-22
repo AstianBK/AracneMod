@@ -3,18 +3,26 @@ package com.astianbk.arachnemod.server.cap;
 
 import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.QuestsType;
+import com.astianbk.arachnemod.common.dialogs.Dialog;
+import com.astianbk.arachnemod.common.dialogs.DialogsManager;
 import com.astianbk.arachnemod.common.quests.Quest;
 import com.astianbk.arachnemod.common.quests.QuestManager;
 import com.astianbk.arachnemod.common.registry.NRegistry;
 import com.mojang.serialization.Codec;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
 import net.minecraft.world.BossEvent;
@@ -29,6 +37,8 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.*;
 
@@ -59,6 +69,12 @@ public class ArachneAttachment {
     public BlockPos teleportBack = null;
     public List<Hex> hexes = new ArrayList<>();
     ServerBossEvent event =  Util.make(new ServerBossEvent(UUID.randomUUID(), Component.literal("this.getDisplayName()"), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS), e -> e.setDarkenScreen(false));
+    public String currentDialog = null;
+    public int index = 0;
+    public List<String> bufferText = new ArrayList<>();
+    public String text = "";
+    public boolean completeText = false;
+    public int time = 0;
 
     public String getTimeInMinuteAndSeconds(){
         int seconds = this.timeQuest/20;
@@ -134,6 +150,7 @@ public class ArachneAttachment {
                 }
             }
         }
+
         Inventory inventory = player.getInventory();
         if (inventory.getTimesChanged() != previousTimesChanged) {
             previousTimesChanged = inventory.getTimesChanged();
@@ -160,8 +177,60 @@ public class ArachneAttachment {
             //this.attack.animateWhen(player.getAttackAnim(1.0F)>0,player.tickCount);
             this.swim.animateWhen(player.isSwimming(),player.tickCount);
             this.block.animateWhen(player.getUseItem().getItem() instanceof ShieldItem,player.tickCount);
+            this.updateText(player);
         }
     }
+
+    private void updateText(Player player) {
+        if (this.currentDialog == null)return;
+        Dialog dialog = DialogsManager.getDialog().get(Identifier.parse(currentDialog));
+
+        if (time>0){
+            time--;
+            if (time==0){
+                if (dialog.answers().size()==index){
+                    this.bufferText.clear();
+                }else {
+                    if (this.bufferText.size()==2){
+                        this.bufferText.removeLast();
+                        this.bufferText.addFirst(text);
+                    }else {
+                        this.bufferText.addFirst(text);
+                    }
+                }
+
+                text="";
+            }
+            return;
+        }
+        if (completeText) {
+            return;
+        }
+
+        if (dialog.answers().size()==index){
+
+            completeText = true;
+            return;
+        }
+        String targetText = dialog.answers().get(index);
+        if (player.tickCount % 2 != 0) {
+
+            return;
+        }
+        if (text.length() < targetText.length()) {
+            text += targetText.charAt(text.length());
+
+        }
+        if (text.length() >= targetText.length()) {
+            index++;
+            time = 30;
+        }
+        SoundEvent event1 = BuiltInRegistries.SOUND_EVENT.getValue(Identifier.parse(dialog.sounds().get(player.level().getRandom().nextInt(0,dialog.sounds().size()))));
+
+        Minecraft.getInstance().getSoundManager().play(new EntityBoundSoundInstance(event1, SoundSource.NEUTRAL, 1.5F, 1.0F, player,player.level().getRandom().nextLong()));
+
+    }
+
     public void setTeleportBackPos(BlockPos pos){
         this.teleportBack = pos;
     }
@@ -180,6 +249,7 @@ public class ArachneAttachment {
         this.event.setVisible(false);
         this.event.removeAllPlayers();
     }
+
     public void init(){
         this.isDirty = true;
     }
@@ -250,6 +320,22 @@ public class ArachneAttachment {
     public static Optional<ArachneAttachment> get(Player player){
         return Optional.of(player.getData(NRegistry.ARACNE.get()));
     }
+
+    public void playDialog(Identifier identifier) {
+        if (this.currentDialog != null){
+            Dialog dialog = DialogsManager.getDialog().get(Identifier.parse(currentDialog));
+            for (String id : dialog.sounds()){
+                Minecraft.getInstance().getSoundManager().stop(Identifier.parse(id),SoundSource.AMBIENT);
+            }
+            this.text = "";
+            this.index = 0;
+            this.completeText = false;
+            this.bufferText.clear();
+        }
+        this.currentDialog = identifier.toString();
+
+    }
+
     public static class NerubianCapSerializer implements IAttachmentSerializer<ArachneAttachment> {
         public static final StreamCodec<RegistryFriendlyByteBuf, ArachneAttachment> STREAM_CODEC =
                 new StreamCodec<>() {

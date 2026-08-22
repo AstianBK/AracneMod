@@ -10,8 +10,7 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.PointedDripstoneBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.DripstoneThickness;
-import net.minecraft.world.level.levelgen.feature.DripstoneUtils;
+import net.minecraft.world.level.block.state.properties.SpeleothemThickness;
 
 import java.util.function.Consumer;
 
@@ -38,28 +37,28 @@ public class BedrockUtils {
     }
 
     public static boolean isEmptyOrWater(LevelAccessor level, BlockPos pos) {
-        return level.isStateAtPosition(pos, net.minecraft.world.level.levelgen.feature.DripstoneUtils::isEmptyOrWater);
+        return level.isStateAtPosition(pos, net.minecraft.world.level.levelgen.feature.SpeleothemUtils::isEmptyOrWater);
     }
 
     protected static boolean isEmptyOrWaterOrLava(LevelAccessor level, BlockPos pos) {
-        return level.isStateAtPosition(pos, net.minecraft.world.level.levelgen.feature.DripstoneUtils::isEmptyOrWaterOrLava);
+        return level.isStateAtPosition(pos, net.minecraft.world.level.levelgen.feature.SpeleothemUtils::isEmptyOrWaterOrLava);
     }
 
     protected static void buildBaseToTipColumn(Direction direction, int totalLength, boolean mergedTip, Consumer<BlockState> consumer) {
         if (totalLength >= 3) {
-            consumer.accept(createPointedDripstone(direction, DripstoneThickness.BASE));
+            consumer.accept(createPointedDripstone(direction, SpeleothemThickness.BASE));
 
             for(int i = 0; i < totalLength - 3; ++i) {
-                consumer.accept(createPointedDripstone(direction, DripstoneThickness.MIDDLE));
+                consumer.accept(createPointedDripstone(direction, SpeleothemThickness.MIDDLE));
             }
         }
 
         if (totalLength >= 2) {
-            consumer.accept(createPointedDripstone(direction, DripstoneThickness.FRUSTUM));
+            consumer.accept(createPointedDripstone(direction, SpeleothemThickness.FRUSTUM));
         }
 
         if (totalLength >= 1) {
-            consumer.accept(createPointedDripstone(direction, mergedTip ? DripstoneThickness.TIP_MERGE : DripstoneThickness.TIP));
+            consumer.accept(createPointedDripstone(direction, mergedTip ? SpeleothemThickness.TIP_MERGE : SpeleothemThickness.TIP));
         }
 
     }
@@ -84,7 +83,7 @@ public class BedrockUtils {
         return true;
     }
 
-    private static BlockState createPointedDripstone(Direction direction, DripstoneThickness thickness) {
+    private static BlockState createPointedDripstone(Direction direction, SpeleothemThickness thickness) {
         return (BlockState)((BlockState)NRegistry.POINTED_BEDROCK_BLOCK.get().defaultBlockState().setValue(PointedDripstoneBlock.TIP_DIRECTION, direction)).setValue(PointedDripstoneBlock.THICKNESS, thickness);
     }
 

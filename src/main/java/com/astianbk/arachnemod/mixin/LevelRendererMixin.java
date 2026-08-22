@@ -46,7 +46,7 @@ public abstract class LevelRendererMixin{
     @Inject(method = "addSkyPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/client/renderer/state/level/CameraRenderState;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Matrix4fc;)V", at = @At("HEAD"))
     private void addSkyMixin(FrameGraphBuilder frame, CameraRenderState cameraState, GpuBufferSlice skyFog, Matrix4fc modelViewMatrix, CallbackInfo ci) {
         if (levelRenderState.skyRenderState.skybox == DimensionType.Skybox.NONE && Minecraft.getInstance().player.level().dimension().equals(NRegistry.THE_VOID)){
-            NeoForge.EVENT_BUS.post(new RenderLevelStageEvent.AfterSky(((LevelRenderer)((Object)this)), this.levelRenderState, (PoseStack)null, RenderSystem.getModelViewMatrix(), this.visibleSections));
+            NeoForge.EVENT_BUS.post(new RenderLevelStageEvent.AfterSky(((LevelRenderer)((Object)this)), this.levelRenderState, (PoseStack)null, RenderSystem.getModelViewMatrixCopy(), this.visibleSections));
         }
     }
 }

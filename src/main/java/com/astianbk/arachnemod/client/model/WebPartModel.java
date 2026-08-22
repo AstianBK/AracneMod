@@ -5,6 +5,7 @@ package com.astianbk.arachnemod.client.model;// Made with Blockbench 5.1.5
 
 import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.client.render_state.ScarabRenderState;
+import com.astianbk.arachnemod.client.render_state.WebElevatorRenderState;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -12,7 +13,7 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.Identifier;
 
-public class WebPartModel<T extends ScarabRenderState> extends EntityModel<T> {
+public class WebPartModel<T extends WebElevatorRenderState> extends EntityModel<T> {
 	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Identifier.fromNamespaceAndPath(AracneMod.MODID, "web_part"), "main");
 	private final ModelPart truemain;
 	private final ModelPart main;

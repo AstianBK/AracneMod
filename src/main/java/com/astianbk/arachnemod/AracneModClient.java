@@ -1,5 +1,6 @@
 package com.astianbk.arachnemod;
 
+import com.astianbk.arachnemod.client.gui.ArachneSpeechGui;
 import com.astianbk.arachnemod.client.layer.MarkSilentLayer;
 import com.astianbk.arachnemod.client.renderer.*;
 import com.astianbk.arachnemod.client.gui.IdolSpeechGui;
@@ -97,7 +98,7 @@ public class AracneModClient {
         event.registerLayerDefinition(WebElevatorModel.LAYER_LOCATION,Suppliers.ofInstance(WebElevatorModel.createBodyLayer()));
         event.registerLayerDefinition(WebPartModel.LAYER_LOCATION,Suppliers.ofInstance(WebPartModel.createBodyLayer()));
         event.registerLayerDefinition(VoidGrubModel.LAYER_LOCATION,Suppliers.ofInstance(VoidGrubModel.createBodyLayer()));
-
+        event.registerLayerDefinition(SealingCrystalModel.LAYER_LOCATION,Suppliers.ofInstance(SealingCrystalModel.createBodyLayer()));
         //        event.registerLayerDefinition(ScarabModel.ARMOR_LOCATION,Suppliers.ofInstance(ScarabModel.createBodyLayer(new CubeDeformation(1.0F))));
     }
 
@@ -107,7 +108,7 @@ public class AracneModClient {
     }
     @SubscribeEvent
     public static void renderModel(RenderLivingEvent.Pre event){
-        if (event.getRenderState().entityType == EntityType.PLAYER){
+        if (event.getRenderState().entityType == EntityTypes.PLAYER){
             AbstractClientPlayer player = Minecraft.getInstance().player;
             ArachneAttachment.get(player).ifPresent(nerubianCap -> {
                 ((HumanoidModel)event.getRenderer().getModel()).head.visible = !(player.getItemBySlot(EquipmentSlot.HEAD).getItem() instanceof VoidKnightArmorItem);
@@ -117,7 +118,7 @@ public class AracneModClient {
                 ((HumanoidModel)event.getRenderer().getModel()).leftLeg.visible = !(player.getItemBySlot(EquipmentSlot.LEGS).getItem() instanceof VoidKnightArmorItem) && !(player.getItemBySlot(EquipmentSlot.FEET).getItem() instanceof VoidKnightArmorItem);
                 ((HumanoidModel)event.getRenderer().getModel()).rightLeg.visible = !(player.getItemBySlot(EquipmentSlot.LEGS).getItem() instanceof VoidKnightArmorItem) && !(player.getItemBySlot(EquipmentSlot.FEET).getItem() instanceof VoidKnightArmorItem);
 
-                if (nerubianCap.transformComplete){
+                if (false){
                     Minecraft mc = Minecraft.getInstance();
                     EntityRendererProvider.Context context = new EntityRendererProvider.Context(mc.getEntityRenderDispatcher(),mc.getBlockModelResolver(),mc.getItemModelResolver(),mc.getMapRenderer(),mc.getResourceManager(),mc.getEntityModels(),new EquipmentAssetManager(),mc.getAtlasManager(),mc.font,mc.playerSkinRenderCache());
                     ScarabPlayerRenderer renderer = new ScarabPlayerRenderer(context);
@@ -187,11 +188,11 @@ public class AracneModClient {
                         }
                     }
 
-                    AvatarRenderState state = renderer.createRenderState();
+                    AvatarRenderState state = (AvatarRenderState) event.getRenderState();
 //                    setModelProperties(player,model);
-                    model.setupAnim((AvatarRenderState) event.getRenderState());
+                    model.setupAnim(state);
 
-                    model.renderToBuffer(poseStack,mc.renderBuffers().bufferSource().getBuffer(RenderTypes.entityCutout(LOCATION)), renderer.getPackedLightCoords(player,partialTicks), LivingEntityRenderer.getOverlayCoords(state,0.0F));
+                    event.getSubmitNodeCollector().submitModel(model,state,poseStack,RenderTypes.entityCutout(LOCATION),state.lightCoords,LivingEntityRenderer.getOverlayCoords(state,0.0F), state.outlineColor, null);
                     poseStack.popPose();
                 }
             });
@@ -319,6 +320,8 @@ public class AracneModClient {
     @SubscribeEvent
     public static void registerOverlays(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.HOTBAR, Identifier.fromNamespaceAndPath(AracneMod.MODID,"idol_speech"),new IdolSpeechGui());
+        event.registerAbove(VanillaGuiLayers.HOTBAR, Identifier.fromNamespaceAndPath(AracneMod.MODID,"arachne_speech"),new ArachneSpeechGui());
+
     }
 
     @SubscribeEvent
@@ -329,6 +332,7 @@ public class AracneModClient {
         event.registerEntityRenderer(NRegistry.VOID_HOPPER.get(), VoidHopperRenderer::new);
         event.registerEntityRenderer(NRegistry.VOID_BEETLE.get(), VoidBeetleRenderer::new);
         event.registerEntityRenderer(NRegistry.VOID_GRUB.get(), VoidGrubRenderer::new);
+        event.registerEntityRenderer(NRegistry.SEALING_CRYSTAL.get(), SealingCrystalRenderer::new);
         event.registerEntityRenderer(NRegistry.VOID_VEILMOTH.get(), VoidVeilmothRenderer::new);
         event.registerEntityRenderer(NRegistry.ENTER_DIMENSION.get(),EnterDimensionRenderer::new);
         event.registerEntityRenderer(NRegistry.WEB_ELEVATOR.get(),WebElevatorRenderer::new);

@@ -36,7 +36,7 @@ public class TheVoidAttachment {
             }
         }else {
             checkTick++;
-            if (checkTick>=2600){
+            if (checkTick>=200){
                 startFlash(level);
                 checkTick=0;
             }

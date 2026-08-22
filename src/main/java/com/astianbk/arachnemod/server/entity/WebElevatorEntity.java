@@ -41,7 +41,7 @@ public class WebElevatorEntity extends Entity {
             ArachneAttachment.get(player).ifPresent(arachneAttachment -> {
                 ServerLevel serverLevel = ((ServerLevel)level()).getServer().getLevel(Level.OVERWORLD);
                 if (serverLevel==null)return;
-                Vec3 vec3 = arachneAttachment.teleportBack!=null ? arachneAttachment.teleportBack.getBottomCenter() : new Vec3(player.position().x,serverLevel.getHeight(Heightmap.Types.MOTION_BLOCKING,blockPosition()),position().z);
+                Vec3 vec3 = arachneAttachment.teleportBack!=null ? Vec3.atBottomCenterOf(arachneAttachment.teleportBack ): new Vec3(player.position().x,serverLevel.getHeight(Heightmap.Types.MOTION_BLOCKING,blockPosition()),position().z);
                 player.teleport(new TeleportTransition(serverLevel,vec3, Vec3.ZERO,0.0F,0.0F,(entity)->{
 
                 }));

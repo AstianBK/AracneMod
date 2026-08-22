@@ -21,30 +21,30 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Column;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.DripstoneClusterConfiguration;
+import net.minecraft.world.level.levelgen.feature.configurations.SpeleothemClusterConfiguration;
 
 import java.util.Optional;
 import java.util.OptionalInt;
 
-public class PoitedBedrockFeature extends Feature<DripstoneClusterConfiguration> {
-    public PoitedBedrockFeature(Codec<DripstoneClusterConfiguration> codec) {
+public class PoitedBedrockFeature extends Feature<SpeleothemClusterConfiguration> {
+    public PoitedBedrockFeature(Codec<SpeleothemClusterConfiguration> codec) {
         super(codec);
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<DripstoneClusterConfiguration> context) {
+    public boolean place(FeaturePlaceContext<SpeleothemClusterConfiguration> context) {
         WorldGenLevel level = context.level();
         BlockPos origin = context.origin();
-        DripstoneClusterConfiguration config = context.config();
+        SpeleothemClusterConfiguration config = context.config();
         RandomSource random = context.random();
         if (!BedrockUtils.isEmptyOrWater(level, origin)) {
             return false;
         } else {
-            int height = config.height.sample(random);
-            float wetness = config.wetness.sample(random);
-            float density = config.density.sample(random);
-            int xRadius = config.radius.sample(random);
-            int zRadius = config.radius.sample(random);
+            int height = config.height().sample(random);
+            float wetness = config.wetness().sample(random);
+            float density = config.density().sample(random);
+            int xRadius = config.radius().sample(random);
+            int zRadius = config.radius().sample(random);
 
             for (int dx = -xRadius; dx <= xRadius; dx++) {
                 for (int dz = -zRadius; dz <= zRadius; dz++) {
@@ -58,8 +58,8 @@ public class PoitedBedrockFeature extends Feature<DripstoneClusterConfiguration>
         }
     }
 
-    private void placeColumn(WorldGenLevel level, RandomSource random, BlockPos pos, int dx, int dz, float chanceOfWater, double chanceOfStalagmiteOrStalactite, int clusterHeight, float density, DripstoneClusterConfiguration config) {
-        Optional<Column> baseColumn = Column.scan(level, pos, config.floorToCeilingSearchRange, BedrockUtils::isEmptyOrWater, BedrockUtils::isNeitherEmptyNorWater);
+    private void placeColumn(WorldGenLevel level, RandomSource random, BlockPos pos, int dx, int dz, float chanceOfWater, double chanceOfStalagmiteOrStalactite, int clusterHeight, float density, SpeleothemClusterConfiguration config) {
+        Optional<Column> baseColumn = Column.scan(level, pos, config.floorToCeilingSearchRange(), BedrockUtils::isEmptyOrWater, BedrockUtils::isNeitherEmptyNorWater);
         if (!baseColumn.isEmpty()) {
             OptionalInt ceiling = baseColumn.get().getCeiling();
             OptionalInt baseFloor = baseColumn.get().getFloor();
@@ -78,7 +78,7 @@ public class PoitedBedrockFeature extends Feature<DripstoneClusterConfiguration>
                 boolean wantStalactite = random.nextDouble() < chanceOfStalagmiteOrStalactite;
                 int stalactiteHeight;
                 if (ceiling.isPresent() && wantStalactite && !this.isLava(level, pos.atY(ceiling.getAsInt()))) {
-                    int ceilingThickness = config.dripstoneBlockLayerThickness.sample(random);
+                    int ceilingThickness = config.speleothemBlockLayerThickness().sample(random);
                     this.replaceBlocksWithDripstoneBlocks(level, pos.atY(ceiling.getAsInt()), ceilingThickness, Direction.UP);
                     int maxHeightForThisColumn;
                     if (floor.isPresent()) {
@@ -95,10 +95,10 @@ public class PoitedBedrockFeature extends Feature<DripstoneClusterConfiguration>
                 boolean wantStalagmite = random.nextDouble() < chanceOfStalagmiteOrStalactite;
                 int stalagmiteHeight;
                 if (floor.isPresent() && wantStalagmite && !this.isLava(level, pos.atY(floor.getAsInt()))) {
-                    int floorThickness = config.dripstoneBlockLayerThickness.sample(random);
+                    int floorThickness = config.speleothemBlockLayerThickness().sample(random);
                     this.replaceBlocksWithDripstoneBlocks(level, pos.atY(floor.getAsInt()), floorThickness, Direction.DOWN);
                     if (ceiling.isPresent()) {
-                        stalagmiteHeight = Math.max(0, stalactiteHeight + Mth.randomBetweenInclusive(random, -config.maxStalagmiteStalactiteHeightDiff, config.maxStalagmiteStalactiteHeightDiff));
+                        stalagmiteHeight = Math.max(0, stalactiteHeight + Mth.randomBetweenInclusive(random, -config.maxStalagmiteStalactiteHeightDiff(), config.maxStalagmiteStalactiteHeightDiff()));
                     } else {
                         stalagmiteHeight = this.getDripstoneHeight(random, dx, dz, density, clusterHeight, config);
                     }
@@ -135,13 +135,13 @@ public class PoitedBedrockFeature extends Feature<DripstoneClusterConfiguration>
         return level.getBlockState(pos).is(Blocks.LAVA);
     }
 
-    private int getDripstoneHeight(RandomSource random, int dx, int dz, float density, int maxHeight, DripstoneClusterConfiguration config) {
+    private int getDripstoneHeight(RandomSource random, int dx, int dz, float density, int maxHeight, SpeleothemClusterConfiguration config) {
         if (random.nextFloat() > density) {
             return 0;
         } else {
             int distanceFromCenter = Math.abs(dx) + Math.abs(dz);
-            float heightMean = (float)Mth.clampedMap((double)distanceFromCenter, 0.0, (double)config.maxDistanceFromCenterAffectingHeightBias, maxHeight / 2.0, 0.0);
-            return (int)randomBetweenBiased(random, 0.0F, maxHeight, heightMean, config.heightDeviation);
+            float heightMean = (float)Mth.clampedMap((double)distanceFromCenter, 0.0, (double)config.maxDistanceFromCenterAffectingHeightBias(), maxHeight / 2.0, 0.0);
+            return (int)randomBetweenBiased(random, 0.0F, maxHeight, heightMean, config.heightDeviation());
         }
     }
 
@@ -181,11 +181,11 @@ public class PoitedBedrockFeature extends Feature<DripstoneClusterConfiguration>
         }
     }
 
-    private double getChanceOfStalagmiteOrStalactite(int xRadius, int zRadius, int dx, int dz, DripstoneClusterConfiguration config) {
+    private double getChanceOfStalagmiteOrStalactite(int xRadius, int zRadius, int dx, int dz, SpeleothemClusterConfiguration config) {
         int xDistanceFromEdge = xRadius - Math.abs(dx);
         int zDistanceFromEdge = zRadius - Math.abs(dz);
         int distanceFromEdge = Math.min(xDistanceFromEdge, zDistanceFromEdge);
-        return Mth.clampedMap((float)distanceFromEdge, 0.0F, (float)config.maxDistanceFromEdgeAffectingChanceOfDripstoneColumn, config.chanceOfDripstoneColumnAtMaxDistanceFromCenter, 1.0F);
+        return Mth.clampedMap((float)distanceFromEdge, 0.0F, (float)config.maxDistanceFromEdgeAffectingChanceOfSpeleothem(), config.chanceOfSpeleothemAtMaxDistanceFromCenter(), 1.0F);
     }
 
     private static float randomBetweenBiased(RandomSource random, float min, float maxExclusive, float mean, float deviation) {

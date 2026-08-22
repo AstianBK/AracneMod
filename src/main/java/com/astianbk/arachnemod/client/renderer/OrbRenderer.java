@@ -7,7 +7,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -39,20 +38,17 @@ public class OrbRenderer<T extends OrbEntity,S extends OrbRenderState> extends E
 
     @Override
     public void submit(S state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
-        super.submit(state, poseStack, submitNodeCollector, camera);
-
         poseStack.pushPose();
         poseStack.translate(0,1,0F);
         poseStack.mulPose(camera.orientation);
         poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
 
-        drawSlash(poseStack.last(), Minecraft.getInstance().renderBuffers().bufferSource(),0,2,state.ageInTicks,state.type);
+        drawSlash(poseStack,poseStack.last(),submitNodeCollector,0,2,state.ageInTicks,state.type);
 
         poseStack.popPose();
     }
 
-    private void drawSlash(PoseStack.Pose pose, MultiBufferSource bufferSource, int light, float width,float ageInTicks,OrbEntity.Type type) {
-        Matrix4f poseMatrix = pose.pose();
+    private void drawSlash(PoseStack poseStack,PoseStack.Pose pose, SubmitNodeCollector bufferSource, int light, float width,float ageInTicks,OrbEntity.Type type) {
         int frame = (int) (ageInTicks * 0.4f % 8.0F);
 
         float halfWidth = width * 0.5f;
@@ -62,26 +58,32 @@ public class OrbRenderer<T extends OrbEntity,S extends OrbRenderState> extends E
         float v0 = frame * frameHeight;
         float v1 = v0 + frameHeight;
 
-        VertexConsumer consumer2 = bufferSource.getBuffer(RenderTypes.entityCutout(TEXTURES.get(type)));
+        Identifier location = TEXTURES.get(type);
 
-        consumer2.addVertex(poseMatrix, -halfWidth, -0.1f, -halfWidth).setColor(255,255,255,255).setUv(0F, v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose,0F,1F,0F);
-        consumer2.addVertex(poseMatrix, halfWidth, -0.1f, -halfWidth).setColor(255,255,255,255).setUv(1F, v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose,0F,1F,0F);
-        consumer2.addVertex(poseMatrix, halfWidth, -0.1f, halfWidth).setColor(255,255,255,255).setUv(1F, v0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose,0F,1F,0F);
-        consumer2.addVertex(poseMatrix, -halfWidth, -0.1f, halfWidth).setColor(255,255,255,255).setUv(0F, v0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose,0F,1F,0F);
+        bufferSource.submitCustomGeometry(poseStack,RenderTypes.entityCutout(location),(pose1,consumer2)->{
+            Matrix4f poseMatrix = pose1.pose();
+            consumer2.addVertex(poseMatrix, -halfWidth, -0.1f, -halfWidth).setColor(255,255,255,255).setUv(0F, v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose,0F,1F,0F);
+            consumer2.addVertex(poseMatrix, halfWidth, -0.1f, -halfWidth).setColor(255,255,255,255).setUv(1F, v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose,0F,1F,0F);
+            consumer2.addVertex(poseMatrix, halfWidth, -0.1f, halfWidth).setColor(255,255,255,255).setUv(1F, v0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose,0F,1F,0F);
+            consumer2.addVertex(poseMatrix, -halfWidth, -0.1f, halfWidth).setColor(255,255,255,255).setUv(0F, v0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose,0F,1F,0F);
+        });
 
-        VertexConsumer consumer1 = bufferSource.getBuffer(RenderTypes.entityTranslucentEmissive(TEXTURES.get(type)));
 
-        consumer1.addVertex(poseMatrix, -halfWidth, -0.1f, -halfWidth).setColor(255,255,255,255).setUv(0F, v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose,0F,1F,0F);
-        consumer1.addVertex(poseMatrix, halfWidth, -0.1f, -halfWidth).setColor(255,255,255,255).setUv(1F, v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose,0F,1F,0F);
-        consumer1.addVertex(poseMatrix, halfWidth, -0.1f, halfWidth).setColor(255,255,255,255).setUv(1F, v0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose,0F,1F,0F);
-        consumer1.addVertex(poseMatrix, -halfWidth, -0.1f, halfWidth).setColor(255,255,255,255).setUv(0F, v0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose,0F,1F,0F);
-        VertexConsumer consumer = bufferSource.getBuffer(RenderTypes.eyes(GLOW.get(type)));
+        bufferSource.submitCustomGeometry(poseStack,RenderTypes.entityTranslucentEmissive(location),(pose1,consumer2)->{
+            Matrix4f poseMatrix = pose1.pose();
+            consumer2.addVertex(poseMatrix, -halfWidth, -0.1f, -halfWidth).setColor(255,255,255,255).setUv(0F, v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose,0F,1F,0F);
+            consumer2.addVertex(poseMatrix, halfWidth, -0.1f, -halfWidth).setColor(255,255,255,255).setUv(1F, v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose,0F,1F,0F);
+            consumer2.addVertex(poseMatrix, halfWidth, -0.1f, halfWidth).setColor(255,255,255,255).setUv(1F, v0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose,0F,1F,0F);
+            consumer2.addVertex(poseMatrix, -halfWidth, -0.1f, halfWidth).setColor(255,255,255,255).setUv(0F, v0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose,0F,1F,0F);
+        });
 
-        consumer.addVertex(poseMatrix, -halfWidth, -0.1f, -halfWidth).setColor(255,255,255,255).setUv(0F, v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(10000000).setNormal(pose,0F,1F,0F);
-        consumer.addVertex(poseMatrix, halfWidth, -0.1f, -halfWidth).setColor(255,255,255,255).setUv(1F, v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(10000000).setNormal(pose,0F,1F,0F);
-        consumer.addVertex(poseMatrix, halfWidth, -0.1f, halfWidth).setColor(255,255,255,255).setUv(1F, v0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(10000000).setNormal(pose,0F,1F,0F);
-        consumer.addVertex(poseMatrix, -halfWidth, -0.1f, halfWidth).setColor(255,255,255,255).setUv(0F, v0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(10000000).setNormal(pose,0F,1F,0F);
-
+        bufferSource.submitCustomGeometry(poseStack,RenderTypes.eyes(location),(pose1,consumer2)->{
+            Matrix4f poseMatrix = pose1.pose();
+            consumer2.addVertex(poseMatrix, -halfWidth, -0.1f, -halfWidth).setColor(255,255,255,255).setUv(0F, v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose,0F,1F,0F);
+            consumer2.addVertex(poseMatrix, halfWidth, -0.1f, -halfWidth).setColor(255,255,255,255).setUv(1F, v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose,0F,1F,0F);
+            consumer2.addVertex(poseMatrix, halfWidth, -0.1f, halfWidth).setColor(255,255,255,255).setUv(1F, v0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose,0F,1F,0F);
+            consumer2.addVertex(poseMatrix, -halfWidth, -0.1f, halfWidth).setColor(255,255,255,255).setUv(0F, v0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose,0F,1F,0F);
+        });
     }
     @Override
     public void extractRenderState(T entity, S state, float partialTicks) {

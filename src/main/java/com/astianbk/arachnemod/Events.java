@@ -1,10 +1,12 @@
 package com.astianbk.arachnemod;
 
+import com.astianbk.arachnemod.common.dialogs.DialogsManager;
 import com.astianbk.arachnemod.common.quests.QuestManager;
 import com.astianbk.arachnemod.common.registry.NRegistry;
 import com.astianbk.arachnemod.server.cap.ArachneAttachment;
 import com.astianbk.arachnemod.server.entity.*;
 import com.astianbk.arachnemod.server.network.PacketNerubianData;
+import com.astianbk.arachnemod.server.network.PacketPlayDialog;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -149,7 +151,7 @@ public class Events {
     @SubscribeEvent
     public static void registerPackets(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(AracneMod.MODID).versioned("1.0");
-
+        registrar.playToClient(PacketPlayDialog.TYPE, PacketPlayDialog.STREAM_CODEC, PacketPlayDialog::handle);
         registrar.playToClient(PacketNerubianData.TYPE, PacketNerubianData.STREAM_CODEC, PacketNerubianData::handle);
     }
 
@@ -192,7 +194,7 @@ public class Events {
                     arachneAttachment.setTeleportBackPos(pos1);
                     if (level.getEntitiesOfClass(WebElevatorEntity.class,serverPlayer.getBoundingBox().inflate(40.0F)).isEmpty()){
                         WebElevatorEntity webElevator = new WebElevatorEntity(NRegistry.WEB_ELEVATOR.get(), level);
-                        webElevator.setPos(pos1.getBottomCenter());
+                        webElevator.setPos(Vec3.atBottomCenterOf(pos1));
                         level.addFreshEntity(webElevator);
                     }
                 });
@@ -211,6 +213,7 @@ public class Events {
     @SubscribeEvent
     public static void addQuestsData(AddServerReloadListenersEvent event){
         event.addListener(Identifier.parse("manager"),new QuestManager());
+        event.addListener(Identifier.parse("dialogs"),new DialogsManager());
     }
 
 }

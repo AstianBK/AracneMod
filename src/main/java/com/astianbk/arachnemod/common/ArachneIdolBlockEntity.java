@@ -1,15 +1,19 @@
 package com.astianbk.arachnemod.common;
 
+import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.common.block.ArachneIdolBlock;
 import com.astianbk.arachnemod.common.quests.QuestManager;
 import com.astianbk.arachnemod.common.registry.NRegistry;
 import com.astianbk.arachnemod.server.cap.ArachneAttachment;
 import com.astianbk.arachnemod.server.entity.EnterDimensionEntity;
 import com.astianbk.arachnemod.server.entity.OrbEntity;
+import com.astianbk.arachnemod.server.network.PacketPlayDialog;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -21,6 +25,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +50,7 @@ public class ArachneIdolBlockEntity extends BlockEntity {
         switch (type){
             case CANCEL -> {
                 currentState = State.NONE;
+                level.setBlock(pos,level.getBlockState(pos).setValue(ArachneIdolBlock.LIT,false),3);
             }
             case QUEST -> {
                 currentState = State.SELECT_QUEST;
@@ -78,10 +84,12 @@ public class ArachneIdolBlockEntity extends BlockEntity {
             }
             case BLESSING -> {
                 currentState = State.NONE;
+                level.setBlock(pos,level.getBlockState(pos).setValue(ArachneIdolBlock.LIT,false),3);
                 player.sendSystemMessage(Component.literal("No existe nada"));
             }
             case QUEST_REPUTATION -> {
                 currentState = State.NONE;
+                level.setBlock(pos,level.getBlockState(pos).setValue(ArachneIdolBlock.LIT,false),3);
                 ArachneAttachment.get(player).ifPresent(arachnePlayer->{
                     player.sendSystemMessage(Component.literal("Reputation :"+arachnePlayer.currentReputation));
 
@@ -126,10 +134,15 @@ public class ArachneIdolBlockEntity extends BlockEntity {
                 level.addFreshEntity(orbEntity);
                 addOrb(orbEntity);
             }
+        }else {
+            ArachneAttachment.get(player).ifPresent(arachneAttachment -> {
+
+            });
         }
 
         currentState = State.MENU;
     }
+
     public void startQuestMenu(Level level,BlockPos pos){
         OrbEntity.Type[] types = ArachneIdolBlock.typesForState.get(State.SELECT_QUEST);
         if (!level.isClientSide()) {

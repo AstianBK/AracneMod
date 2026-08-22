@@ -9,6 +9,7 @@ import com.astianbk.arachnemod.common.block.TallVeilCrystalBlock;
 import com.astianbk.arachnemod.common.effect.DamnationHexEffect;
 import com.astianbk.arachnemod.common.effect.SilentHexEffect;
 import com.astianbk.arachnemod.common.effect.SilentEffect;
+import com.astianbk.arachnemod.common.items.SealingCrystalItem;
 import com.astianbk.arachnemod.common.items.VoidKnightArmorItem;
 import com.astianbk.arachnemod.common.items.VoidMaterial;
 import com.astianbk.arachnemod.common.worldgenerator.VoidChunkGenerator;
@@ -27,6 +28,7 @@ import com.astianbk.arachnemod.server.cap.ArachneAttachment;
 import com.astianbk.arachnemod.server.entity.*;
 import com.astianbk.arachnemod.server.cap.TheVoidAttachment;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -49,7 +51,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.configurations.DripstoneClusterConfiguration;
+import net.minecraft.world.level.levelgen.feature.configurations.SpeleothemClusterConfiguration;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraft.world.level.levelgen.structure.placement.StructurePlacementType;
@@ -95,11 +97,11 @@ public class NRegistry {
             SOUNDS.register("orb_select", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "orb_select")));
 
     public static final DeferredHolder<SoundEvent, SoundEvent> ARACHNE_TALK_1 =
-            SOUNDS.register("arachne_talk1", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "arachne_talk_1")));
+            SOUNDS.register("arachne_talk1", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "arachne_talk1")));
     public static final DeferredHolder<SoundEvent, SoundEvent> ARACHNE_TALK_2 =
-            SOUNDS.register("arachne_talk2", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "arachne_talk_2")));
+            SOUNDS.register("arachne_talk2", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "arachne_talk2")));
     public static final DeferredHolder<SoundEvent, SoundEvent> ARACHNE_TALK_3 =
-            SOUNDS.register("arachne_talk3", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "arachne_talk_3")));
+            SOUNDS.register("arachne_talk3", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "arachne_talk3")));
 
     public static final Supplier<AttachmentType<TheVoidAttachment>> THE_VOID_ATTACHMENT =
             ATTACHMENTS.register(
@@ -165,6 +167,7 @@ public class NRegistry {
     public static final DeferredItem<BlockItem> COCOONCHEST_ITEM = ITEMS.registerSimpleBlockItem("cocoonchest_item",COCOONCHEST_BLOCK);
 
     public static final DeferredItem<BlockItem> POINTED_BEDROCK_ITEM = ITEMS.registerSimpleBlockItem("pointed_bedrock_item",POINTED_BEDROCK_BLOCK);
+    public static final DeferredItem<Item> SEALING_CRYSTAL_ITEM = ITEMS.registerItem("sealing_crystal_item",(properties)->new SealingCrystalItem(properties.component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)));
 
     public static final DeferredItem<Item> VOID_HELMET = ITEMS.registerItem("void_helmet",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.HELMET).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_helmet" )))));
     public static final DeferredItem<Item> VOID_CHESTPLATE = ITEMS.registerItem("void_chestplate",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.CHESTPLATE).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_chestplate" )))));
@@ -176,6 +179,7 @@ public class NRegistry {
             .withTabsBefore(CreativeModeTabs.COMBAT)
             .icon(() -> WEAVER_IDOL_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
+                output.accept(SEALING_CRYSTAL_ITEM.get());
                 output.accept(WEAVER_IDOL_ITEM.get());
                 output.accept(BEDCRUST_ITEM.get());
                 output.accept(CRACKED_BEDROCK_ITEM.get());
@@ -243,6 +247,11 @@ public class NRegistry {
                     () -> EntityType.Builder.of(VoidGrubEntity::new, MobCategory.MONSTER)
                             .sized(0.25F, 0.5F).clientTrackingRange(10).updateInterval(2)
                             .build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_grub"))));
+    public static final DeferredHolder<EntityType<?>, EntityType<SealingCrystalEntity>> SEALING_CRYSTAL =
+            ENTITY_TYPES.register("sealing_crystal",
+                    () -> EntityType.Builder.of(SealingCrystalEntity::new, MobCategory.MONSTER)
+                            .noLootTable().fireImmune().sized(2.0F, 2.0F).clientTrackingRange(16).updateInterval(Integer.MAX_VALUE)
+                            .build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_grub"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<VoidVeilmothEntity>> VOID_VEILMOTH =
             ENTITY_TYPES.register("void_veilmoth",
@@ -276,7 +285,7 @@ public class NRegistry {
 
     public static final DeferredHolder<Feature<?>,Feature<VoidCrystalFeatureConfiguration>> VOID_CRYSTAL =
             FEATURE.register("void_crystal",()->new VoidCrystalFeature(VoidCrystalFeatureConfiguration.CODEC));
-    public static final DeferredHolder<Feature<?>,Feature<DripstoneClusterConfiguration>> POINTED_BEDROCK =
-            FEATURE.register("pointed_bedrock",()->new PoitedBedrockFeature(DripstoneClusterConfiguration.CODEC));
+    public static final DeferredHolder<Feature<?>,Feature<SpeleothemClusterConfiguration>> POINTED_BEDROCK =
+            FEATURE.register("pointed_bedrock",()->new PoitedBedrockFeature(SpeleothemClusterConfiguration.CODEC));
 
 }

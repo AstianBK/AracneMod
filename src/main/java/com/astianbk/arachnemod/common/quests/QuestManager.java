@@ -22,10 +22,7 @@ public class QuestManager extends SimpleJsonResourceReloadListener<Quest> {
     private static final List<Quest> quests = Lists.newArrayList();
 
     public QuestManager() {
-        super(
-                Quest.CODEC,
-                new FileToIdConverter("quest", ".json")
-        );
+        super(Quest.CODEC, new FileToIdConverter("quest", ".json"));
     }
 
     @Override

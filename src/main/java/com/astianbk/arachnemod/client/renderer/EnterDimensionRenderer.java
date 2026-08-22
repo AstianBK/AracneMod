@@ -62,7 +62,7 @@ public class EnterDimensionRenderer<T extends EnterDimensionEntity,R extends Ent
         poseStack.pushPose();
         poseStack.mulPose(Axis.XN.rotationDegrees(180.0F));
         poseStack.translate(0,-1.5F,0);
-        this.model.renderToBuffer(poseStack, Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderTypes.entityCutout(getTextureLocation(state))),state.lightCoords, OverlayTexture.NO_OVERLAY);
+        submitNodeCollector.submitModel(this.model,state,poseStack,RenderTypes.entityCutout(getTextureLocation(state)),state.lightCoords, OverlayTexture.NO_OVERLAY,state.outlineColor,null);
         poseStack.popPose();
     }
 }

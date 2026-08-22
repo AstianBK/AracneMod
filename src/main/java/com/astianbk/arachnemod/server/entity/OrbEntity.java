@@ -102,7 +102,6 @@ public class OrbEntity extends Entity {
     public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
         if (sourceBlock!=null && level().getBlockEntity(sourceBlock) instanceof ArachneIdolBlockEntity arachneIdol){
             if (arachneIdol.orbs.contains(this)){
-
                 arachneIdol.selectOrb(player, getOrbType(),level(),sourceBlock);
             }
         }
