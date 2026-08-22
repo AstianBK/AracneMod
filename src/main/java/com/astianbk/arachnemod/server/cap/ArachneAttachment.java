@@ -213,7 +213,7 @@ public class ArachneAttachment {
             return;
         }
         String targetText = dialog.answers().get(index);
-        if (player.tickCount % 2 != 0) {
+        if (player.tickCount % 3 != 0) {
 
             return;
         }
