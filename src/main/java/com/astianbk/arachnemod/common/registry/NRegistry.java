@@ -2,10 +2,7 @@ package com.astianbk.arachnemod.common.registry;
 
 import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.common.ArachneIdolBlockEntity;
-import com.astianbk.arachnemod.common.block.GenerateFogBlock;
-import com.astianbk.arachnemod.common.block.PointedUpBlock;
-import com.astianbk.arachnemod.common.block.ArachneIdolBlock;
-import com.astianbk.arachnemod.common.block.TallVeilCrystalBlock;
+import com.astianbk.arachnemod.common.block.*;
 import com.astianbk.arachnemod.common.effect.DamnationHexEffect;
 import com.astianbk.arachnemod.common.effect.SilentHexEffect;
 import com.astianbk.arachnemod.common.effect.SilentEffect;
@@ -134,6 +131,7 @@ public class NRegistry {
     public static final DeferredBlock<Block> COCOONCHEST_BLOCK = BLOCKS.registerBlock("cocoonchest",(p)->new Block(p.noOcclusion().sound(SoundType.COBWEB).strength(3.0F)));
     public static final DeferredBlock<Block> VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("veil_crystal",(p)->new Block(p.lightLevel(statex -> 5).noOcclusion()));
     public static final DeferredBlock<Block> TALL_VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("tall_veil_crystal",(p)->new TallVeilCrystalBlock(p.lightLevel(statex -> 8).noOcclusion()));
+    public static final DeferredBlock<Block> LARGE_VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("large_tall_veil_crystal",(p)->new LargeTallVeilCrystalBlock(p.lightLevel(statex -> 8).noOcclusion()));
 
     public static final DeferredBlock<Block> BEDROCK_TRANSPARENT_BLOCK = BLOCKS.registerBlock("bedrock_transparent", (properties)->new TransparentBlock(properties.strength(-1.0F, 3600000.0F).noOcclusion().isValidSpawn(Blocks::never).isRedstoneConductor((s,e,s1)->false).isSuffocating((s,e,s1)->false).isViewBlocking((s,e,s1)->false)));
     public static final DeferredHolder<BlockEntityType<?>,BlockEntityType<ArachneIdolBlockEntity>> ARACHNE_IDOL_BLOCK_ENTITY = BLOCK_ENTITY_TYPE.register("arachne_idol_block_entity", () -> new BlockEntityType<>(ArachneIdolBlockEntity::new, Set.of(WEAVER_IDOL_BLOCK.get())));
@@ -163,6 +161,8 @@ public class NRegistry {
     public static final DeferredItem<BlockItem> SLATED_BEDROCK_ITEM = ITEMS.registerSimpleBlockItem("slated_bedrock_item",SLATED_BEDROCK_BLOCK);
     public static final DeferredItem<BlockItem> VEIL_CRYSTAL_ITEM = ITEMS.registerSimpleBlockItem("veil_crystal_item",VEIL_CRYSTAL_BLOCK);
     public static final DeferredItem<BlockItem> TALL_VEIL_CRYSTAL_ITEM = ITEMS.registerSimpleBlockItem("tall_veil_crystal_item",TALL_VEIL_CRYSTAL_BLOCK);
+    public static final DeferredItem<BlockItem> LARGE_TALL_VEIL_CRYSTAL_ITEM = ITEMS.registerSimpleBlockItem("large_tall_veil_crystal_item",LARGE_VEIL_CRYSTAL_BLOCK);
+
     public static final DeferredItem<BlockItem> VOID_WEB_ITEM = ITEMS.registerSimpleBlockItem("void_web_item",VOID_WEB_BLOCK);
     public static final DeferredItem<BlockItem> COCOONCHEST_ITEM = ITEMS.registerSimpleBlockItem("cocoonchest_item",COCOONCHEST_BLOCK);
 

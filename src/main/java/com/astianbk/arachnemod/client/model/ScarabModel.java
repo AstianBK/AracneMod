@@ -54,6 +54,9 @@ public class ScarabModel<T extends ScarabRenderState> extends EntityModel<T> {
 	private final ModelPart SectionFrontRight;
 	private KeyframeAnimation walkLegs;
 	private KeyframeAnimation walkBody;
+	private KeyframeAnimation walkLegsAggressive;
+	private KeyframeAnimation walkBodyAggressive;
+
 	private KeyframeAnimation attack1;
 	private KeyframeAnimation attack2;
 	private KeyframeAnimation bite;
@@ -103,6 +106,9 @@ public class ScarabModel<T extends ScarabRenderState> extends EntityModel<T> {
 		this.bite = ScarabAnimation.attackspit.bake(root);
 		this.walkBody = ScarabAnimation.move1.bake(root);
 		this.walkLegs = ScarabAnimation.move1legs.bake(root);
+
+		this.walkBodyAggressive = ScarabAnimation.move2.bake(root);
+		this.walkLegsAggressive = ScarabAnimation.move2legs.bake(root);
 	}
 
 	public static LayerDefinition createBodyLayer() {
@@ -255,9 +261,13 @@ public class ScarabModel<T extends ScarabRenderState> extends EntityModel<T> {
 	@Override
 	public void setupAnim(T state) {
 		super.setupAnim(state);
-
-		this.walkBody.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
-		this.walkLegs.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
+		if (state.isAgressive){
+			this.walkBodyAggressive.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
+			this.walkLegsAggressive.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
+		}else {
+			this.walkBody.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
+			this.walkLegs.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
+		}
 		this.idle.apply(state.idle,state.ageInTicks);
 		this.attack1.apply(state.attack1,state.ageInTicks,0.5F);
 		this.attack2.apply(state.attack2,state.ageInTicks,0.5F);

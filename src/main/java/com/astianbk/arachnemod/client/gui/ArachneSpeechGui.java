@@ -21,7 +21,6 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 
 public class ArachneSpeechGui implements GuiLayer {
-    public static final Identifier LOCATION = Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/gui/darkness/void_darkness.png");
     @Override
     public void render(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker) {
 
@@ -43,14 +42,10 @@ public class ArachneSpeechGui implements GuiLayer {
 
             int e = 0;
             for (String s : arachneAttachment.bufferText){
-                int textWidth = mc.font.width(s);
-
-                guiGraphics.centeredText(mc.font, Component.literal(s), j1+45, k1-10-10*e,ARGB.white(1.0F));
+                guiGraphics.centeredText(mc.font, Component.literal(s), j1+45, k1-10-10*e,ARGB.color(255,0,0));
                 e++;
             }
-
-            int textWidth = mc.font.width(arachneAttachment.text);
-            guiGraphics.centeredText(mc.font, Component.literal(arachneAttachment.text), j1+45, k1,ARGB.white(1.0F));
+            guiGraphics.centeredText(mc.font, Component.literal(arachneAttachment.text), j1+45, k1,ARGB.color(255,0,0));
         });
     }
 

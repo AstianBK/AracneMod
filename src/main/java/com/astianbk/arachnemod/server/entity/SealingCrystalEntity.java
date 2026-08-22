@@ -93,10 +93,6 @@ public class SealingCrystalEntity extends Entity {
         } else {
             if (!this.isRemoved()) {
                 this.remove(RemovalReason.KILLED);
-                if (!source.is(DamageTypeTags.IS_EXPLOSION)) {
-                    DamageSource damageSource = source.getEntity() != null ? this.damageSources().explosion(this, source.getEntity()) : null;
-                    level.explode(this, damageSource, (ExplosionDamageCalculator)null, this.getX(), this.getY(), this.getZ(), 6.0F, false, Level.ExplosionInteraction.BLOCK);
-                }
             }
             return true;
         }
@@ -125,10 +121,6 @@ public class SealingCrystalEntity extends Entity {
 
     public boolean shouldRenderAtSqrDistance(double distance) {
         return super.shouldRenderAtSqrDistance(distance) || this.getBeamTarget() != null;
-    }
-
-    public ItemStack getPickResult() {
-        return new ItemStack(Items.END_CRYSTAL);
     }
 
 }

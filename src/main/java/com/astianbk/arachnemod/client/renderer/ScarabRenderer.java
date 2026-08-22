@@ -45,6 +45,7 @@ public class ScarabRenderer<T extends ScarabEntity,R extends ScarabRenderState,M
         state.attack1.copyFrom(entity.attack1);
         state.attack2.copyFrom(entity.attack2);
         state.bite.copyFrom(entity.bite);
+        state.isAgressive = entity.isAggressive();
     }
 
 

@@ -69,7 +69,9 @@ public class AracneMod {
         }
     }
     public void clientLevel(LevelTickEvent.Post event){
-        event.getLevel().getData(NRegistry.THE_VOID_ATTACHMENT).tick(event.getLevel());
+        if (event.getLevel().dimension() == NRegistry.THE_VOID ){
+            event.getLevel().getData(NRegistry.THE_VOID_ATTACHMENT).tick(event.getLevel());
+        }
     }
 
 

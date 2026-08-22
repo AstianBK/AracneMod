@@ -1,6 +1,7 @@
 package com.astianbk.arachnemod.common.worldgenerator.feature;
 
 import com.astianbk.arachnemod.AracneMod;
+import com.astianbk.arachnemod.common.block.LargeTallVeilCrystalBlock;
 import com.astianbk.arachnemod.common.registry.NRegistry;
 import com.astianbk.arachnemod.common.worldgenerator.feature_configuration.VoidCrystalFeatureConfiguration;
 import com.mojang.serialization.Codec;
@@ -8,9 +9,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.block.state.properties.SpeleothemThickness;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 
@@ -33,15 +36,22 @@ public class VoidCrystalFeature extends Feature<VoidCrystalFeatureConfiguration>
         if (!canPlace(level, pos)) {
             return false;
         }
-        if (random.nextFloat() > 0.5F){
+
+        if (random.nextFloat() < 0.6F){
+            BlockState crystal = NRegistry.VEIL_CRYSTAL_BLOCK.get().defaultBlockState();
+            level.setBlock(pos,crystal,3);
+        }if (random.nextFloat() < 0.2F){
+            BlockState crystal = NRegistry.LARGE_VEIL_CRYSTAL_BLOCK.get().defaultBlockState();
+            level.setBlock(pos, crystal.setValue(LargeTallVeilCrystalBlock.THICKNESS, SpeleothemThickness.BASE), Block.UPDATE_ALL);
+
+            level.setBlock(pos.above(), crystal.setValue(LargeTallVeilCrystalBlock.THICKNESS, SpeleothemThickness.MIDDLE), 3);
+
+            level.setBlock(pos.above(2), crystal.setValue(LargeTallVeilCrystalBlock.THICKNESS, SpeleothemThickness.TIP),3);
+        }else {
             BlockState crystal = NRegistry.TALL_VEIL_CRYSTAL_BLOCK.get().defaultBlockState();
 
             level.setBlock(pos, crystal.setValue(DoublePlantBlock.HALF, DoubleBlockHalf.LOWER), 3);
             level.setBlock(pos.above(), crystal.setValue(DoublePlantBlock.HALF, DoubleBlockHalf.UPPER), 3);
-
-        }else {
-            BlockState crystal = NRegistry.VEIL_CRYSTAL_BLOCK.get().defaultBlockState();
-            level.setBlock(pos,crystal,3);
         }
 
         return true;

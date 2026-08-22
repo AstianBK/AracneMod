@@ -27,32 +27,28 @@ public class SealingCrystalItem extends Item {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
         BlockState blockState = level.getBlockState(pos);
-        if (!blockState.is(Blocks.OBSIDIAN) && !blockState.is(Blocks.BEDROCK)) {
+        BlockPos above = pos.above();
+        if (!level.isEmptyBlock(above)) {
             return InteractionResult.FAIL;
         } else {
-            BlockPos above = pos.above();
-            if (!level.isEmptyBlock(above)) {
+            double x = (double)above.getX();
+            double y = (double)above.getY();
+            double z = (double)above.getZ();
+            List<Entity> entities = level.getEntities((Entity)null, new AABB(x, y, z, x + 1.0, y + 2.0, z + 1.0));
+            if (!entities.isEmpty()) {
                 return InteractionResult.FAIL;
             } else {
-                double x = (double)above.getX();
-                double y = (double)above.getY();
-                double z = (double)above.getZ();
-                List<Entity> entities = level.getEntities((Entity)null, new AABB(x, y, z, x + 1.0, y + 2.0, z + 1.0));
-                if (!entities.isEmpty()) {
-                    return InteractionResult.FAIL;
-                } else {
-                    if (level instanceof ServerLevel) {
-                        SealingCrystalEntity crystal = new SealingCrystalEntity(NRegistry.SEALING_CRYSTAL.get(),level);
-                        crystal.setPos(x + 0.5, y, z + 0.5);
-                        crystal.setShowBottom(false);
-                        level.addFreshEntity(crystal);
-                        level.gameEvent(context.getPlayer(), GameEvent.ENTITY_PLACE, above);
+                if (level instanceof ServerLevel) {
+                    SealingCrystalEntity crystal = new SealingCrystalEntity(NRegistry.SEALING_CRYSTAL.get(),level);
+                    crystal.setPos(x + 0.5, y, z + 0.5);
+                    crystal.setShowBottom(false);
+                    level.addFreshEntity(crystal);
+                    level.gameEvent(context.getPlayer(), GameEvent.ENTITY_PLACE, above);
 
-                    }
-
-                    context.getItemInHand().shrink(1);
-                    return InteractionResult.SUCCESS;
                 }
+
+                context.getItemInHand().shrink(1);
+                return InteractionResult.SUCCESS;
             }
         }
     }
