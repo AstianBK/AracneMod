@@ -159,6 +159,8 @@ public class Events {
         event.put(NRegistry.VOID_NEEDLE.get(), VoidNeedleEntity.createAttributes().build());
         event.put(NRegistry.VOID_HOPPER.get(), VoidHopperEntity.createAttributes().build());
         event.put(NRegistry.VOID_BEETLE.get(), VoidBeetleEntity.createAttributes().build());
+        event.put(NRegistry.VOID_GRUB.get(), VoidGrubEntity.createAttributes().build());
+
         event.put(NRegistry.VOID_VEILMOTH.get(), VoidVeilmothEntity.createAttributes().build());
     }
 
@@ -175,7 +177,8 @@ public class Events {
 
     @SubscribeEvent
     public static void onUse(PlayerInteractEvent.RightClickItem event){
-        if (!event.getItemStack().getItem().equals(Items.STICK))return;
+        if (!event.getItemStack().getItem().equals(Items.STICK)) {
+        }
 
     }
 
@@ -185,7 +188,13 @@ public class Events {
         living.teleport(new TeleportTransition(serverLevel,createIsland(serverLevel.getSeed(),pos.x(),pos.z()), Vec3.ZERO,0.0F,0.0F,(entity)->{
             if (entity instanceof ServerPlayer serverPlayer){
                 ArachneAttachment.get(serverPlayer).ifPresent(arachneAttachment -> {
-                    arachneAttachment.setTeleportBackPos(new BlockPos((int) position.x, (int) position.y, (int) position.z));
+                    BlockPos pos1 = new BlockPos((int) position.x, (int) position.y, (int) position.z);
+                    arachneAttachment.setTeleportBackPos(pos1);
+                    if (level.getEntitiesOfClass(WebElevatorEntity.class,serverPlayer.getBoundingBox().inflate(40.0F)).isEmpty()){
+                        WebElevatorEntity webElevator = new WebElevatorEntity(NRegistry.WEB_ELEVATOR.get(), level);
+                        webElevator.setPos(pos1.getBottomCenter());
+                        level.addFreshEntity(webElevator);
+                    }
                 });
             }
         }));

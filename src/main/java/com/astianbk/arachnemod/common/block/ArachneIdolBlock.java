@@ -1,11 +1,13 @@
 package com.astianbk.arachnemod.common.block;
 
 import com.astianbk.arachnemod.common.ArachneIdolBlockEntity;
+import com.astianbk.arachnemod.common.registry.NRegistry;
 import com.astianbk.arachnemod.server.entity.OrbEntity;
 import com.astianbk.arachnemod.server.cap.ArachneAttachment;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -32,7 +34,7 @@ public class ArachneIdolBlock extends BaseEntityBlock {
     public static EnumProperty<Direction> DIRECTION = BlockStateProperties.HORIZONTAL_FACING;
     public static BooleanProperty LIT = BlockStateProperties.LIT;
     public static Map<ArachneIdolBlockEntity.State,OrbEntity.Type[]> typesForState = Map.of(ArachneIdolBlockEntity.State.MENU
-            ,new OrbEntity.Type[]{OrbEntity.Type.CANCEL, OrbEntity.Type.QUEST, OrbEntity.Type.BLESSING}
+            ,new OrbEntity.Type[]{OrbEntity.Type.CANCEL, OrbEntity.Type.QUEST, OrbEntity.Type.BLESSING, OrbEntity.Type.QUEST_REPUTATION}
     , ArachneIdolBlockEntity.State.SELECT_QUEST
             ,new OrbEntity.Type[]{OrbEntity.Type.QUEST_GET, OrbEntity.Type.QUEST_KILL});
 
@@ -56,20 +58,20 @@ public class ArachneIdolBlock extends BaseEntityBlock {
         ArachneAttachment.get(player).ifPresent(e->{
             ArachneIdolBlockEntity arachneIdol = (ArachneIdolBlockEntity) level.getBlockEntity(pos);
             if (arachneIdol.currentState == ArachneIdolBlockEntity.State.NONE){
-                arachneIdol.startMenu(player,level,pos,typesForState.get(ArachneIdolBlockEntity.State.MENU));
-                level.setBlock(pos,state.setValue(LIT,true),3);
+                if (e.currentQuest==null){
+                    arachneIdol.startMenu(player,level,pos,typesForState.get(ArachneIdolBlockEntity.State.MENU));
+                    level.setBlock(pos,state.setValue(LIT,true),3);
+                }else {
+                    e.currentReputation = Math.min(100,e.currentReputation+e.currentQuest.getReputation());
+                    e.currentQuest = null;
+                    level.setBlock(pos,state.setValue(LIT,false),3);
+                }
             }
         });
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }
 
-    public static <T> T getRandomQuest(List<T> list) {
-        if (list == null || list.isEmpty()) {
-            throw new IllegalArgumentException("La lista puede estar vacía o ser null.");
-        }
-        Random random = new Random();
-        return list.get(random.nextInt(list.size()));
-    }
+
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

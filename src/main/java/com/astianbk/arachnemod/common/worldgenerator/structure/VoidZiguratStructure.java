@@ -42,8 +42,9 @@ public class VoidZiguratStructure extends Structure {
         BlockPos pos = BlockPos.containing(island);
 
 
+        ;
         return Optional.of(new GenerationStub(pos, builder -> {
-            builder.addPiece(new VoidZiguratStructurePiece(0,generationContext.structureTemplateManager(),new StructurePlaceSettings(), pos));
+            builder.addPiece(new VoidZiguratStructurePiece(0,generationContext.random().nextInt(1,5),generationContext.structureTemplateManager(),new StructurePlaceSettings(), pos));
         }));
     }
     @Override

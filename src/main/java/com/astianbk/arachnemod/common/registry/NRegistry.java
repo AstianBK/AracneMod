@@ -91,7 +91,15 @@ public class NRegistry {
     public static final DeferredHolder<SoundEvent, SoundEvent> NEEDLE_LOOP =
             SOUNDS.register("needle_loop", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "needle_loop")));
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> ORB_SELECT =
+            SOUNDS.register("orb_select", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "orb_select")));
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> ARACHNE_TALK_1 =
+            SOUNDS.register("arachne_talk1", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "arachne_talk_1")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> ARACHNE_TALK_2 =
+            SOUNDS.register("arachne_talk2", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "arachne_talk_2")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> ARACHNE_TALK_3 =
+            SOUNDS.register("arachne_talk3", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "arachne_talk_3")));
 
     public static final Supplier<AttachmentType<TheVoidAttachment>> THE_VOID_ATTACHMENT =
             ATTACHMENTS.register(
@@ -230,6 +238,12 @@ public class NRegistry {
                     () -> EntityType.Builder.of(VoidBeetleEntity::new, MobCategory.MONSTER)
                             .sized(0.25F, 0.5F).clientTrackingRange(10).updateInterval(2)
                             .build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_beetle"))));
+    public static final DeferredHolder<EntityType<?>, EntityType<VoidGrubEntity>> VOID_GRUB =
+            ENTITY_TYPES.register("void_grub",
+                    () -> EntityType.Builder.of(VoidGrubEntity::new, MobCategory.MONSTER)
+                            .sized(0.25F, 0.5F).clientTrackingRange(10).updateInterval(2)
+                            .build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_grub"))));
+
     public static final DeferredHolder<EntityType<?>, EntityType<VoidVeilmothEntity>> VOID_VEILMOTH =
             ENTITY_TYPES.register("void_veilmoth",
                     () -> EntityType.Builder.of(VoidVeilmothEntity::new, MobCategory.MONSTER)

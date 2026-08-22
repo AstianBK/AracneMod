@@ -2,6 +2,7 @@ package com.astianbk.arachnemod.client.screen;
 
 import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.common.quests.Quest;
+import com.astianbk.arachnemod.common.registry.NRegistry;
 import com.astianbk.arachnemod.server.cap.ArachneAttachment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -63,20 +64,20 @@ public class IdolScreen extends Screen {
         int j1 =  i + 101;
         int k1 = height - 58 ;
 
-        float xExtra = -60;
-        float yExtra = -155;
-
-        float centerX = (j1 + xExtra);
-        float centerY = (k1 + yExtra);
-
-        int indexSpeech = (int) ((0.25F*(player.tickCount+ a)) % 13.0F);
-        int indexBackground = (int) ((0.1F*(player.tickCount+ a)) % 4.0F);
-
-        Identifier locationBackground = FRAMES_BACKGROUND[indexBackground];
-//                guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED,locationBackground, 0, 0, width, height);
-
-        Identifier locationSpeech = FRAMES_SPEECH[indexSpeech];
-        graphics.blit(RenderPipelines.GUI_TEXTURED,locationSpeech, (int) centerX, (int) centerY,0.0F,0.0F,194,194,194, 194);
+//        float xExtra = -60;
+//        float yExtra = -155;
+//
+//        float centerX = (j1 + xExtra);
+//        float centerY = (k1 + yExtra);
+//
+//        int indexSpeech = (int) ((0.25F*(player.tickCount+ a)) % 13.0F);
+//        int indexBackground = (int) ((0.1F*(player.tickCount+ a)) % 4.0F);
+//
+//        Identifier locationBackground = FRAMES_BACKGROUND[indexBackground];
+////                guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED,locationBackground, 0, 0, width, height);
+//
+//        Identifier locationSpeech = FRAMES_SPEECH[indexSpeech];
+//        graphics.blit(RenderPipelines.GUI_TEXTURED,locationSpeech, (int) centerX, (int) centerY,0.0F,0.0F,194,194,194, 194);
         if (currentQuest != null){
             int textWidth = font.width(this.text);
 

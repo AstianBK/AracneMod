@@ -49,7 +49,6 @@ import java.util.List;
 @EventBusSubscriber(modid = AracneMod.MODID, value = Dist.CLIENT)
 public class AracneModClient {
     public static final Identifier LOCATION = Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/war_spider/warspider.png");
-    public static final ContextKey<MobEffectInstance> EFFECT = new ContextKey<>(Identifier.fromNamespaceAndPath(AracneMod.MODID,"effect"));
     public static final ContextKey<List<ArachneAttachment.Hex>> HEXS = new ContextKey<>(Identifier.fromNamespaceAndPath(AracneMod.MODID,"hexs"));
     public AracneModClient(ModContainer container) {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
@@ -97,6 +96,7 @@ public class AracneModClient {
         event.registerLayerDefinition(EnterDimensionModel.LAYER_LOCATION,Suppliers.ofInstance(EnterDimensionModel.createBodyLayer()));
         event.registerLayerDefinition(WebElevatorModel.LAYER_LOCATION,Suppliers.ofInstance(WebElevatorModel.createBodyLayer()));
         event.registerLayerDefinition(WebPartModel.LAYER_LOCATION,Suppliers.ofInstance(WebPartModel.createBodyLayer()));
+        event.registerLayerDefinition(VoidGrubModel.LAYER_LOCATION,Suppliers.ofInstance(VoidGrubModel.createBodyLayer()));
 
         //        event.registerLayerDefinition(ScarabModel.ARMOR_LOCATION,Suppliers.ofInstance(ScarabModel.createBodyLayer(new CubeDeformation(1.0F))));
     }
@@ -328,6 +328,7 @@ public class AracneModClient {
         event.registerEntityRenderer(NRegistry.ORB.get(), OrbRenderer::new);
         event.registerEntityRenderer(NRegistry.VOID_HOPPER.get(), VoidHopperRenderer::new);
         event.registerEntityRenderer(NRegistry.VOID_BEETLE.get(), VoidBeetleRenderer::new);
+        event.registerEntityRenderer(NRegistry.VOID_GRUB.get(), VoidGrubRenderer::new);
         event.registerEntityRenderer(NRegistry.VOID_VEILMOTH.get(), VoidVeilmothRenderer::new);
         event.registerEntityRenderer(NRegistry.ENTER_DIMENSION.get(),EnterDimensionRenderer::new);
         event.registerEntityRenderer(NRegistry.WEB_ELEVATOR.get(),WebElevatorRenderer::new);
