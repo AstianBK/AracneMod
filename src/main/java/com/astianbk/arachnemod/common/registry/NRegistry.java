@@ -9,18 +9,15 @@ import com.astianbk.arachnemod.common.effect.SilentEffect;
 import com.astianbk.arachnemod.common.items.SealingCrystalItem;
 import com.astianbk.arachnemod.common.items.VoidKnightArmorItem;
 import com.astianbk.arachnemod.common.items.VoidMaterial;
-import com.astianbk.arachnemod.common.worldgenerator.VoidChunkGenerator;
 import com.astianbk.arachnemod.common.worldgenerator.feature.BonesFeature;
-import com.astianbk.arachnemod.common.worldgenerator.feature.PoitedBedrockFeature;
-import com.astianbk.arachnemod.common.worldgenerator.feature.VoidCrystalFeature;
 import com.astianbk.arachnemod.common.worldgenerator.feature_configuration.VoidCrystalFeatureConfiguration;
-import com.astianbk.arachnemod.common.worldgenerator.structure.VoidBoneRemainsStructure;
 import com.astianbk.arachnemod.common.worldgenerator.structure.VoidNeedleHiveStructure;
-import com.astianbk.arachnemod.common.worldgenerator.structure.VoidZiguratStructure;
-import com.astianbk.arachnemod.common.worldgenerator.structure_piece.VoidBoneRemainsStructurePiece;
-import com.astianbk.arachnemod.common.worldgenerator.structure_piece.VoidNeedleHiveStructurePiece;
 import com.astianbk.arachnemod.common.worldgenerator.structure_piece.VoidZiguratStructurePiece;
 import com.astianbk.arachnemod.common.worldgenerator.structure_placement.VoidZiguratPlacement;
+import com.astianbk.arachnemod.common.worldgenerator.the_depths.TheDepthsChunkGenerator;
+import com.astianbk.arachnemod.common.worldgenerator.the_void.VoidChunkGenerator;
+import com.astianbk.arachnemod.common.worldgenerator.the_void.feature.PoitedBedrockFeature;
+import com.astianbk.arachnemod.common.worldgenerator.the_void.structure.VoidZiguratStructure;
 import com.astianbk.arachnemod.server.cap.ArachneAttachment;
 import com.astianbk.arachnemod.server.entity.*;
 import com.astianbk.arachnemod.server.cap.TheVoidAttachment;
@@ -168,6 +165,7 @@ public class NRegistry {
 
     public static final DeferredItem<BlockItem> POINTED_BEDROCK_ITEM = ITEMS.registerSimpleBlockItem("pointed_bedrock_item",POINTED_BEDROCK_BLOCK);
     public static final DeferredItem<Item> SEALING_CRYSTAL_ITEM = ITEMS.registerItem("sealing_crystal_item",(properties)->new SealingCrystalItem(properties.component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)));
+    public static final DeferredItem<Item> POWER_FRAGMENT = ITEMS.registerItem("power_fragment", Item::new);
 
     public static final DeferredItem<Item> VOID_HELMET = ITEMS.registerItem("void_helmet",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.HELMET).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_helmet" )))));
     public static final DeferredItem<Item> VOID_CHESTPLATE = ITEMS.registerItem("void_chestplate",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.CHESTPLATE).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_chestplate" )))));
@@ -179,6 +177,7 @@ public class NRegistry {
             .withTabsBefore(CreativeModeTabs.COMBAT)
             .icon(() -> WEAVER_IDOL_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
+                output.accept(POWER_FRAGMENT.get());
                 output.accept(SEALING_CRYSTAL_ITEM.get());
                 output.accept(WEAVER_IDOL_ITEM.get());
                 output.accept(BEDCRUST_ITEM.get());
@@ -198,6 +197,7 @@ public class NRegistry {
             }).build());
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.createEntities(AracneMod.MODID);
     public static final ResourceKey<Level> THE_VOID = ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath(AracneMod.MODID,"void"));
+
     public static final DeferredHolder<EntityType<?>, EntityType<OrbEntity>> ORB =
             ENTITY_TYPES.register("orb",
                     () -> EntityType.Builder
@@ -211,6 +211,7 @@ public class NRegistry {
                             .of(WebElevatorEntity::new, MobCategory.MONSTER)
                             .sized(1.0F, 2.0F).clientTrackingRange(10).updateInterval(2)
                             .build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(AracneMod.MODID,"web_elevator"))));
+
     public static final DeferredHolder<EntityType<?>, EntityType<EnterDimensionEntity>> ENTER_DIMENSION =
             ENTITY_TYPES.register("enter_dimension",
                     () -> EntityType.Builder
@@ -262,9 +263,9 @@ public class NRegistry {
     public static final DeferredHolder<StructurePieceType, StructurePieceType> VOID_ZIGURAT_PIECE =
             PIECES.register("void_zigurat", () -> (context, tag) -> new VoidZiguratStructurePiece(tag, context.structureTemplateManager()));
     public static final DeferredHolder<StructurePieceType, StructurePieceType> VOID_NEEDLE_HIVE_PIECE =
-            PIECES.register("void_needle_hive", () -> (context, tag) -> new VoidNeedleHiveStructurePiece(tag, context.structureTemplateManager()));
+            PIECES.register("void_needle_hive", () -> (context, tag) -> new com.astianbk.arachnemod.common.worldgenerator.structure_piece.VoidNeedleHiveStructurePiece(tag, context.structureTemplateManager()));
     public static final DeferredHolder<StructurePieceType, StructurePieceType> VOID_BONE_REMAINS_PIECE =
-            PIECES.register("void_bone_remains", () -> (context, tag) -> new VoidBoneRemainsStructurePiece(tag, context.structureTemplateManager()));
+            PIECES.register("void_bone_remains", () -> (context, tag) -> new com.astianbk.arachnemod.common.worldgenerator.structure_piece.VoidBoneRemainsStructurePiece(tag, context.structureTemplateManager()));
 
     public static final DeferredRegister<MapCodec<? extends ChunkGenerator>> CHUNK_GENERATORS =
             DeferredRegister.create(Registries.CHUNK_GENERATOR,AracneMod.MODID);
@@ -272,19 +273,23 @@ public class NRegistry {
     public static final DeferredHolder<MapCodec<? extends ChunkGenerator>, MapCodec<VoidChunkGenerator>> VOID =
             CHUNK_GENERATORS.register("void",
                     () -> VoidChunkGenerator.CODEC);
+
+    public static final DeferredHolder<MapCodec<? extends ChunkGenerator>, MapCodec<TheDepthsChunkGenerator>> THE_DEPTHS =
+            CHUNK_GENERATORS.register("the_depths",
+                    () -> TheDepthsChunkGenerator.CODEC);
     public static final DeferredHolder<StructurePlacementType<?>,StructurePlacementType<VoidZiguratPlacement>> VOID_PLACEMENT = STRUCTURE_PLACEMENT_TYPE.register("void_placement",()-> (StructurePlacementType<VoidZiguratPlacement>) () -> VoidZiguratPlacement.CODEC);
     public static final DeferredHolder<StructureType<?>,StructureType<VoidZiguratStructure>> VOID_ZIGURAT =
             STRUCTURE_TYPE.register("void_zigurat",()-> () -> VoidZiguratStructure.CODEC);
     public static final DeferredHolder<StructureType<?>,StructureType<VoidNeedleHiveStructure>> NEEDLE_HIVE =
             STRUCTURE_TYPE.register("needle_hive",()-> () -> VoidNeedleHiveStructure.CODEC);
 
-    public static final DeferredHolder<StructureType<?>,StructureType<VoidBoneRemainsStructure>> BONE_REMAINS =
-            STRUCTURE_TYPE.register("bone_remains",()-> () -> VoidBoneRemainsStructure.CODEC);
+    public static final DeferredHolder<StructureType<?>,StructureType<com.astianbk.arachnemod.common.worldgenerator.structure.VoidBoneRemainsStructure>> BONE_REMAINS =
+            STRUCTURE_TYPE.register("bone_remains",()-> () -> com.astianbk.arachnemod.common.worldgenerator.structure.VoidBoneRemainsStructure.CODEC);
     public static final DeferredHolder<Feature<?>,Feature<VoidCrystalFeatureConfiguration>> BONES =
             FEATURE.register("bones",()->new BonesFeature(VoidCrystalFeatureConfiguration.CODEC));
 
     public static final DeferredHolder<Feature<?>,Feature<VoidCrystalFeatureConfiguration>> VOID_CRYSTAL =
-            FEATURE.register("void_crystal",()->new VoidCrystalFeature(VoidCrystalFeatureConfiguration.CODEC));
+            FEATURE.register("void_crystal",()->new com.astianbk.arachnemod.common.worldgenerator.feature.VoidCrystalFeature(VoidCrystalFeatureConfiguration.CODEC));
     public static final DeferredHolder<Feature<?>,Feature<SpeleothemClusterConfiguration>> POINTED_BEDROCK =
             FEATURE.register("pointed_bedrock",()->new PoitedBedrockFeature(SpeleothemClusterConfiguration.CODEC));
 

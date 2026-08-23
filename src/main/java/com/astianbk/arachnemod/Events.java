@@ -183,7 +183,13 @@ public class Events {
         }
 
     }
+    public static void teleportToTheDepth(Vec3 position, Level level, LivingEntity living){
+        ServerLevel serverLevel = ((ServerLevel)level).getServer().getLevel(ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath("arachnemod", "the_depths")));
+        ChunkPos pos = serverLevel.getChunk(living.blockPosition()).getPos();
+        living.teleport(new TeleportTransition(serverLevel,new Vec3(position.x,250,position.z), Vec3.ZERO,0.0F,0.0F,(entity)->{
 
+        }));
+    }
     public static void teleportToVoid(Vec3 position, Level level, LivingEntity living){
         ServerLevel serverLevel = ((ServerLevel)level).getServer().getLevel(ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath("arachnemod", "void")));
         ChunkPos pos = serverLevel.getChunk(living.blockPosition()).getPos();
@@ -192,10 +198,10 @@ public class Events {
                 ArachneAttachment.get(serverPlayer).ifPresent(arachneAttachment -> {
                     BlockPos pos1 = new BlockPos((int) position.x, (int) position.y, (int) position.z);
                     arachneAttachment.setTeleportBackPos(pos1);
-                    if (level.getEntitiesOfClass(WebElevatorEntity.class,serverPlayer.getBoundingBox().inflate(40.0F)).isEmpty()){
+                    if (serverLevel.getEntitiesOfClass(WebElevatorEntity.class,serverPlayer.getBoundingBox().inflate(40.0F)).isEmpty()){
                         WebElevatorEntity webElevator = new WebElevatorEntity(NRegistry.WEB_ELEVATOR.get(), level);
                         webElevator.setPos(Vec3.atBottomCenterOf(pos1));
-                        level.addFreshEntity(webElevator);
+                        serverLevel.addFreshEntity(webElevator);
                     }
                 });
             }

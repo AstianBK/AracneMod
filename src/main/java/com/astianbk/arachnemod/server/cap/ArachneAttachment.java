@@ -2,6 +2,7 @@ package com.astianbk.arachnemod.server.cap;
 
 
 import com.astianbk.arachnemod.AracneMod;
+import com.astianbk.arachnemod.Events;
 import com.astianbk.arachnemod.QuestsType;
 import com.astianbk.arachnemod.common.dialogs.Dialog;
 import com.astianbk.arachnemod.common.dialogs.DialogsManager;
@@ -146,6 +147,13 @@ public class ArachneAttachment {
             }else {
                 timeDarkness = 0;
             }
+
+            if (!player.level().isClientSide()){
+                if (player.getY()<=0){
+                    Events.teleportToTheDepth(player.position(),player.level(),player);
+                }
+            }
+
         }
 
         Inventory inventory = player.getInventory();

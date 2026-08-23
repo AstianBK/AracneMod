@@ -1,8 +1,7 @@
-package com.astianbk.arachnemod.common.worldgenerator.structure;
+package com.astianbk.arachnemod.common.worldgenerator.the_void.structure;
 
 import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.common.registry.NRegistry;
-import com.astianbk.arachnemod.common.worldgenerator.density.IslandSource;
 import com.astianbk.arachnemod.common.worldgenerator.structure_piece.VoidZiguratStructurePiece;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;

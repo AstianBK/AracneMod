@@ -1,4 +1,4 @@
-package com.astianbk.arachnemod.common.worldgenerator;
+package com.astianbk.arachnemod.common.worldgenerator.the_void;
 
 import com.astianbk.arachnemod.common.registry.NRegistry;
 import net.minecraft.core.BlockPos;

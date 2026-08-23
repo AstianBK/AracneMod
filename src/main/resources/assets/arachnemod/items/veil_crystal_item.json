@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "arachnemod:item/veilcrystal_item"
+    "model": "arachnemod:item/veil_crystal"
   }
 }

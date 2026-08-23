@@ -1,9 +1,9 @@
-package com.astianbk.arachnemod.common.worldgenerator;
+package com.astianbk.arachnemod.common.worldgenerator.the_void;
 
 import com.astianbk.arachnemod.common.registry.NRegistry;
-import com.astianbk.arachnemod.common.worldgenerator.density.IslandSource;
-import com.astianbk.arachnemod.common.worldgenerator.density.BridgeSource;
-import com.astianbk.arachnemod.common.worldgenerator.density.SpikesSource;
+import com.astianbk.arachnemod.common.worldgenerator.the_void.density.BridgeSource;
+import com.astianbk.arachnemod.common.worldgenerator.the_void.density.IslandSource;
+import com.astianbk.arachnemod.common.worldgenerator.the_void.density.SpikesSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
@@ -30,6 +30,7 @@ public class IslandManager {
         generateRoof(chunk);
         generateGenerateParticle(chunk);
     }
+
     public List<SpikesSource> getNearbySpikes(ChunkPos chunkPos) {
 
         List<SpikesSource> islands = new ArrayList<>();

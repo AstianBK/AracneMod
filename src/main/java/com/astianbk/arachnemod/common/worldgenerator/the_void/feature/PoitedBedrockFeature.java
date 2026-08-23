@@ -1,10 +1,8 @@
-package com.astianbk.arachnemod.common.worldgenerator.feature;
+package com.astianbk.arachnemod.common.worldgenerator.the_void.feature;
 
 import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.common.registry.NRegistry;
-import com.astianbk.arachnemod.common.worldgenerator.BedrockUtils;
-import com.astianbk.arachnemod.common.worldgenerator.feature_configuration.PoitedBedrockFeatureConfiguration;
-import com.astianbk.arachnemod.common.worldgenerator.feature_configuration.VoidCrystalFeatureConfiguration;
+import com.astianbk.arachnemod.common.worldgenerator.the_void.BedrockUtils;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

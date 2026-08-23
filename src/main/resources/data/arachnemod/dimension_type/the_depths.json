@@ -1,0 +1,33 @@
+{
+  "ambient_light": 0.10,
+  "attributes": {
+
+    "minecraft:audio/ambient_sounds": {
+      "loop": "arachnemod:ambience_loop"
+    },
+    "minecraft:visual/cloud_color": "#cc0F0F1F",
+    "minecraft:visual/cloud_height" : 10.0,
+    "minecraft:visual/fog_start_distance": 0.0,
+    "minecraft:visual/fog_end_distance": 256.0,
+    "minecraft:visual/fog_color": "#090912",
+    "minecraft:visual/sky_light_color": "#090912",
+    "minecraft:visual/sky_light_factor": 0.0
+  },
+  "coordinate_scale": 1.0,
+  "default_clock": "minecraft:overworld",
+  "has_ceiling": false,
+  "has_ender_dragon_fight": false,
+  "has_skylight": true,
+  "has_fixed_time": false,
+  "height": 400,
+  "infiniburn": "#minecraft:infiniburn_end",
+  "logical_height": 400,
+  "min_y": 0,
+  "monster_spawn_block_light_limit": 0,
+  "monster_spawn_light_level": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 7,
+    "min_inclusive": 0
+  },
+  "timelines": "#minecraft:in_end"
+}

@@ -53,7 +53,10 @@ public class ScarabEntity extends PathfinderMob {
                 .add(Attributes.ARMOR_TOUGHNESS, 5.0)
                 .add(Attributes.ATTACK_DAMAGE, 8.0);
     }
+    @Override
+    protected void checkFallDamage(double ya, boolean onGround, BlockState onState, BlockPos pos) {
 
+    }
     @Override
     protected void registerGoals() {
         super.registerGoals();

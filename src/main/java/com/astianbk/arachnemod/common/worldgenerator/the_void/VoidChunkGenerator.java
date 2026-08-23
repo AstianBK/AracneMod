@@ -1,4 +1,4 @@
-package com.astianbk.arachnemod.common.worldgenerator;
+package com.astianbk.arachnemod.common.worldgenerator.the_void;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

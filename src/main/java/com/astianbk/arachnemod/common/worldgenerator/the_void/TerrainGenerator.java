@@ -1,4 +1,4 @@
-package com.astianbk.arachnemod.common.worldgenerator;
+package com.astianbk.arachnemod.common.worldgenerator.the_void;
 
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.RandomState;

@@ -1,0 +1,10 @@
+{
+  "type": "arachnemod:the_depths",
+  "generator": {
+    "type": "arachnemod:the_depths",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "arachnemod:pilar"
+    }
+  }
+}
