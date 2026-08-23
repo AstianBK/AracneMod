@@ -86,6 +86,7 @@ public class ArachneAttachment {
     }
 
     public void tick(Player player){
+
         if(player instanceof ServerPlayer serverPlayer){
             boolean questActive = this.currentQuest!=null;
             event.setVisible(questActive);
@@ -123,6 +124,7 @@ public class ArachneAttachment {
                 }
             }
         }
+
         if (player.level().dimension() == NRegistry.THE_VOID){
             this.prevTimeDarkness = this.timeDarkness;
 
@@ -134,20 +136,15 @@ public class ArachneAttachment {
             if (prevIsDark){
                 this.timeDarkness++;
                 if (this.timeDarkness > 100){
-                    if (player.tickCount%100 == 0){
+                    if (player.tickCount%20 == 0){
                         if (player instanceof ServerPlayer serverPlayer){
-                            player.hurtServer(serverPlayer.level(),serverPlayer.damageSources().magic(),5.0F);
+                            player.hurtServer(serverPlayer.level(),serverPlayer.damageSources().fellOutOfWorld(),3.0F);
                         }
                     }
-
                     this.timeDarkness = 100;
                 }
             }else {
-                if (timeDarkness > 0){
-                    timeDarkness--;
-                }else {
-                    timeDarkness = 0;
-                }
+                timeDarkness = 0;
             }
         }
 
@@ -179,6 +176,7 @@ public class ArachneAttachment {
             this.block.animateWhen(player.getUseItem().getItem() instanceof ShieldItem,player.tickCount);
             this.updateText(player);
         }
+
     }
 
     private void updateText(Player player) {

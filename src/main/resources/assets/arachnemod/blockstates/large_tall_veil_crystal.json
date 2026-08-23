@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "thickness=tip": {
+      "model": "arachnemod:block/large_tall_veil_crystal_tip"
+
+    },
+    "thickness=middle": {
+      "model": "arachnemod:block/large_tall_veil_crystal_middle"
+
+    },
+    "thickness=base": {
+      "model": "arachnemod:block/large_tall_veil_crystal_base"
+
+    }
+  }
+}
