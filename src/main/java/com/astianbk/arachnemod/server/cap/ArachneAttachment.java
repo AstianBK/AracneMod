@@ -126,7 +126,7 @@ public class ArachneAttachment {
             }
         }
 
-        if (player.level().dimension() == NRegistry.THE_VOID){
+        if (player.level().dimension() == NRegistry.THE_VOID && !player.isCreative() && !player.isSpectator()){
             this.prevTimeDarkness = this.timeDarkness;
 
             boolean isDark = player.level().getLightEngine().getRawBrightness(player.blockPosition(),15)==0.0F && !player.level().getData(NRegistry.THE_VOID_ATTACHMENT).flash;
