@@ -8,6 +8,8 @@
   "entity.arachnemod.void_needle": "VoidNeedle",
   "entity.arachnemod.void_hopper": "VoidHexer",
 
+  "item.arachnemod.power_fragment": "Power Fragment",
+  "item.arachnemod.sealing_crystal_item": "Sealing Crystal",
 
   "block.arachnemod.arachne_idol_item": "Forgotten Idol",
   "block.arachnemod.cracked_bedrock_item": "Shattered Bedrock",
@@ -48,8 +50,6 @@
   "sounds.arachnemod.orb_select":"Orb Selected",
 
   "sounds.arachnemod.darkness_constrict":"Darkness Constricts You",
-
-  "item.arachnemod.example_item": "Example Item",
 
   "arachnemod.configuration.title": "Nerubian Mod Configs",
   "arachnemod.configuration.section.arachnemod.common.toml": "Nerubian Mod Configs",
