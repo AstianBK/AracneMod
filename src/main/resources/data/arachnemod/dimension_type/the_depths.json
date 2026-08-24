@@ -1,7 +1,6 @@
 {
   "ambient_light": 0.10,
   "attributes": {
-
     "minecraft:audio/ambient_sounds": {
       "loop": "arachnemod:ambience_loop"
     },
@@ -12,7 +11,7 @@
     "minecraft:visual/sky_light_factor": 0.0
   },
   "coordinate_scale": 1.0,
-  "default_clock": "minecraft:end",
+  "default_clock": "minecraft:the_end",
   "has_ceiling": false,
   "has_ender_dragon_fight": false,
   "has_skylight": false,
