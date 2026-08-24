@@ -126,27 +126,30 @@ public class ArachneAttachment {
             }
         }
 
-        if (player.level().dimension() == NRegistry.THE_VOID && !player.isCreative() && !player.isSpectator()){
-            this.prevTimeDarkness = this.timeDarkness;
+        if (player.level().dimension() == NRegistry.THE_VOID){
+            if (!player.isCreative() && !player.isSpectator()){
+                this.prevTimeDarkness = this.timeDarkness;
 
-            boolean isDark = player.level().getLightEngine().getRawBrightness(player.blockPosition(),15)==0.0F && !player.level().getData(NRegistry.THE_VOID_ATTACHMENT).flash;
+                boolean isDark = player.level().getLightEngine().getRawBrightness(player.blockPosition(),15)==0.0F && !player.level().getData(NRegistry.THE_VOID_ATTACHMENT).flash;
 
-            if (prevIsDark != isDark){
-                prevIsDark = isDark;
-            }
-            if (prevIsDark){
-                this.timeDarkness++;
-                if (this.timeDarkness > 100){
-                    if (player.tickCount%20 == 0){
-                        if (player instanceof ServerPlayer serverPlayer){
-                            player.hurtServer(serverPlayer.level(),serverPlayer.damageSources().fellOutOfWorld(),3.0F);
-                        }
-                    }
-                    this.timeDarkness = 100;
+                if (prevIsDark != isDark){
+                    prevIsDark = isDark;
                 }
-            }else {
-                timeDarkness = 0;
+                if (prevIsDark){
+                    this.timeDarkness++;
+                    if (this.timeDarkness > 100){
+                        if (player.tickCount%20 == 0){
+                            if (player instanceof ServerPlayer serverPlayer){
+                                player.hurtServer(serverPlayer.level(),serverPlayer.damageSources().fellOutOfWorld(),3.0F);
+                            }
+                        }
+                        this.timeDarkness = 100;
+                    }
+                }else {
+                    timeDarkness = 0;
+                }
             }
+
 
             if (!player.level().isClientSide()){
                 if (player.getY()<=0){

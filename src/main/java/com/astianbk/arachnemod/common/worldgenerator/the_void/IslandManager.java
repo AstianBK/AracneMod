@@ -134,7 +134,7 @@ public class IslandManager {
             int minZ = (int)Math.max(chunkMinZ, Math.floor(island.centerZ - r));
             int maxZ = (int)Math.min(chunkMaxZ, Math.ceil(island.centerZ + r));
 
-            int y0 = 0;
+            int y0 = -100;
             int y1 = (int)Math.min(maxY, island.centerY + 40);
 
             for (int x = minX; x <= maxX; x++) {
@@ -182,7 +182,7 @@ public class IslandManager {
             for (int localZ = 0; localZ < 16; localZ++) {
 
                 pos.set(minX + localX, 0, minZ + localZ);
-                chunk.setBlockState(pos, Blocks.END_PORTAL.defaultBlockState());
+
 
             }
         }

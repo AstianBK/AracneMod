@@ -22,7 +22,7 @@
   "height": 400,
   "infiniburn": "#minecraft:infiniburn_end",
   "logical_height": 400,
-  "min_y": 0,
+  "min_y": -112,
   "monster_spawn_block_light_limit": 0,
   "monster_spawn_light_level": {
     "type": "minecraft:uniform",

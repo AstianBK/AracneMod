@@ -121,7 +121,7 @@ public class TheDepthsChunkGenerator extends ChunkGenerator {
         int chunkMinZ = pos.getMinBlockZ();
         int chunkMaxZ = chunkMinZ + 15;
 
-        int maxY = 250;
+        int maxY = 450;
 
         for (IslandSource island : islands) {
             double r = island.radius;
