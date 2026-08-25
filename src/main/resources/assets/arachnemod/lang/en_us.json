@@ -28,6 +28,8 @@
   "block.arachnemod.cocoonchest_item": "Void Cocoon",
   "block.arachnemod.void_web_item": "Voidweb",
 
+  "sounds.arachnemod.bedrockfall":"The ground shakes",
+
   "sounds.arachnemod.arachne_talk1":"Arachne Talking",
   "sounds.arachnemod.arachne_talk2":"Arachne Talking",
   "sounds.arachnemod.arachne_talk3":"Arachne Talking",

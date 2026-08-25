@@ -53,6 +53,12 @@
       "arachnemod:needle_loop"
     ]
   },
+  "bedrockfall": {
+  "subtitle": "sounds.arachnemod.bedrockfall",
+  "sounds": [
+    "arachnemod:bedrockfall"
+  ]
+},
     "ambience_0": {
     "subtitle": "sounds.arachnemod.ambience_0",
     "sounds": [

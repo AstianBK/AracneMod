@@ -86,7 +86,8 @@ public class NRegistry {
             SOUNDS.register("scarab_idle2", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "scarab_idle2")));
     public static final DeferredHolder<SoundEvent, SoundEvent> NEEDLE_LOOP =
             SOUNDS.register("needle_loop", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "needle_loop")));
-
+    public static final DeferredHolder<SoundEvent, SoundEvent> BEDROCKFALL =
+            SOUNDS.register("bedrockfall", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "bedrockfall")));
     public static final DeferredHolder<SoundEvent, SoundEvent> ORB_SELECT =
             SOUNDS.register("orb_select", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "orb_select")));
 
