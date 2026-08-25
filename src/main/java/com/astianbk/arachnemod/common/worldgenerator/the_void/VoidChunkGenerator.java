@@ -71,7 +71,7 @@ public class VoidChunkGenerator extends ChunkGenerator {
 
     @Override
     public int getMinY() {
-        return 0;
+        return -112;
     }
 
     @Override

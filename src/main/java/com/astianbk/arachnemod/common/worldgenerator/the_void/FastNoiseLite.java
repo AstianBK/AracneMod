@@ -183,7 +183,7 @@ public class FastNoiseLite {
     public void SetFractalWeightedStrength(float weightedStrength) { mWeightedStrength = weightedStrength; }
 
     /// <summary>
-    /// Sets strength of the fractal ping pong effect
+    /// Sets strength of the fractal ping pong mob_effect
     /// </summary>
     /// <remarks>
     /// Default: 2.0

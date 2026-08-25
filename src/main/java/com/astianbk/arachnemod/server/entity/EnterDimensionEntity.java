@@ -2,15 +2,19 @@ package com.astianbk.arachnemod.server.entity;
 
 import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.Events;
+import com.astianbk.arachnemod.server.network.PacketSetScreen;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +22,15 @@ import java.util.List;
 public class EnterDimensionEntity extends Entity {
     public AnimationState idle = new AnimationState();
     public AnimationState take = new AnimationState();
-
+    public AnimationState spawn = new AnimationState();
     public int idleResetTimer = 0;
     public int portalTime = 0;
     public boolean active = false;
     public int takeTime = 0;
+    public int spawnTime = 0;
     public EnterDimensionEntity(EntityType<?> type, Level level) {
         super(type, level);
+
     }
 
     @Override
@@ -36,7 +42,12 @@ public class EnterDimensionEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
+        if (this.spawnTime>=0){
+            this.spawnTime--;
+            if (this.spawnTime == 0){
 
+            }
+        }
 
         if (this.level().isClientSide()){
             this.setupAnimation();
@@ -55,8 +66,17 @@ public class EnterDimensionEntity extends Entity {
 
             if (this.takeTime>0){
                 this.takeTime--;
-                if (this.takeTime==0){
-                    list.forEach(living -> Events.teleportToVoid(this.position(),level(),living));
+                if (this.takeTime == 0){
+                    list.forEach(living -> {
+                        Events.teleportToVoid(this.position(),level(),living);
+                    });
+                    this.discard();
+                }else if (this.takeTime == 1){
+                    list.forEach(living -> {
+                        if (living instanceof Player player){
+                            PacketDistributor.sendToPlayer((ServerPlayer) player,new PacketSetScreen(player.getId()));
+                        }
+                    });
                 }
             }else {
                 if (active){
@@ -79,6 +99,7 @@ public class EnterDimensionEntity extends Entity {
         if (this.idleResetTimer--<=0){
             this.idleResetTimer = 50;
             this.take.stop();
+            this.spawn.stop();
             this.idle.start(this.tickCount);
         }
     }
@@ -88,6 +109,11 @@ public class EnterDimensionEntity extends Entity {
             this.take.start(this.tickCount);
             this.idle.stop();
             this.idleResetTimer = 60;
+        }else if (id == 8){
+            this.spawn.start(this.tickCount);
+            this.spawnTime = 40;
+            this.idle.stop();
+            this.idleResetTimer = 40;
         }
         super.handleEntityEvent(id);
     }

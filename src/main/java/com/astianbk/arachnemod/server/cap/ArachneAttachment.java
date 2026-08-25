@@ -9,10 +9,10 @@ import com.astianbk.arachnemod.common.dialogs.DialogsManager;
 import com.astianbk.arachnemod.common.quests.Quest;
 import com.astianbk.arachnemod.common.quests.QuestManager;
 import com.astianbk.arachnemod.common.registry.NRegistry;
+import com.astianbk.arachnemod.server.network.PacketPlayDialog;
 import com.mojang.serialization.Codec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -20,26 +20,33 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerBossEvent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.entity.AnimationState;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
 
@@ -87,7 +94,6 @@ public class ArachneAttachment {
     }
 
     public void tick(Player player){
-
         if(player instanceof ServerPlayer serverPlayer){
             boolean questActive = this.currentQuest!=null;
             event.setVisible(questActive);
@@ -105,8 +111,7 @@ public class ArachneAttachment {
                 event.setProgress((float) this.progressQuest/this.currentQuest.getMaxProgress());
 
                 if(!this.currentQuest.isComplete(this) && this.timeQuest--<=0){
-                    this.currentQuest = null;
-                    this.currentReputation -= 10;
+                    failQuest(serverPlayer);
                     this.progressQuest = 0;
                     this.timeQuest = 0;
                 }
@@ -159,6 +164,22 @@ public class ArachneAttachment {
 
         }
 
+        if (player.level().dimension() == NRegistry.THE_DEPTH){
+            if (!player.level().isClientSide()){
+                if (player.getY()>=250){
+                    Level level = player.level();
+                    ServerLevel serverLevel = ((ServerLevel)level).getServer().getLevel(ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath("arachnemod", "void")));
+                    player.teleport(new TeleportTransition(serverLevel,new Vec3(player.getX(),2,player.getZ()), Vec3.ZERO,0.0F,0.0F,(entity)->{
+                        if (entity instanceof ServerPlayer serverPlayer){
+                            serverLevel.setBlock(new BlockPos((int) player.getX(),0, (int) player.getZ()), Blocks.DEEPSLATE.defaultBlockState(),3);
+                            ArachneAttachment.get(serverPlayer).ifPresent(arachneAttachment -> {
+
+                            });
+                        }
+                    }));
+                }
+            }
+        }
         Inventory inventory = player.getInventory();
         if (inventory.getTimesChanged() != previousTimesChanged) {
             previousTimesChanged = inventory.getTimesChanged();
@@ -188,6 +209,60 @@ public class ArachneAttachment {
             this.updateText(player);
         }
 
+    }
+
+    public void acceptQuest(ServerPlayer player,Quest quest){
+        this.currentQuest = quest;
+        this.timeQuest = 2000;
+        PacketDistributor.sendToPlayer(player,new PacketPlayDialog(Identifier.parse(quest.getDescription()),player.getId()));
+        this.progressQuest = 0;
+    }
+    public void failQuest(ServerPlayer serverPlayer){
+        if (this.currentQuest != null){
+            PacketDistributor.sendToPlayer(serverPlayer,new PacketPlayDialog(Identifier.parse(currentQuest.getDialogFail()),serverPlayer.getId()));
+            currentReputation= Math.max(0,currentReputation-10);
+            this.currentQuest = null;
+
+        }
+    }
+
+    public void completeQuest(ServerPlayer serverPlayer){
+        if (this.currentQuest != null){
+            PacketDistributor.sendToPlayer(serverPlayer,new PacketPlayDialog(Identifier.parse(currentQuest.getDialogFail()),serverPlayer.getId()));
+            currentReputation= Math.min(100,currentReputation+currentQuest.getReputation());
+            this.currentQuest = null;
+        }
+    }
+    public static float getSpiderCrosshairAmount(Player player, double maxDistance) {
+        Vec3 eyePos = player.getEyePosition();
+        Vec3 look = player.getLookAngle().normalize();
+
+        AABB searchBox = player.getBoundingBox().expandTowards(look.scale(maxDistance)).inflate(2.0);
+
+        Mob closestSpider = null;
+        double closestAngle = Double.MAX_VALUE;
+
+        for (Mob spider : player.level().getEntitiesOfClass(Mob.class, searchBox, (e)->e.is(EntityTypeTags.ARTHROPOD))) {
+            Vec3 target = spider.getBoundingBox().getCenter().subtract(eyePos).normalize();
+
+            double dot = look.dot(target);
+            double angle = 1.0 - dot;
+
+            if (angle < closestAngle) {
+                closestAngle = angle;
+                closestSpider = spider;
+            }
+        }
+
+        if (closestSpider == null)
+            return 0.0F;
+
+
+        double maxAngle = Math.toRadians(15.0);
+
+        double angle = Math.acos(Mth.clamp(1.0 - closestAngle, -1.0, 1.0));
+
+        return (float) Mth.clamp(1.0 - angle / maxAngle, 0.0, 1.0);
     }
 
     private void updateText(Player player) {
@@ -272,7 +347,6 @@ public class ArachneAttachment {
     }
 
     public void addHex(Level level,Player player){
-
         if (hexes.size()==3)return;
         hexes.add(Hex.values()[level.getRandom().nextInt(0,3)]);
 
@@ -286,14 +360,11 @@ public class ArachneAttachment {
     public void refreshQuest(Player player){
         if(this.currentQuest==null || this.currentQuest.getType() != QuestsType.COLLECT)return;
         Item itemQuest = BuiltInRegistries.ITEM.get(Identifier.parse(this.currentQuest.getTargetId())).get().value();
-        int countItem = 0;
-        for(int i = 0 ; i < player.getInventory().getContainerSize() ; i++){
-            ItemStack item = player.getInventory().getItem(i);
-            if(item.is(itemQuest)){
-                countItem += item.getCount();
-            }
-        }
+
+        int countItem = player.getInventory().countItem(itemQuest);
+        AracneMod.LOGGER.info("item :{} , quest:{}",countItem,this.currentQuest);
         this.progressQuest = Math.min(countItem,this.currentQuest.getMaxProgress());
+        player.syncData(NRegistry.ARACNE);
     }
 
     private BossEvent.BossBarColor getColorForQuestType() {
@@ -303,10 +374,6 @@ public class ArachneAttachment {
             }
             case COLLECT -> {
                 return BossEvent.BossBarColor.GREEN;
-            }
-            case SACRIFICE -> {
-                return BossEvent.BossBarColor.PURPLE;
-
             }
         }
         return BossEvent.BossBarColor.WHITE;
@@ -355,10 +422,16 @@ public class ArachneAttachment {
 
                         for (Hex hex : attachment.hexes) {
                             buf.writeEnum(hex);
-                            AracneMod.LOGGER.info("addHex :{}",hex);
                         }
 
                         buf.writeInt(attachment.timeHex);
+                        buf.writeInt(attachment.currentReputation);
+                        buf.writeInt(attachment.progressQuest);
+                        buf.writeInt(attachment.timeQuest);
+                        buf.writeBoolean(attachment.currentQuest!=null);
+                        if (attachment.currentQuest!=null){
+                            buf.writeUtf(attachment.currentQuest.getTitle());
+                        }
                     }
 
                     @Override
@@ -368,11 +441,15 @@ public class ArachneAttachment {
 
                         for (int i = 0; i < size; i++) {
                             attachment.hexes.add(buf.readEnum(Hex.class));
-                            AracneMod.LOGGER.info("addHex :{}",attachment.hexes);
                         }
 
                         attachment.timeHex = buf.readInt();
-
+                        attachment.currentReputation = buf.readInt();
+                        attachment.progressQuest = buf.readInt();
+                        attachment.timeQuest = buf.readInt();
+                        if (buf.readBoolean()){
+                            attachment.currentQuest = QuestManager.getQuestForTittle(buf.readUtf());
+                        }
                         return attachment;
                     }
                 };

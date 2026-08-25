@@ -6,17 +6,20 @@ import net.minecraft.world.phys.Vec3;
 public class BridgeSource implements com.astianbk.arachnemod.common.worldgenerator.density.DensitySource {
     public final Vec3 from;
     public final Vec3 to;
-
+    public final IslandSource islandA;
+    public final IslandSource islandB;
     public final double radius;
 
     private final WorldNoise noise;
 
 
-    public BridgeSource(Vec3 from, Vec3 to, double radius, WorldNoise noise) {
+    public BridgeSource(Vec3 from, Vec3 to,IslandSource islandA,IslandSource islandB, double radius, WorldNoise noise) {
         this.from = from;
         this.to = to;
         this.radius = radius;
         this.noise = noise;
+        this.islandA = islandA;
+        this.islandB = islandB;
     }
 
 

@@ -48,6 +48,7 @@ public class EnterDimensionRenderer<T extends EnterDimensionEntity,R extends Ent
         super.extractRenderState(entity, state, partialTicks);
         state.idle.copyFrom(entity.idle);
         state.take.copyFrom(entity.take);
+        state.spawn.copyFrom(entity.spawn);
 //        state.attack1.copyFrom(entity.attack1);
 //        state.attack2.copyFrom(entity.attack2);
 //        state.bite.copyFrom(entity.bite);

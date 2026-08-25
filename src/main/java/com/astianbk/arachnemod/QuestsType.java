@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 
 public enum QuestsType {
     HUNT,
-    COLLECT,
-    SACRIFICE;
+    COLLECT;
     public static final Codec<QuestsType> CODEC = Codec.STRING.xmap(QuestsType::valueOf, QuestsType::name);
 }

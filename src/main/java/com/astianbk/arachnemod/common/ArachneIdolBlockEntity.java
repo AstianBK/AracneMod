@@ -1,6 +1,7 @@
 package com.astianbk.arachnemod.common;
 
 import com.astianbk.arachnemod.AracneMod;
+import com.astianbk.arachnemod.QuestsType;
 import com.astianbk.arachnemod.common.block.ArachneIdolBlock;
 import com.astianbk.arachnemod.common.quests.QuestManager;
 import com.astianbk.arachnemod.common.registry.NRegistry;
@@ -58,20 +59,8 @@ public class ArachneIdolBlockEntity extends BlockEntity {
             }
             case QUEST_GET -> {
                 currentState = State.NONE;
-                Direction direction = level.getBlockState(pos).getValue(ArachneIdolBlock.DIRECTION);
-                Vec3 forward = direction.getUnitVec3();
-
-                Vec3 center = Vec3.atCenterOf(pos).add(forward.scale(2.0));
-                EnterDimensionEntity enterDimension = new EnterDimensionEntity(NRegistry.ENTER_DIMENSION.get(), level);
-                enterDimension.setPos(center.x,level.getHeight(Heightmap.Types.MOTION_BLOCKING, (int) center.x, (int) center.z),center.z);
-                level.addFreshEntity(enterDimension);
-                player.sendSystemMessage(Component.literal("Obtuviste mision de recolectar de mentira jijjijiij wiwiwi...."));
-
-            }
-            case QUEST_KILL -> {
-                currentState = State.NONE;
                 ArachneAttachment.get(player).ifPresent(arachneAttachment -> {
-                    arachneAttachment.currentQuest = getRandomQuest(QuestManager.getQuests());
+                    arachneAttachment.acceptQuest((ServerPlayer) player,getRandomQuest(QuestManager.getQuestForType(QuestsType.COLLECT)));
                 });
                 Direction direction = level.getBlockState(pos).getValue(ArachneIdolBlock.DIRECTION);
                 Vec3 forward = direction.getUnitVec3();
@@ -80,7 +69,25 @@ public class ArachneIdolBlockEntity extends BlockEntity {
                 EnterDimensionEntity enterDimension = new EnterDimensionEntity(NRegistry.ENTER_DIMENSION.get(), level);
                 enterDimension.setPos(center.x,level.getHeight(Heightmap.Types.MOTION_BLOCKING, (int) center.x, (int) center.z),center.z);
                 level.addFreshEntity(enterDimension);
-                player.sendSystemMessage(Component.literal("Obtuviste mision de caza mentira jijji"));
+                if (!level.isClientSide()){
+                    level.broadcastEntityEvent(enterDimension,(byte) 8);
+                }
+            }
+            case QUEST_KILL -> {
+                currentState = State.NONE;
+                ArachneAttachment.get(player).ifPresent(arachneAttachment -> {
+                    arachneAttachment.acceptQuest((ServerPlayer) player,getRandomQuest(QuestManager.getQuestForType(QuestsType.HUNT)));
+                });
+                Direction direction = level.getBlockState(pos).getValue(ArachneIdolBlock.DIRECTION);
+                Vec3 forward = direction.getUnitVec3();
+
+                Vec3 center = Vec3.atCenterOf(pos).add(forward.scale(2.0));
+                EnterDimensionEntity enterDimension = new EnterDimensionEntity(NRegistry.ENTER_DIMENSION.get(), level);
+                enterDimension.setPos(center.x,level.getHeight(Heightmap.Types.MOTION_BLOCKING, (int) center.x, (int) center.z),center.z);
+                level.addFreshEntity(enterDimension);
+                if (!level.isClientSide()){
+                    level.broadcastEntityEvent(enterDimension,(byte) 8);
+                }
             }
             case BLESSING -> {
                 currentState = State.NONE;

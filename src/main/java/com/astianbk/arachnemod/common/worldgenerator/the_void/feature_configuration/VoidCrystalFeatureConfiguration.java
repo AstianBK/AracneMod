@@ -1,6 +1,5 @@
-package com.astianbk.arachnemod.common.worldgenerator.feature_configuration;
+package com.astianbk.arachnemod.common.worldgenerator.the_void.feature_configuration;
 
-import com.astianbk.arachnemod.common.worldgenerator.feature.VoidCrystalFeature;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;

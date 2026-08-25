@@ -4,11 +4,13 @@ import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.common.registry.NRegistry;
 import com.astianbk.arachnemod.server.cap.ArachneAttachment;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
@@ -22,6 +24,7 @@ import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
@@ -56,6 +59,8 @@ public class VoidHopperEntity extends Monster {
         this.goalSelector.addGoal(5,new LookAtPlayerGoal(this, Player.class,30.0F));
         this.goalSelector.addGoal(3,new SilentCastingGoal());
         this.goalSelector.addGoal(4,new DamnationCastingGoal());
+        this.goalSelector.addGoal(4,new ArachnophobiaCastingGoal());
+
         this.goalSelector.addGoal(1,new FleeGoal());
     }
 
@@ -107,46 +112,37 @@ public class VoidHopperEntity extends Monster {
     protected void checkFallDamage(double ya, boolean onGround, BlockState onState, BlockPos pos) {
 
     }
-
-    public void addMarkSilent(LivingEntity living){
+    public void addEffectToEnemy(LivingEntity living, Holder<MobEffect> effectHolder){
         if (living instanceof Player player){
             ArachneAttachment.get(player).ifPresent(arachneAttachment -> {
                 int size = arachneAttachment.hexes.size();
                 if (size==3){
                     arachneAttachment.clearHexes(player);
-                    living.addEffect(new MobEffectInstance(NRegistry.SILENT,500,0));
+                    living.addEffect(new MobEffectInstance(effectHolder,500,0));
                 }else  {
                     arachneAttachment.addHex(level(), player);
                 }
             });
         }
     }
-
-    public void addDamnationHex(LivingEntity living){
-        if (living instanceof Player player){
-            ArachneAttachment.get(player).ifPresent(arachneAttachment -> {
-                int size = arachneAttachment.hexes.size();
-                if (size==3){
-                    arachneAttachment.clearHexes(player);
-                    living.addEffect(new MobEffectInstance(MobEffects.DARKNESS,250,0));
-                    living.addEffect(new MobEffectInstance(MobEffects.WEAKNESS,250,0));
-                }else  {
-                    arachneAttachment.addHex(level(), player);
-                }
-            });
+    public void criArachnophobia(){
+        for (LivingEntity living : this.level().getEntitiesOfClass(LivingEntity.class,this.getHitbox().inflate(30.0F))){
+            if (!living.is(EntityTypeTags.ARTHROPOD)){
+                addEffectToEnemy(living,NRegistry.ARACHNOPHOBIA);
+            }
         }
     }
     public void criSilent(){
         for (LivingEntity living : this.level().getEntitiesOfClass(LivingEntity.class,this.getHitbox().inflate(30.0F))){
             if (!living.is(EntityTypeTags.ARTHROPOD)){
-                addMarkSilent(living);
+                addEffectToEnemy(living,NRegistry.SILENT);
             }
         }
     }
     public void criDamnation(){
         for (LivingEntity living : this.level().getEntitiesOfClass(LivingEntity.class,this.getHitbox().inflate(30.0F))){
             if (!living.is(EntityTypeTags.ARTHROPOD)){
-                addDamnationHex(living);
+                addEffectToEnemy(living,NRegistry.DAMNATION);
             }
         }
     }
@@ -193,6 +189,10 @@ public class VoidHopperEntity extends Monster {
     }
 
     @Override
+    protected @Nullable SoundEvent getHurtSound(DamageSource damageSource) {
+        return SoundEvents.ZOMBIE_NAUTILUS_AMBIENT_ON_LAND;
+    }
+    @Override
     protected PathNavigation createNavigation(Level level) {
         return new GroundPathNavigation(this, level){
             @Override
@@ -235,12 +235,12 @@ public class VoidHopperEntity extends Monster {
         }
         public boolean validPos(double x , double y, double z){
             BlockPos pos = new BlockPos((int) x, (int) y, (int) z);
-            return !level().getBlockState(pos.below()).isAir();
+            return !level().getBlockState(pos.below()).isAir() && level().getBrightness(LightLayer.BLOCK,VoidHopperEntity.this.blockPosition())==0;
         }
 
         @Override
         public boolean canUse() {
-            return VoidHopperEntity.this.getTarget() != null && VoidHopperEntity.this.distanceToSqr(VoidHopperEntity.this.getTarget()) < 15.0F;
+            return VoidHopperEntity.this.prevBlessing==Blessing.NONE &&  (VoidHopperEntity.this.getTarget() != null && VoidHopperEntity.this.distanceToSqr(VoidHopperEntity.this.getTarget()) < 15.0F) || level().getBrightness(LightLayer.BLOCK,VoidHopperEntity.this.blockPosition())>0;
         }
     }
     public abstract class BlessingGoal extends Goal{
@@ -265,7 +265,6 @@ public class VoidHopperEntity extends Monster {
             if (!VoidHopperEntity.this.level().isClientSide()){
                 if (this.chargeBlessing()){
                     if ((this.castingTime % chargeTime)==0){
-                        AracneMod.LOGGER.info("castingTime : {}",this.castingTime);
                         blessing();
                     }
                 }
@@ -334,17 +333,37 @@ public class VoidHopperEntity extends Monster {
             return Blessing.DAMNATION;
         }
     }
+    public class ArachnophobiaCastingGoal extends BlessingGoal{
+
+
+        public ArachnophobiaCastingGoal() {
+            super(100);
+        }
+
+        @Override
+        void blessing() {
+            VoidHopperEntity.this.criArachnophobia();
+        }
+        @Override
+        public boolean chargeBlessing() {
+            return true;
+        }
+
+
+        @Override
+        Blessing getType() {
+            return Blessing.ARACHNOPHOBIA;
+        }
+    }
     public enum Blessing{
         NONE,
         SILENT,
         DAMNATION,
+        ARACHNOPHOBIA,
         SUMMON_NEEDLE,
         CALL_ALLIES;
     }
 
-    @Override
-    protected @Nullable SoundEvent getHurtSound(DamageSource damageSource) {
-        return SoundEvents.ZOMBIE_NAUTILUS_AMBIENT_ON_LAND;
-    }
+
 
 }

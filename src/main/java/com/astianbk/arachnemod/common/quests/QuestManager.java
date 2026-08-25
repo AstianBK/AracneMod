@@ -14,6 +14,7 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +41,15 @@ public class QuestManager extends SimpleJsonResourceReloadListener<Quest> {
         }
     }
 
-
+    public static List<Quest> getQuestForType(QuestsType type){
+        List<Quest> list = new ArrayList<>();
+        for (Quest quest: quests) {
+            if(quest.getType() == type){
+                list.add(quest);
+            }
+        }
+        return list;
+    }
     public static Quest getQuestForTittle(String tittle){
         for (Quest quest: quests) {
             if(quest.getTitle().equals(tittle)){

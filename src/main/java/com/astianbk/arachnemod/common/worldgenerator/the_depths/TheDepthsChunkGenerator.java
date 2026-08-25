@@ -73,7 +73,7 @@ public class TheDepthsChunkGenerator extends ChunkGenerator {
             for (int localZ = 0; localZ < 16; localZ++) {
 
                 pos.set(minX + localX, 0, minZ + localZ);
-                chunk.setBlockState(pos, Blocks.BEDROCK.defaultBlockState());
+                chunk.setBlockState(pos, NRegistry.VOID_PUDDLE_BLOCK.get().defaultBlockState());
 
             }
         }

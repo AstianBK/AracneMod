@@ -1,9 +1,9 @@
-package com.astianbk.arachnemod.common.worldgenerator.feature;
+package com.astianbk.arachnemod.common.worldgenerator.the_void.feature;
 
 import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.common.block.LargeTallVeilCrystalBlock;
 import com.astianbk.arachnemod.common.registry.NRegistry;
-import com.astianbk.arachnemod.common.worldgenerator.feature_configuration.VoidCrystalFeatureConfiguration;
+import com.astianbk.arachnemod.common.worldgenerator.the_void.feature_configuration.VoidCrystalFeatureConfiguration;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -32,6 +32,7 @@ public class VoidCrystalFeature extends Feature<VoidCrystalFeatureConfiguration>
         if (pos == null) {
             return false;
         }
+        if (random.nextFloat()<0.3F)return false;
 
         if (!canPlace(level, pos)) {
             return false;

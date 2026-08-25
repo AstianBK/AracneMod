@@ -7,6 +7,7 @@ import net.minecraft.world.entity.AnimationState;
 public class EnterDimensionRenderState extends LivingEntityRenderState {
     public AnimationState idle = new AnimationState();
     public AnimationState take = new AnimationState();
+    public AnimationState spawn = new AnimationState();
 
     public EnterDimensionRenderState(){
 

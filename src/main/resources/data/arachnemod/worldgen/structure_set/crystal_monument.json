@@ -1,7 +1,7 @@
 {
   "structures": [
     {
-      "structure": "arachnemod:bone_remains",
+      "structure": "arachnemod:crystal_monument",
       "weight": 1
     }
   ],
@@ -9,7 +9,7 @@
     "type": "arachnemod:void_placement",
     "salt": 123456789,
     "frequency_reduction_method": "default",
-    "frequency": 0.7,
+    "frequency": 0.3,
     "cell_size": 256
   }
 }
