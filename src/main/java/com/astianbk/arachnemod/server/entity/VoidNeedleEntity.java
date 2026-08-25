@@ -67,7 +67,7 @@ public class VoidNeedleEntity extends Monster {
                 .add(Attributes.MOVEMENT_SPEED, 0.35F)
                 .add(Attributes.FOLLOW_RANGE, 40.0)
                 .add(Attributes.ATTACK_KNOCKBACK,20)
-                .add(Attributes.MAX_HEALTH, 12.0)
+                .add(Attributes.MAX_HEALTH, 15.0)
                 .add(Attributes.ATTACK_DAMAGE, 12.0);
     }
 

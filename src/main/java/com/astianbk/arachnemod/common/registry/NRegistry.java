@@ -166,6 +166,8 @@ public class NRegistry {
     public static final DeferredItem<BlockItem> POINTED_BEDROCK_ITEM = ITEMS.registerSimpleBlockItem("pointed_bedrock_item",POINTED_BEDROCK_BLOCK);
     public static final DeferredItem<Item> SEALING_CRYSTAL_ITEM = ITEMS.registerItem("sealing_crystal_item",(properties)->new SealingCrystalItem(properties.component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)));
     public static final DeferredItem<Item> POWER_FRAGMENT = ITEMS.registerItem("power_fragment", Item::new);
+    public static final DeferredItem<Item> VOID_STRING = ITEMS.registerItem("void_string", Item::new);
+    public static final DeferredItem<Item> VOID_CHITIN = ITEMS.registerItem("void_chitin", Item::new);
 
     public static final DeferredItem<Item> VOID_HELMET = ITEMS.registerItem("void_helmet",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.HELMET).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_helmet" )))));
     public static final DeferredItem<Item> VOID_CHESTPLATE = ITEMS.registerItem("void_chestplate",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.CHESTPLATE).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_chestplate" )))));
@@ -178,6 +180,8 @@ public class NRegistry {
             .icon(() -> WEAVER_IDOL_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
                 output.accept(POWER_FRAGMENT.get());
+                output.accept(VOID_STRING.get());
+                output.accept(VOID_CHITIN.get());
                 output.accept(SEALING_CRYSTAL_ITEM.get());
                 output.accept(WEAVER_IDOL_ITEM.get());
                 output.accept(BEDCRUST_ITEM.get());

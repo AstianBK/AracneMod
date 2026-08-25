@@ -49,9 +49,11 @@ public class ScarabEntity extends PathfinderMob {
                 .add(Attributes.MOVEMENT_SPEED, 0.26F)
                 .add(Attributes.FOLLOW_RANGE, 35.0)
                 .add(Attributes.MAX_HEALTH, 20.0)
+                .add(Attributes.ATTACK_DAMAGE, 8.0)
                 .add(Attributes.ARMOR, 10.0)
-                .add(Attributes.ARMOR_TOUGHNESS, 5.0)
-                .add(Attributes.ATTACK_DAMAGE, 8.0);
+                .add(Attributes.ARMOR_TOUGHNESS, 8.0)
+                .add(Attributes.KNOCKBACK_RESISTANCE,0.20F);
+
     }
     @Override
     protected void checkFallDamage(double ya, boolean onGround, BlockState onState, BlockPos pos) {
