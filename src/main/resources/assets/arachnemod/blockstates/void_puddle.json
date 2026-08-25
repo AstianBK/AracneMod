@@ -1,9 +1,7 @@
 {
   "variants": {
-    "": [
-      {
-        "model": "arachnemod:block/void_puddle"
-      }
-    ]
+    "": {
+      "model": "arachnemod:block/void_puddle"
+    }
   }
 }

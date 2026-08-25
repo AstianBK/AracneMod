@@ -118,7 +118,7 @@ public class NRegistry {
 
     public static final DeferredBlock<Block> WEAVER_IDOL_BLOCK = BLOCKS.registerBlock("arachne_idol", (ArachneIdolBlock::new));
     public static final DeferredBlock<Block> BEDCRUST_BLOCK = BLOCKS.registerBlock("bedcrust", properties -> new Block(properties.strength(-1.0F, 3600000.0F)));
-    public static final DeferredBlock<Block> VOID_PUDDLE_BLOCK = BLOCKS.registerBlock("void_puddle", properties -> new Block(properties.strength(-1.0F, 3600000.0F)));
+    public static final DeferredBlock<Block> VOID_PUDDLE_BLOCK = BLOCKS.registerBlock("void_puddle", properties -> new Block(properties.sound(SoundType.MUD).strength(-1.0F, 3600000.0F)));
 
     public static final DeferredBlock<Block> BEDSLAG_BLOCK = BLOCKS.registerBlock("bedslag", properties -> new Block(properties.strength(-1.0F, 3600000.0F)));
     public static final DeferredBlock<Block> BEDSTONE_BLOCK = BLOCKS.registerBlock("bedstone", properties -> new Block(properties.sound(SoundType.DEEPSLATE).strength(-1.0F, 3600000.0F)));
