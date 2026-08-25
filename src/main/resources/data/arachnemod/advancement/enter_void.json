@@ -1,0 +1,30 @@
+{
+  "parent": "arachnemod:talk_idol",
+  "criteria": {
+    "entervoid": {
+      "trigger": "minecraft:changed_dimension",
+      "conditions": {
+        "from": "minecraft:overworld",
+        "to": "arachnemod:the_void"
+      }
+    }
+  },
+  "display": {
+    "description": "Descend into The Void",
+    "icon": {
+      "id": "minecraft:bedrock"
+    },
+    "title": "Sealed Beneath",
+    "show_toast": false,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "requirements": [
+    [
+      "entervoid"
+    ]
+  ],
+  "rewards": {
+    "experience": 50
+  }
+}

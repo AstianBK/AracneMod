@@ -1,0 +1,33 @@
+{
+  "criteria": {
+    "idol": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "arachnemod:arachne_idol_item"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "description": "Obtain a Forgotten Idol",
+    "icon": {
+      "id": "arachnemod:arachne_idol_item"
+    },
+    "title": "Void Weaver",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "arachnemod:block/stone_bedrock"
+  },
+  "requirements": [
+    [
+      "idol"
+    ]
+  ],
+  "rewards": {
+    "experience": 35
+  }
+}

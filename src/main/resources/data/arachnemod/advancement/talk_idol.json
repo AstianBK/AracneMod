@@ -1,0 +1,23 @@
+{
+  "parent": "arachnemod:get_idol",
+  "criteria": {
+    "talkwithidol": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": "You've made contact with a forgotten deity",
+    "icon": {
+      "id": "arachnemod:arachne_idol_item"
+    },
+    "title": "Dark Communion",
+    "show_toast": false,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "talkwithidol"
+    ]
+  ]
+}
