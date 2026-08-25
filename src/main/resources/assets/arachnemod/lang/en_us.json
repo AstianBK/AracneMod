@@ -55,8 +55,8 @@
 
   "sounds.arachnemod.darkness_constrict":"Darkness Constricts You",
 
-  "arachnemod.configuration.title": "Nerubian Mod Configs",
-  "arachnemod.configuration.section.arachnemod.common.toml": "Nerubian Mod Configs",
-  "arachnemod.configuration.section.arachnemod.common.toml.title": "Nerubian Mod Configs",
+  "arachnemod.configuration.title": "VoidWeaver Configs",
+  "arachnemod.configuration.section.arachnemod.common.toml": "VoidWeaver Configs",
+  "arachnemod.configuration.section.arachnemod.common.toml.title": "VoidWeaver Configs",
   "arachnemod.configuration.items": "Item List"
 }
