@@ -1,0 +1,30 @@
+{
+  "parent": "arachnemod:enter_void",
+  "criteria": {
+    "getchitin": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "arachnemod:void_string"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "description": "Obtain Void Chitin",
+    "icon": {
+      "id": "arachnemod:void_chitin"
+    },
+    "title": "Blocking Shadows",
+    "show_toast": false,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "requirements": [
+    [
+      "getchitin"
+    ]
+  ]
+}

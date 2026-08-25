@@ -1,0 +1,30 @@
+{
+  "parent": "arachnemod:enter_void",
+  "criteria": {
+    "getstring": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "arachnemod:void_string"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "description": "Obtain Void String",
+    "icon": {
+      "id": "arachnemod:void_string"
+    },
+    "title": "Sticking to Shadows",
+    "show_toast": false,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "requirements": [
+    [
+      "getstring"
+    ]
+  ]
+}
