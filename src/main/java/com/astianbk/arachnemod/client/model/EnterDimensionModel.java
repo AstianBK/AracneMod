@@ -42,6 +42,7 @@ public class EnterDimensionModel<T extends EnterDimensionRenderState> extends En
 	private final ModelPart left1spike3;
 	private KeyframeAnimation idle;
 	private KeyframeAnimation take;
+	private KeyframeAnimation spawn;
 	public EnterDimensionModel(ModelPart root) {
         super(root);
         this.truemain = root.getChild("truemain");
@@ -68,6 +69,7 @@ public class EnterDimensionModel<T extends EnterDimensionRenderState> extends En
 		this.left1spike3 = this.left1lower3.getChild("left1spike3");
 		this.idle = EnterDimensionAnim.idle.bake(root);
 		this.take = EnterDimensionAnim.take.bake(root);
+		this.spawn = EnterDimensionAnim.spawn.bake(root);
 	}
 
 	public static LayerDefinition createBodyLayer() {
@@ -152,6 +154,7 @@ public class EnterDimensionModel<T extends EnterDimensionRenderState> extends En
 //		this.walkLegs.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
 		this.idle.apply(state.idle,state.ageInTicks);
 		this.take.apply(state.take,state.ageInTicks);
+		this.spawn.apply(state.spawn,state.ageInTicks);
 //		this.attack2.apply(state.attack2,state.ageInTicks,0.5F);
 //
 //		this.bite.apply(state.bite,state.ageInTicks,0.5F);

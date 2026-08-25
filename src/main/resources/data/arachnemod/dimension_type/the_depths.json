@@ -5,10 +5,8 @@
       "loop": "arachnemod:ambience_loop"
     },
     "minecraft:visual/fog_start_distance": 0.0,
-    "minecraft:visual/fog_end_distance": 256.0,
-    "minecraft:visual/fog_color": "#090912",
-    "minecraft:visual/sky_light_color": "#090912",
-    "minecraft:visual/sky_light_factor": 0.0
+    "minecraft:visual/fog_end_distance": 30.0,
+    "minecraft:visual/fog_color": "#090912"
   },
   "coordinate_scale": 1.0,
   "default_clock": "minecraft:the_end",
@@ -26,5 +24,6 @@
     "max_inclusive": 7,
     "min_inclusive": 0
   },
+  "skybox": "none",
   "timelines": "#minecraft:in_end"
 }

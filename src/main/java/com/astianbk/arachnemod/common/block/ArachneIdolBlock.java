@@ -63,21 +63,25 @@ public class ArachneIdolBlock extends BaseEntityBlock {
         ArachneAttachment.get(player).ifPresent(e->{
             ArachneIdolBlockEntity arachneIdol = (ArachneIdolBlockEntity) level.getBlockEntity(pos);
             if (!level.isClientSide()){
-                if (arachneIdol.currentState == ArachneIdolBlockEntity.State.NONE && !state.getValue(LIT)){
-                    if (e.currentQuest==null){
-                        PacketDistributor.sendToPlayer((ServerPlayer) player,new PacketPlayDialog(Identifier.fromNamespaceAndPath(AracneMod.MODID,"arachne_dialog1"),player.getId()));
-                        arachneIdol.startMenu(player,level,pos,typesForState.get(ArachneIdolBlockEntity.State.MENU));
-                        level.setBlock(pos,state.setValue(LIT,true),3);
+                if (arachneIdol==null)return;
+                if (arachneIdol.currentState == ArachneIdolBlockEntity.State.NONE){
+                    if(!state.getValue(LIT)){
+                        if (e.currentQuest==null){
+                            level.setBlock(pos,state.setValue(LIT,true),3);
+                            PacketDistributor.sendToPlayer((ServerPlayer) player,new PacketPlayDialog(Identifier.fromNamespaceAndPath(AracneMod.MODID,"arachne_first_introduction"),player.getId()));
+                            arachneIdol.startMenu(player,level,pos,typesForState.get(ArachneIdolBlockEntity.State.MENU));
+                        }
                     }else {
-                        e.currentReputation = Math.min(100,e.currentReputation+e.currentQuest.getReputation());
-                        e.currentQuest = null;
-                        level.setBlock(pos,state.setValue(LIT,false),3);
+                        if (e.currentQuest.isComplete(e)){
+                            level.setBlock(pos,state.setValue(LIT,false),3);
+
+                            e.completeQuest((ServerPlayer) player);
+                        }
                     }
                 }
             }
-
         });
-        return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
+        return InteractionResult.SUCCESS;
     }
 
 

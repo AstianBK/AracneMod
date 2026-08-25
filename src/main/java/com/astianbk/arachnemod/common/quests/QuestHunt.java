@@ -14,17 +14,19 @@ public class QuestHunt extends Quest{
             RecordCodecBuilder.mapCodec(instance ->
                     instance.group(
                             Codec.STRING.fieldOf("title").forGetter(Quest::getTitle),
-                            Codec.STRING.fieldOf("description").forGetter(Quest::getDescription),
+                            Codec.STRING.fieldOf("dialogDescription").forGetter(Quest::getDescription),
+                            Codec.STRING.fieldOf("dialogFail").forGetter(Quest::getDialogFail),
+                            Codec.STRING.fieldOf("dialogComplete").forGetter(Quest::getDialogComplete),
                             TierQuest.CODEC.fieldOf("tier").forGetter(Quest::getTier),
                             Codec.INT.fieldOf("reputation").forGetter(Quest::getReputation),
                             Codec.INT.fieldOf("xp").forGetter(Quest::getXp),
                             Codec.STRING.fieldOf("entityTypeId").forGetter(QuestHunt::getTargetId),
                             Codec.INT.fieldOf("toHuntEntities").forGetter(QuestHunt::getMaxProgress)
-                    ).apply(instance,(tittle,descrip,tier,rep,xp,id,toHunt)->new QuestHunt(tittle,QuestsType.HUNT,descrip,tier,rep,xp,id,toHunt)));
+                    ).apply(instance, QuestHunt::new));
     public String entityTypeId;
     public int toHuntEntities;
-    public QuestHunt(String title, QuestsType type, String description, TierQuest tier, int reputation, int xp, String id,int toHunt) {
-        super(title, QuestsType.HUNT, description, tier,reputation,xp);
+    public QuestHunt(String title,String dialogDescription,String dialogFail,String dialogComplete, TierQuest tier, int reputation, int xp, String id,int toHunt) {
+        super(title, QuestsType.HUNT,dialogDescription,dialogFail,dialogComplete, tier,reputation,xp);
         this.entityTypeId = id;
         this.toHuntEntities = toHunt;
     }
@@ -36,7 +38,6 @@ public class QuestHunt extends Quest{
     }
 
     public boolean canAddProgress(String idTarget) {
-        AracneMod.LOGGER.debug("target : "+this.entityTypeId);
         return this.entityTypeId.equals(idTarget);
     }
     public boolean isComplete(ArachneAttachment cap) {

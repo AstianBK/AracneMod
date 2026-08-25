@@ -1,8 +1,6 @@
-package com.astianbk.arachnemod.common.worldgenerator.feature;
+package com.astianbk.arachnemod.common.worldgenerator.the_void.feature;
 
-import com.astianbk.arachnemod.common.registry.NRegistry;
-import com.astianbk.arachnemod.common.worldgenerator.feature_configuration.VoidCrystalFeatureConfiguration;
-import com.mojang.math.Axis;
+import com.astianbk.arachnemod.common.worldgenerator.the_void.feature_configuration.VoidCrystalFeatureConfiguration;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

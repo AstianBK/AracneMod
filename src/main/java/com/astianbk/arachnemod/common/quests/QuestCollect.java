@@ -12,18 +12,20 @@ public class QuestCollect extends Quest{
             RecordCodecBuilder.mapCodec(instance ->
                     instance.group(
                             Codec.STRING.fieldOf("title").forGetter(Quest::getTitle),
-                            Codec.STRING.fieldOf("description").forGetter(Quest::getDescription),
+                            Codec.STRING.fieldOf("dialogDescription").forGetter(Quest::getDescription),
+                            Codec.STRING.fieldOf("dialogFail").forGetter(Quest::getDialogFail),
+                            Codec.STRING.fieldOf("dialogComplete").forGetter(Quest::getDialogComplete),
                             TierQuest.CODEC.fieldOf("tier").forGetter(Quest::getTier),
                             Codec.INT.fieldOf("reputation").forGetter(Quest::getReputation),
                             Codec.INT.fieldOf("xp").forGetter(Quest::getXp),
                             Codec.STRING.fieldOf("itemId").forGetter(QuestCollect::getTargetId),
                             Codec.INT.fieldOf("toCollect").forGetter(QuestCollect::getMaxProgress)
-                    ).apply(instance, (title,description,tier,reputation,xp,itemId,toCollect)->new QuestCollect(title,QuestsType.COLLECT,description,tier,reputation,xp,itemId,toCollect))
+                    ).apply(instance, QuestCollect::new)
             );
     public String itemId;
     public int toCollect;
-    public QuestCollect(String title, QuestsType type, String description, TierQuest tier, int reputation, int xp, String itemId,int toCollect) {
-        super(title, QuestsType.COLLECT, description, tier,reputation,xp);
+    public QuestCollect(String title, String dialogDescription,String dialogFail,String dialogComplete, TierQuest tier, int reputation, int xp, String itemId,int toCollect) {
+        super(title, QuestsType.COLLECT,dialogDescription,dialogFail,dialogComplete, tier,reputation,xp);
         this.itemId = itemId;
         this.toCollect = toCollect;
     }

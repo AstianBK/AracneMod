@@ -323,7 +323,7 @@ public class PointedUpBlock extends Block implements SimpleWaterloggedBlock, Fal
 
     }
 
-    private static void grow(ServerLevel level, BlockPos growFromPos, Direction growToDirection) {
+    public static void grow(ServerLevel level, BlockPos growFromPos, Direction growToDirection) {
         BlockPos targetPos = growFromPos.relative(growToDirection);
         BlockState existingStateAtTargetPos = level.getBlockState(targetPos);
         if (isUnmergedTipWithDirection(existingStateAtTargetPos, growToDirection.getOpposite())) {

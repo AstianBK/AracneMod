@@ -1,0 +1,8 @@
+{
+  "type": "arachnemod:crystal_monument",
+  "biomes": [
+    "arachnemod:pilar"
+  ],
+  "spawn_overrides": {},
+  "step": "surface_structures"
+}

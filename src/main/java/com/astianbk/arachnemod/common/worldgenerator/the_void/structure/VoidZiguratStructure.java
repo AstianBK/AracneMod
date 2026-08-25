@@ -2,7 +2,7 @@ package com.astianbk.arachnemod.common.worldgenerator.the_void.structure;
 
 import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.common.registry.NRegistry;
-import com.astianbk.arachnemod.common.worldgenerator.structure_piece.VoidZiguratStructurePiece;
+import com.astianbk.arachnemod.common.worldgenerator.the_void.structure_piece.VoidZiguratStructurePiece;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -60,7 +60,8 @@ public class VoidZiguratStructure extends Structure {
         int cellX = Math.floorDiv(chunkCenterX, cellSize);
         int cellZ = Math.floorDiv(chunkCenterZ, cellSize);
 
-        Random random = new Random(seed + cellX * 341873128712L + cellZ * 132897987541L);
+        long islandSeed = seed + cellX * 341873128712L + cellZ * 132897987541L;
+        Random random = new Random(islandSeed);
 
         double centerX = cellX * cellSize + random.nextInt(cellSize);
 
@@ -74,7 +75,8 @@ public class VoidZiguratStructure extends Structure {
         if (islandChunkX != chunkPos.x() || islandChunkZ != chunkPos.z()) {
             return null;
         }
-
+        Random structureType = new Random(islandSeed ^ 0x5DEECE66DL);
+        if (structureType.nextInt(0,4)!=3)return null;
         return new Vec3(centerX, centerY, centerZ);
     }
 }

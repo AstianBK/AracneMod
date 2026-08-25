@@ -92,6 +92,7 @@ public class SealingCrystalEntity extends Entity {
             return false;
         } else {
             if (!this.isRemoved()) {
+                this.spawnAtLocation(level,new ItemStack(NRegistry.POWER_FRAGMENT.get()));
                 this.remove(RemovalReason.KILLED);
             }
             return true;

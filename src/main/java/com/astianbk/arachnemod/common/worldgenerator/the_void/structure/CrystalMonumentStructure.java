@@ -1,7 +1,7 @@
 package com.astianbk.arachnemod.common.worldgenerator.the_void.structure;
 
 import com.astianbk.arachnemod.common.registry.NRegistry;
-import com.astianbk.arachnemod.common.worldgenerator.the_void.structure_piece.VoidBoneRemainsStructurePiece;
+import com.astianbk.arachnemod.common.worldgenerator.the_void.structure_piece.CrystalMonumentStructurePiece;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
@@ -13,11 +13,11 @@ import net.minecraft.world.phys.Vec3;
 import java.util.Optional;
 import java.util.Random;
 
-public class VoidBoneRemainsStructure extends Structure {
+public class CrystalMonumentStructure extends Structure {
 
-    public static final MapCodec<VoidBoneRemainsStructure> CODEC = simpleCodec(VoidBoneRemainsStructure::new);
+    public static final MapCodec<CrystalMonumentStructure> CODEC = simpleCodec(CrystalMonumentStructure::new);
 
-    public VoidBoneRemainsStructure(StructureSettings settings) {
+    public CrystalMonumentStructure(StructureSettings settings) {
         super(settings);
     }
 
@@ -32,14 +32,12 @@ public class VoidBoneRemainsStructure extends Structure {
 
         BlockPos pos = BlockPos.containing(island);
 
-
-        return Optional.of(new GenerationStub(pos, builder -> {
-            builder.addPiece(new VoidBoneRemainsStructurePiece(0,generationContext.structureTemplateManager(),new StructurePlaceSettings(), pos));
-        }));
+        return Optional.of(new GenerationStub(pos, builder -> builder.addPiece(new CrystalMonumentStructurePiece(0,generationContext.structureTemplateManager(),new StructurePlaceSettings(), pos))));
     }
+
     @Override
     public StructureType<?> type() {
-        return NRegistry.BONE_REMAINS.get();
+        return NRegistry.CRYSTAL_MONUMENT.get();
     }
     public Vec3 getIslandForChunk(ChunkPos chunkPos, long seed) {
 
@@ -53,7 +51,6 @@ public class VoidBoneRemainsStructure extends Structure {
 
         long islandSeed = seed + cellX * 341873128712L + cellZ * 132897987541L;
         Random random = new Random(islandSeed);
-
         double centerX = cellX * cellSize + random.nextInt(cellSize);
 
         double centerZ = cellZ * cellSize + random.nextInt(cellSize);
@@ -67,7 +64,8 @@ public class VoidBoneRemainsStructure extends Structure {
             return null;
         }
         Random structureType = new Random(islandSeed ^ 0x5DEECE66DL);
-        if (structureType.nextInt(0,4)!=1)return null;
+        if (structureType.nextInt(0,4)!=0)return null;
+
 
         return new Vec3(centerX, centerY, centerZ);
     }

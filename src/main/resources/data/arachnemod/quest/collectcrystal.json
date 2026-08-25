@@ -1,0 +1,12 @@
+{
+  "title" : "Bring 1 Power Fragment",
+  "dialogDescription" : "arachnemod:quest_decription_collectcrystal",
+  "dialogComplete" : "arachnemod:quest_complete_1",
+  "dialogFail" : "arachnemod:quest_fail_1",
+  "type" : "COLLECT",
+  "itemId" : "arachnemod:power_fragment",
+  "toCollect" : 1,
+  "tier" : 0,
+  "reputation" : 5,
+  "xp" : 34
+}

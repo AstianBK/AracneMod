@@ -15,19 +15,22 @@ public abstract class Quest {
                     type -> switch (type) {
                         case HUNT -> QuestHunt.CODEC;
                         case COLLECT -> QuestCollect.CODEC;
-                        case SACRIFICE -> QuestSacrifice.CODEC;
                     }
             );
     protected String title;
     protected QuestsType type;
-    protected String description;
     protected TierQuest tier;
+    protected String dialogFail;
+    protected String dialogComplete;
+    protected String dialogDescription;
     protected int reputation;
     protected int xp;
-    public Quest(String title, QuestsType type, String description, TierQuest tier, int reputation, int xp) {
+    public Quest(String title, QuestsType type, String dialogDescription,String dialogFail,String dialogComplete, TierQuest tier, int reputation, int xp) {
         this.title = title;
         this.type = type;
-        this.description = description;
+        this.dialogDescription = dialogDescription;
+        this.dialogFail = dialogFail;
+        this.dialogComplete = dialogComplete;
         this.tier = tier;
         this.reputation = reputation;
         this.xp = xp;
@@ -53,7 +56,15 @@ public abstract class Quest {
     }
 
     public String getDescription() {
-        return description;
+        return dialogDescription;
+    }
+
+    public String getDialogFail() {
+        return dialogFail;
+    }
+
+    public String getDialogComplete() {
+        return dialogComplete;
     }
 
     public TierQuest getTier(){
@@ -66,7 +77,6 @@ public abstract class Quest {
 
 
     public boolean canAddProgress(String idTarget) {
-        AracneMod.LOGGER.debug("can add ");
         return false;
     }
     public boolean isComplete(ArachneAttachment cap) {

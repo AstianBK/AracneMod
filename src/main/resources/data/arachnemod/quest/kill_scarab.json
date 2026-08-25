@@ -1,0 +1,12 @@
+{
+  "type" : "HUNT",
+  "title" : "Slain 10 Scarab",
+  "dialogDescription" : "arachnemod:quest_decription_collectcrystal",
+  "dialogComplete" : "arachnemod:quest_complete_1",
+  "dialogFail" : "arachnemod:quest_fail_1",
+  "entityTypeId" : "arachnemod:scarab",
+  "tier" : 0,
+  "toHuntEntities" : 15,
+  "reputation" : 5,
+  "xp" : 34
+}
