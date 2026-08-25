@@ -10,11 +10,11 @@
     }
   },
   "display": {
-    "description": "Cling to light for survival",
+    "description": "Where Darkness is Born",
     "icon": {
       "id": "arachnemod:void_puddle"
     },
-    "title": "Where Darkness is Born",
+    "title": "Fall into The Depths",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": true
