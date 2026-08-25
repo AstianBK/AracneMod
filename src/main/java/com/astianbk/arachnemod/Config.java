@@ -19,7 +19,7 @@ public class Config {
 
     public static final ModConfigSpec.BooleanValue LOG_DIRT_BLOCK = BUILDER
             .comment("Whether to log the dirt block on common setup")
-            .define("logDirtBlock", true);
+            .define("logDirtBlock", false);
 
     public static final ModConfigSpec.IntValue MAGIC_NUMBER = BUILDER
             .comment("A magic number")

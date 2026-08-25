@@ -47,7 +47,7 @@
               "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:string",
+          "name": "arachnemod:void_string",
           "weight": 9
         }
       ],
@@ -93,7 +93,7 @@
         {
           "type": "minecraft:item",
           "functions": [],
-          "name": "minecraft:string",
+          "name": "arachnemod:void_chitin",
           "weight": 8
         },
         {
