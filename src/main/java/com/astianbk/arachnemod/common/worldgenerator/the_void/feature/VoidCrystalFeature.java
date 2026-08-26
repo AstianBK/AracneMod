@@ -32,7 +32,7 @@ public class VoidCrystalFeature extends Feature<VoidCrystalFeatureConfiguration>
         if (pos == null) {
             return false;
         }
-        if (random.nextFloat()<0.3F)return false;
+        if (random.nextFloat()>0.3F)return false;
 
         if (!canPlace(level, pos)) {
             return false;

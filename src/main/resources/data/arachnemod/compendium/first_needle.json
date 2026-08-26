@@ -1,0 +1,6 @@
+{
+  "type" : "ENTITY",
+  "idEntity" : "arachnemod:void_needle",
+  "idDialog" : "arachnemod:arachne_dialogue_needle",
+  "action": "KILL"
+}

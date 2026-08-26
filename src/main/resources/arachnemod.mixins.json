@@ -6,7 +6,8 @@
     "CloudRendererMixin",
     "HumanoidArmorLayerMixin",
     "LevelRendererMixin",
-    "LightmapRenderStateExtractorMixin"
+    "LightmapRenderStateExtractorMixin",
+    "WebBlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1

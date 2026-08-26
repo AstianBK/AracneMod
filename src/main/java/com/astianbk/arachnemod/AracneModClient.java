@@ -99,6 +99,7 @@ public class AracneModClient {
         event.registerLayerDefinition(WebPartModel.LAYER_LOCATION,Suppliers.ofInstance(WebPartModel.createBodyLayer()));
         event.registerLayerDefinition(VoidGrubModel.LAYER_LOCATION,Suppliers.ofInstance(VoidGrubModel.createBodyLayer()));
         event.registerLayerDefinition(SealingCrystalModel.LAYER_LOCATION,Suppliers.ofInstance(SealingCrystalModel.createBodyLayer()));
+
         //        event.registerLayerDefinition(ScarabModel.ARMOR_LOCATION,Suppliers.ofInstance(ScarabModel.createBodyLayer(new CubeDeformation(1.0F))));
     }
 
@@ -336,5 +337,6 @@ public class AracneModClient {
         event.registerEntityRenderer(NRegistry.VOID_VEILMOTH.get(), VoidVeilmothRenderer::new);
         event.registerEntityRenderer(NRegistry.ENTER_DIMENSION.get(),EnterDimensionRenderer::new);
         event.registerEntityRenderer(NRegistry.WEB_ELEVATOR.get(),WebElevatorRenderer::new);
+        event.registerEntityRenderer(NRegistry.VOID_SPIDER.get(),SummoneableSpiderRenderer::new);
     }
 }

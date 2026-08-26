@@ -1,0 +1,6 @@
+{
+  "type" : "ENTITY",
+  "idEntity" : "arachnemod:scarab",
+  "idDialog" : "arachnemod:arachne_dialogue_reaver",
+  "action": "KILL"
+}

@@ -5,6 +5,7 @@ import com.astianbk.arachnemod.common.registry.NRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -56,7 +57,7 @@ public class TheVoidAttachment {
                 }
             }
             oldShakeTime = shakeTime;
-            if (this.shakeTime<160){
+            if (this.shakeTime<600){
                 this.shakeTime++;
             }
             this.bedrockfallTime++;
@@ -65,9 +66,9 @@ public class TheVoidAttachment {
             }
         }else {
             checkTick++;
-            if (checkTick>=200){
+            if (checkTick>=6000){
                 if (!level.isClientSide()){
-                    if(level.getRandom().nextFloat()<0.5F){
+                    if(level.getRandom().nextFloat()<0.64F){
                         startFlash(level);
                     }else {
                         startBedrockFall(level);
@@ -83,14 +84,26 @@ public class TheVoidAttachment {
         oldTick = 0;
         tick = 0;
         SoundEvent event = soundFlash[level.getRandom().nextInt(0,soundFlash.length-1)];
-        level.players().forEach(player -> level.playLocalSound(player,event,SoundSource.AMBIENT,2.0F,1.0F));
+        level.players().forEach(player -> {
+            level.playLocalSound(player,event,SoundSource.AMBIENT,2.0F,1.0F);
+            if (!level.isClientSide()){
+                ArachneAttachment.get(player).ifPresent(arachneAttachment -> {
+                    arachneAttachment.checkCompendiumEvents((ServerPlayer) player, Identifier.fromNamespaceAndPath(AracneMod.MODID,"flash"),null);
+                });
+            }
+        });
     }
     public void startBedrockFall(Level level){
         bedrockfall = true;
         oldShakeTime = 0;
         shakeTime = 0;
         bedrockfallTime = 0;
-        level.players().forEach(player -> level.playLocalSound(player,NRegistry.BEDROCKFALL.get(), SoundSource.AMBIENT,2.0F,1.0F));
+        level.players().forEach(player -> {
+            level.playLocalSound(player,NRegistry.BEDROCKFALL.get(), SoundSource.AMBIENT,2.0F,1.0F);
+            if (!level.isClientSide()){
+                ArachneAttachment.get(player).ifPresent(arachneAttachment -> arachneAttachment.checkCompendiumEvents((ServerPlayer) player, Identifier.fromNamespaceAndPath(AracneMod.MODID,"bedrockfall"),null));
+            }
+        });
 
     }
     public float getIntensityFlash(float partial) {
@@ -98,7 +111,7 @@ public class TheVoidAttachment {
         return Mth.sin(t * Mth.PI) ;
     }
     public float getIntensityShake(float partial) {
-        float t = Mth.clamp(Mth.lerp(partial, oldShakeTime, shakeTime) / 160.0F, 0.0F, 1.0F);
+        float t = Mth.clamp(Mth.lerp(partial, oldShakeTime, shakeTime) / 600.0F, 0.0F, 1.0F);
         return Mth.sin(t * Mth.PI) ;
     }
     public static class TheVoidSerializer implements IAttachmentSerializer<TheVoidAttachment> {

@@ -258,6 +258,12 @@ public class NRegistry {
                     () -> EntityType.Builder.of(VoidGrubEntity::new, MobCategory.MONSTER)
                             .sized(0.25F, 0.5F).clientTrackingRange(10).updateInterval(2)
                             .build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_grub"))));
+    public static final DeferredHolder<EntityType<?>, EntityType<SummoneableSpiderEntity>> VOID_SPIDER =
+            ENTITY_TYPES.register("void_spider",
+                    () -> EntityType.Builder.of(SummoneableSpiderEntity::new, MobCategory.MONSTER)
+                            .sized(0.5F, 0.5F).clientTrackingRange(10).updateInterval(2)
+                            .build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_spider"))));
+
     public static final DeferredHolder<EntityType<?>, EntityType<SealingCrystalEntity>> SEALING_CRYSTAL =
             ENTITY_TYPES.register("sealing_crystal",
                     () -> EntityType.Builder.of(SealingCrystalEntity::new, MobCategory.MONSTER)

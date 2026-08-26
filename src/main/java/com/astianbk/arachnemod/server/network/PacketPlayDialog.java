@@ -38,6 +38,7 @@ public record PacketPlayDialog(Identifier identifier,int id) implements CustomPa
             Minecraft minecraft = Minecraft.getInstance();
             if (minecraft.level.getEntity(msg.id) instanceof  Player player){
                 ArachneAttachment.get(player).ifPresent(arachneAttachment -> {
+                    AracneMod.LOGGER.info("play");
                     arachneAttachment.playDialog(msg.identifier);
                 });
             }

@@ -12,7 +12,18 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 
 public class IdolSpeechGui implements GuiLayer {
-    public static final Identifier LOCATION = Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/gui/darkness/void_darkness.png");
+    public static final Identifier[] LOCATIONS = {
+            Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/gui/darkness/void_darkness_0.png"),
+            Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/gui/darkness/void_darkness_1.png"),
+            Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/gui/darkness/void_darkness_2.png"),
+            Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/gui/darkness/void_darkness_3.png"),
+            Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/gui/darkness/void_darkness_4.png"),
+            Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/gui/darkness/void_darkness_5.png"),
+            Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/gui/darkness/void_darkness_6.png"),
+            Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/gui/darkness/void_darkness_7.png"),
+            Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/gui/darkness/void_darkness_8.png"),
+            Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/gui/darkness/void_darkness_9.png")
+    };
 
     @Override
     public void render(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker) {
@@ -23,7 +34,8 @@ public class IdolSpeechGui implements GuiLayer {
         if (!player.isCreative() && !player.isSpectator()){
             ArachneAttachment.get(player).ifPresent(arachnePlayer->{
                 float alpha = arachnePlayer.getAnimDarkness(deltaTracker.getGameTimeDeltaTicks());
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED,LOCATION, (int) 0, (int) 0,0,0,width,height,width,height,ARGB.white(alpha));
+                int index = (int) (((player.tickCount * 0.3F + deltaTracker.getGameTimeDeltaTicks()) % 10 ));
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED,LOCATIONS[index], (int) 0, (int) 0,0,0,width,height,width,height,ARGB.white(alpha));
             });
         }
 

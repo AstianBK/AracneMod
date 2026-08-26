@@ -4,11 +4,15 @@ package com.astianbk.arachnemod.server.cap;
 import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.Events;
 import com.astianbk.arachnemod.QuestsType;
+import com.astianbk.arachnemod.common.compendium.*;
 import com.astianbk.arachnemod.common.dialogs.Dialog;
 import com.astianbk.arachnemod.common.dialogs.DialogsManager;
 import com.astianbk.arachnemod.common.quests.Quest;
 import com.astianbk.arachnemod.common.quests.QuestManager;
 import com.astianbk.arachnemod.common.registry.NRegistry;
+import com.astianbk.arachnemod.server.cap.data.BlessingData;
+import com.astianbk.arachnemod.server.cap.data.CompendiumData;
+import com.astianbk.arachnemod.server.cap.data.CooldownData;
 import com.astianbk.arachnemod.server.network.PacketPlayDialog;
 import com.mojang.serialization.Codec;
 import net.minecraft.client.Minecraft;
@@ -35,7 +39,6 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -59,6 +62,7 @@ public class ArachneAttachment {
     public AnimationState block = new AnimationState();
     public AnimationState burrow = new AnimationState();
     public AnimationState swim = new AnimationState();
+    public boolean isCocoon = false;
     public boolean transformComplete = false;
     public boolean itemTransformDrop = false;
     public Quest currentQuest=null;
@@ -76,6 +80,8 @@ public class ArachneAttachment {
     public boolean prevIsDark = false;
     public BlockPos teleportBack = null;
     public List<Hex> hexes = new ArrayList<>();
+    public List<CompendiumData> compendiumData=new ArrayList<>();
+    public List<BlessingData> blessingData = new ArrayList<>();
     ServerBossEvent event =  Util.make(new ServerBossEvent(UUID.randomUUID(), Component.literal("this.getDisplayName()"), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS), e -> e.setDarkenScreen(false));
     public String currentDialog = null;
     public int index = 0;
@@ -146,6 +152,7 @@ public class ArachneAttachment {
                         if (player.tickCount%20 == 0){
                             if (player instanceof ServerPlayer serverPlayer){
                                 player.hurtServer(serverPlayer.level(),serverPlayer.damageSources().fellOutOfWorld(),3.0F);
+                                checkCompendiumEvents(serverPlayer, Identifier.fromNamespaceAndPath(AracneMod.MODID,"darkness"),null);
                             }
                         }
                         this.timeDarkness = 100;
@@ -206,14 +213,19 @@ public class ArachneAttachment {
             //this.attack.animateWhen(player.getAttackAnim(1.0F)>0,player.tickCount);
             this.swim.animateWhen(player.isSwimming(),player.tickCount);
             this.block.animateWhen(player.getUseItem().getItem() instanceof ShieldItem,player.tickCount);
-            this.updateText(player);
-        }
 
+        }
+        this.updateText(player);
+        for (BlessingData data : blessingData){
+            if (data.hasCooldown){
+                data.cooldownData.tick();
+            }
+        }
     }
 
     public void acceptQuest(ServerPlayer player,Quest quest){
         this.currentQuest = quest;
-        this.timeQuest = 2000;
+        this.timeQuest = 5600;
         PacketDistributor.sendToPlayer(player,new PacketPlayDialog(Identifier.parse(quest.getDescription()),player.getId()));
         this.progressQuest = 0;
     }
@@ -228,11 +240,22 @@ public class ArachneAttachment {
 
     public void completeQuest(ServerPlayer serverPlayer){
         if (this.currentQuest != null){
-            PacketDistributor.sendToPlayer(serverPlayer,new PacketPlayDialog(Identifier.parse(currentQuest.getDialogFail()),serverPlayer.getId()));
+            playDialog(Identifier.parse(currentQuest.getDialogComplete()));
             currentReputation= Math.min(100,currentReputation+currentQuest.getReputation());
+            this.checkAvailableBlessing();
             this.currentQuest = null;
+            serverPlayer.syncData(NRegistry.ARACNE);
         }
     }
+
+    private void checkAvailableBlessing() {
+        for (BlessingData data : this.blessingData){
+            if (currentReputation >= data.reputation){
+                data.unlock=true;
+            }
+        }
+    }
+
     public static float getSpiderCrosshairAmount(Player player, double maxDistance) {
         Vec3 eyePos = player.getEyePosition();
         Vec3 look = player.getLookAngle().normalize();
@@ -303,15 +326,17 @@ public class ArachneAttachment {
         }
         if (text.length() < targetText.length()) {
             text += targetText.charAt(text.length());
-
         }
+
         if (text.length() >= targetText.length()) {
             index++;
-            time = 30;
+            time = 20;
         }
-        SoundEvent event1 = BuiltInRegistries.SOUND_EVENT.getValue(Identifier.parse(dialog.sounds().get(player.level().getRandom().nextInt(0,dialog.sounds().size()))));
 
-        Minecraft.getInstance().getSoundManager().play(new EntityBoundSoundInstance(event1, SoundSource.NEUTRAL, 1.5F, 1.0F, player,player.level().getRandom().nextLong()));
+        if (player.level().isClientSide()){
+            SoundEvent event1 = BuiltInRegistries.SOUND_EVENT.getValue(Identifier.parse(dialog.sounds().get(player.level().getRandom().nextInt(0,dialog.sounds().size()))));
+            Minecraft.getInstance().getSoundManager().play(new EntityBoundSoundInstance(event1, SoundSource.NEUTRAL, 1.5F, 1.0F, player,player.level().getRandom().nextLong()));
+        }
 
     }
 
@@ -335,17 +360,85 @@ public class ArachneAttachment {
     }
 
     public void init(){
-        this.isDirty = true;
+        if (this.compendiumData.isEmpty()){
+            this.initCompendiumData();
+        }
+        if (this.blessingData.isEmpty()){
+            this.initBlessingData();
+        }
     }
 
-    public boolean isNerubian(){
-        return this.transformComplete;
+    public void startBlessingCooldown(BlessingData.BlessingType type){
+        for (BlessingData data : this.blessingData){
+            if (data.type == type){
+                data.cooldownData.startCooldown();
+            }
+        }
+    }
+    public boolean blessingIsActive(BlessingData.BlessingType type){
+        for (BlessingData data : this.blessingData){
+            if (data.type == type){
+                return data.isUnlock();
+            }
+        }
+        return false;
     }
 
-    public float getAnimSpeech(float partialTick){
-        return Mth.lerp(partialTick,this.speechTimeO,this.speechTime) / 160.0F;
+    public void unlockBlessing(Player player,BlessingData.BlessingType type){
+        for (BlessingData data : this.blessingData){
+            if (data.type == type){
+                data.unlock = true;
+            }
+        }
+        player.syncData(NRegistry.ARACNE);
     }
 
+    private void initBlessingData() {
+        this.blessingData.add(new BlessingData(BlessingData.BlessingType.ARACHNE_MOVE,new CooldownData(0),5,false,false));
+        this.blessingData.add(new BlessingData(BlessingData.BlessingType.ARACHNE_ANTI_FALL,new CooldownData(24000),15,false,true));
+        this.blessingData.add(new BlessingData(BlessingData.BlessingType.ARACHNE_FANG,new CooldownData(0),40,false,false));
+        this.blessingData.add(new BlessingData(BlessingData.BlessingType.ARACHNE_ALLIE,new CooldownData(0),50,false,false));
+        this.blessingData.add(new BlessingData(BlessingData.BlessingType.ARACHNE_INFECTION,new CooldownData(0),70,false,false));
+        this.blessingData.add(new BlessingData(BlessingData.BlessingType.ARACHNE_PROTECTION,new CooldownData(0),90,false,false));
+        this.blessingData.add(new BlessingData(BlessingData.BlessingType.ARACHNE_FORM,new CooldownData(0),100,false,false));
+    }
+
+    private void initCompendiumData() {
+        for (Map.Entry<Identifier,Compendium> entry : CompendiumManager.getCompendiums().entrySet()){
+            this.compendiumData.add(new CompendiumData(entry.getKey(),entry.getValue(),false));
+        }
+    }
+
+    public void checkCompendiumEvents(ServerPlayer player,Identifier id, Action action){
+        for (CompendiumData data : compendiumData){
+            if (!data.unlock) {
+                if (action == null){
+                    if (data.compendium.getType() == Compendium.CompendiumType.EVENT){
+                        CompendiumEvent compendiumEvent = (CompendiumEvent) data.compendium;
+                        if (compendiumEvent.idEvent.equals(id.toString())){
+                            data.unlock = true;
+                            playDialog(Identifier.parse(compendiumEvent.getDialog()));
+                            player.syncData(NRegistry.ARACNE);
+
+                        }
+                    }
+                }else {
+                    if (data.compendium.getType() == Compendium.CompendiumType.ENTITY){
+                        CompendiumEntity compendiumEvent = (CompendiumEntity) data.compendium;
+
+                        if (compendiumEvent.action == action){
+                            if (compendiumEvent.idEntity.equals(id.toString())){
+                                data.unlock = true;
+                                playDialog(Identifier.parse(compendiumEvent.getDialog()));
+                                player.syncData(NRegistry.ARACNE);
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     public void addHex(Level level,Player player){
         if (hexes.size()==3)return;
         hexes.add(Hex.values()[level.getRandom().nextInt(0,3)]);
@@ -362,7 +455,6 @@ public class ArachneAttachment {
         Item itemQuest = BuiltInRegistries.ITEM.get(Identifier.parse(this.currentQuest.getTargetId())).get().value();
 
         int countItem = player.getInventory().countItem(itemQuest);
-        AracneMod.LOGGER.info("item :{} , quest:{}",countItem,this.currentQuest);
         this.progressQuest = Math.min(countItem,this.currentQuest.getMaxProgress());
         player.syncData(NRegistry.ARACNE);
     }
@@ -391,6 +483,12 @@ public class ArachneAttachment {
         currentQuest = QuestManager.getQuestForTittle(tag.getStringOr("quest"," "));
         hexes = new ArrayList<>(tag.read("hexes", Hex.CODEC.listOf()).orElseGet(List::of));
         timeHex = tag.getIntOr("timeHex",0);
+
+        compendiumData = new ArrayList<>(tag.read("compendiumData",CompendiumData.CODEC.listOf()).orElseGet(List::of));
+        if (tag.getInt("teleportX").isPresent()){
+            teleportBack = new BlockPos(tag.getIntOr("teleportX",0),tag.getIntOr("teleportY",0),tag.getIntOr("teleportZ",0));
+        }
+        blessingData = new ArrayList<>(tag.read("blessingData",BlessingData.CODEC.listOf()).orElseGet(List::of));
     }
 
     public static Optional<ArachneAttachment> get(Player player){
@@ -415,7 +513,6 @@ public class ArachneAttachment {
     public static class NerubianCapSerializer implements IAttachmentSerializer<ArachneAttachment> {
         public static final StreamCodec<RegistryFriendlyByteBuf, ArachneAttachment> STREAM_CODEC =
                 new StreamCodec<>() {
-
                     @Override
                     public void encode(RegistryFriendlyByteBuf buf, ArachneAttachment attachment) {
                         buf.writeInt(attachment.hexes.size());
@@ -432,10 +529,28 @@ public class ArachneAttachment {
                         if (attachment.currentQuest!=null){
                             buf.writeUtf(attachment.currentQuest.getTitle());
                         }
+                        buf.writeInt(attachment.compendiumData.size());
+                        for (CompendiumData data : attachment.compendiumData){
+                            data.save(buf);
+                        }
+                        buf.writeBoolean(attachment.currentDialog!=null);
+                        if (attachment.currentDialog!=null){
+                            buf.writeUtf(attachment.currentDialog);
+                            buf.writeInt(attachment.index);
+                        }
+                        buf.writeBoolean(attachment.teleportBack!=null);
+                        if (attachment.teleportBack!=null){
+                            buf.writeBlockPos(attachment.teleportBack);
+                        }
+                        buf.writeInt(attachment.blessingData.size());
+                        for (BlessingData data : attachment.blessingData){
+                            data.save(buf);
+                        }
                     }
 
                     @Override
-                    public ArachneAttachment decode(RegistryFriendlyByteBuf buf) {ArachneAttachment attachment = new ArachneAttachment();
+                    public ArachneAttachment decode(RegistryFriendlyByteBuf buf) {
+                        ArachneAttachment attachment = new ArachneAttachment();
 
                         int size = buf.readInt();
 
@@ -449,6 +564,21 @@ public class ArachneAttachment {
                         attachment.timeQuest = buf.readInt();
                         if (buf.readBoolean()){
                             attachment.currentQuest = QuestManager.getQuestForTittle(buf.readUtf());
+                        }
+                        int compendiumSize = buf.readInt();
+                        for (int i = 0; i < compendiumSize ; i++){
+                            attachment.compendiumData.add(new CompendiumData(buf));
+                        }
+                        if (buf.readBoolean()){
+                            attachment.currentDialog = buf.readUtf();
+                            attachment.index = buf.readInt();
+                        }
+                        if (buf.readBoolean()){
+                            attachment.teleportBack = buf.readBlockPos();
+                        }
+                        int blessingSize = buf.readInt();
+                        for (int i = 0; i< blessingSize ; i++){
+                            attachment.blessingData.add(new BlessingData(buf));
                         }
                         return attachment;
                     }
@@ -476,7 +606,13 @@ public class ArachneAttachment {
             }
 
             output.putInt("timeHex", attachment.timeHex);
-
+            output.store("compendiumData",CompendiumData.CODEC.listOf(),attachment.compendiumData);
+            if (attachment.teleportBack!=null){
+                output.putInt("teleportX",attachment.teleportBack.getX());
+                output.putInt("teleportY",attachment.teleportBack.getY());
+                output.putInt("teleportZ",attachment.teleportBack.getZ());
+            }
+            output.store("blessingData",BlessingData.CODEC.listOf(),attachment.blessingData);
             return true;
         }
     }
