@@ -72,11 +72,14 @@ public class ArachneIdolBlock extends BaseEntityBlock {
                             arachneIdol.startMenu(player,level,pos,typesForState.get(ArachneIdolBlockEntity.State.MENU));
                         }
                     }else {
-                        if (e.currentQuest.isComplete(e)){
+                        if (e.currentQuest==null){
+                            level.setBlock(pos,state.setValue(LIT,false),3);
+                        }else if (e.currentQuest.isComplete(e)){
                             level.setBlock(pos,state.setValue(LIT,false),3);
 
                             e.completeQuest((ServerPlayer) player);
                         }
+
                     }
                 }
             }

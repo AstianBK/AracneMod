@@ -3,6 +3,7 @@ package com.astianbk.arachnemod;
 import com.astianbk.arachnemod.common.compendium.Action;
 import com.astianbk.arachnemod.common.compendium.CompendiumManager;
 import com.astianbk.arachnemod.common.dialogs.DialogsManager;
+import com.astianbk.arachnemod.common.items.OsmiumArmorItem;
 import com.astianbk.arachnemod.common.quests.QuestManager;
 import com.astianbk.arachnemod.common.registry.NRegistry;
 import com.astianbk.arachnemod.server.cap.ArachneAttachment;
@@ -23,10 +24,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.SpawnPlacementTypes;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.animal.golem.IronGolem;
@@ -45,6 +45,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
@@ -79,8 +81,32 @@ public class Events {
     }
 
     @SubscribeEvent
+    public static void itemModifierEvent(ItemAttributeModifierEvent event){
+        ItemStack stack = event.getItemStack();
+
+        if (!(stack.getItem() instanceof OsmiumArmorItem)) {
+            return;
+        }
+
+        if (!stack.isDamageableItem()) {
+            return;
+        }
+
+        float damageRatio = (float) stack.getDamageValue() / (float) stack.getMaxDamage();
+
+        double maxBonus = 8.0D;
+        double armorBonus = maxBonus * damageRatio;
+
+        if (armorBonus <= 0.0D) {
+            return;
+        }
+
+        event.addModifier(Attributes.ARMOR, new AttributeModifier(Identifier.fromNamespaceAndPath(AracneMod.MODID, "osmium_durability_armor"), armorBonus, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.ARMOR);
+    }
+    @SubscribeEvent
     public static void onDie(LivingDeathEvent event){
         Entity entity = event.getSource().getEntity();
+        LivingEntity death = event.getEntity();
         if(entity instanceof Player player){
             ArachneAttachment.get(player).ifPresent(e->{
                 if (e.blessingIsActive(BlessingData.BlessingType.ARACHNE_INFECTION)){
@@ -104,6 +130,19 @@ public class Events {
                 }
             });
         }
+        if (death instanceof Player player){
+            ArachneAttachment.get(player).ifPresent(e->{
+                AracneMod.LOGGER.info("die");
+                if (e.blessingIsActive(BlessingData.BlessingType.ARACHNE_PROTECTION)){
+                    AracneMod.LOGGER.info("tiene arachne protetion");
+                    e.isCocoon = true;
+                    e.cocoonTime = 100;
+                    event.setCanceled(true);
+                    death.setHealth(1.0F);
+                    player.syncData(NRegistry.ARACNE);
+                }
+            });
+        }
     }
 
     @SubscribeEvent
@@ -120,7 +159,6 @@ public class Events {
         }
         if (entity instanceof Silverfish silverfish){
             silverfish.targetSelector.removeAllGoals(goal -> true);
-
             silverfish.targetSelector.addGoal(1, (new HurtByTargetGoal(silverfish, new Class[0])).setAlertOthers(new Class[0]));
             silverfish.targetSelector.addGoal(2, new NearestAttackableTargetGoal(silverfish, Player.class, true){
                 @Override
@@ -136,6 +174,10 @@ public class Events {
             });
 
         }
+    }
+    @SubscribeEvent
+    public static void registerCommands(RegisterCommandsEvent event) {
+        VoidWeatherCommand.register(event.getDispatcher());
     }
 
 
@@ -158,9 +200,7 @@ public class Events {
 
     @SubscribeEvent
     public static void onEquip(LivingEquipmentChangeEvent event) {
-
         if (!(event.getEntity() instanceof Player player)) return;
-
     }
     @SubscribeEvent
     public static void spawnEvent(RegisterSpawnPlacementsEvent event) {
@@ -227,6 +267,13 @@ public class Events {
     }
     @SubscribeEvent
     public static void hurtEvent(LivingDamageEvent.Pre event){
+        if (event.getEntity() instanceof Player player){
+            ArachneAttachment.get(player).ifPresent(arachneAttachment -> {
+                if (arachneAttachment.isCocoon){
+                    event.setNewDamage(0.0F);
+                }
+            });
+        }
         if (!event.getEntity().hasEffect(NRegistry.DAMNATION))return;
         if (event.getEntity() instanceof Player){
             event.setNewDamage(event.getOriginalDamage()+3);
@@ -319,9 +366,8 @@ public class Events {
 
     @SubscribeEvent
     public static void onUse(PlayerInteractEvent.RightClickItem event){
-        if (!event.getItemStack().getItem().equals(Items.STICK)) {
+        if (!event.getItemStack().getItem().equals(NRegistry.BEDSTONE_ITEM.get())) {
         }
-
     }
     public static void teleportToTheDepth(Vec3 position, Level level, LivingEntity living){
         ServerLevel serverLevel = ((ServerLevel)level).getServer().getLevel(ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath("arachnemod", "the_depths")));
@@ -355,16 +401,16 @@ public class Events {
 
         double centerX = cellX * cellSize + random.nextInt(cellSize);
         double centerZ = cellZ * cellSize + random.nextInt(cellSize);
-        for (int y = 398; y >= 240; y--) {
+        for (int y = 390; y >= 240; y--) {
 
-            BlockPos pos = new BlockPos(cellX, y, cellZ);
+            BlockPos pos = new BlockPos((int) centerX, y, (int) centerZ);
             BlockState state = serverLevel.getBlockState(pos);
 
             if (!state.isAir()) {
                 return Vec3.atCenterOf(pos.above());
             }
         }
-        return new Vec3(centerX,serverLevel.getHeight(),centerZ);
+        return new Vec3(centerX,252,centerZ);
     }
     @SubscribeEvent
     public static void addQuestsData(AddServerReloadListenersEvent event){

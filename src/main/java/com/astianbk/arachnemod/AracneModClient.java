@@ -2,6 +2,7 @@ package com.astianbk.arachnemod;
 
 import com.astianbk.arachnemod.client.gui.ArachneSpeechGui;
 import com.astianbk.arachnemod.client.layer.MarkSilentLayer;
+import com.astianbk.arachnemod.client.render_state.SpiderAvatarRenderState;
 import com.astianbk.arachnemod.client.renderer.*;
 import com.astianbk.arachnemod.client.gui.IdolSpeechGui;
 import com.astianbk.arachnemod.client.model.*;
@@ -13,8 +14,10 @@ import com.google.common.reflect.TypeToken;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.*;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
@@ -28,11 +31,13 @@ import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.player.Input;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelType;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.phys.Vec2;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -50,6 +55,8 @@ import java.util.List;
 @EventBusSubscriber(modid = AracneMod.MODID, value = Dist.CLIENT)
 public class AracneModClient {
     public static final Identifier LOCATION = Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/war_spider/warspider.png");
+    public static final Identifier LOCATION_COCOON= Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/cocoon/shield_cocoon.png");
+
     public static final ContextKey<List<ArachneAttachment.Hex>> HEXS = new ContextKey<>(Identifier.fromNamespaceAndPath(AracneMod.MODID,"hexs"));
     public AracneModClient(ModContainer container) {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
@@ -99,13 +106,26 @@ public class AracneModClient {
         event.registerLayerDefinition(WebPartModel.LAYER_LOCATION,Suppliers.ofInstance(WebPartModel.createBodyLayer()));
         event.registerLayerDefinition(VoidGrubModel.LAYER_LOCATION,Suppliers.ofInstance(VoidGrubModel.createBodyLayer()));
         event.registerLayerDefinition(SealingCrystalModel.LAYER_LOCATION,Suppliers.ofInstance(SealingCrystalModel.createBodyLayer()));
-
+        event.registerLayerDefinition(ShieldCocoonModel.LAYER_LOCATION,Suppliers.ofInstance(ShieldCocoonModel.createBodyLayer()));
         //        event.registerLayerDefinition(ScarabModel.ARMOR_LOCATION,Suppliers.ofInstance(ScarabModel.createBodyLayer(new CubeDeformation(1.0F))));
     }
 
     @SubscribeEvent
     public static void RenderArm(RenderArmEvent event){
 //        event.setCanceled(true);
+    }
+
+    public static void onkey(InputEvent.Key event){
+    }
+    @SubscribeEvent
+    public static void onMovementInput(MovementInputUpdateEvent event) {
+        ArachneAttachment.get(event.getEntity()).ifPresent(arachneAttachment -> {
+            if (arachneAttachment.isCocoon){
+                event.getInput().keyPresses = Input.EMPTY;
+                event.getInput().moveVector = Vec2.ZERO;
+            }
+        });
+
     }
     @SubscribeEvent
     public static void renderModel(RenderLivingEvent.Pre event){
@@ -191,9 +211,90 @@ public class AracneModClient {
 
                     AvatarRenderState state = (AvatarRenderState) event.getRenderState();
 //                    setModelProperties(player,model);
+
                     model.setupAnim(state);
 
                     event.getSubmitNodeCollector().submitModel(model,state,poseStack,RenderTypes.entityCutout(LOCATION),state.lightCoords,LivingEntityRenderer.getOverlayCoords(state,0.0F), state.outlineColor, null);
+                    poseStack.popPose();
+                }
+
+                if (nerubianCap.isCocoon){
+                    Minecraft mc = Minecraft.getInstance();
+                    ShieldCocoonModel model = new ShieldCocoonModel(mc.getEntityModels().bakeLayer(ShieldCocoonModel.LAYER_LOCATION));
+//                    ItemScarabLayer layer = new ItemScarabLayer<>(renderer,Minecraft.getInstance().gameRenderer.itemInHandRenderer);
+                    PoseStack poseStack = event.getPoseStack();
+                    float partialTicks = event.getPartialTick();
+
+                    event.setCanceled(true);
+                    poseStack.pushPose();
+
+                    boolean shouldSit = player.isPassenger() && (player.getVehicle() != null && player.getVehicle().shouldRiderSit());
+                    float f = Mth.rotLerp(partialTicks, player.yBodyRotO, player.yBodyRot);
+                    float f1 = Mth.rotLerp(partialTicks, player.yHeadRotO, player.yHeadRot);
+                    float f2 = f1 - f;
+                    float f7;
+                    if (shouldSit && player.getVehicle() instanceof LivingEntity livingplayer) {
+                        f = Mth.rotLerp(partialTicks, livingplayer.yBodyRotO, livingplayer.yBodyRot);
+                        f2 = f1 - f;
+                        f7 = Mth.wrapDegrees(f2);
+                        if (f7 < -85.0F) {
+                            f7 = -85.0F;
+                        }
+
+                        if (f7 >= 85.0F) {
+                            f7 = 85.0F;
+                        }
+
+                        f = f1 - f7;
+                        if (f7 * f7 > 2500.0F) {
+                            f += f7 * 0.2F;
+                        }
+
+                        f2 = f1 - f;
+                    }
+
+                    float f6 = Mth.lerp(partialTicks, player.xRotO, player.getXRot());
+
+
+                    f2 = Mth.wrapDegrees(f2);
+                    if (player.hasPose(Pose.SLEEPING)) {
+                        Direction direction = player.getBedOrientation();
+                        if (direction != null) {
+                            float f3 = player.getEyeHeight(Pose.STANDING) - 0.1F;
+                            poseStack.translate((float)(-direction.getStepX()) * f3, 0.0F, (float)(-direction.getStepZ()) * f3);
+                        }
+                    }
+
+                    float f8 = player.getScale();
+                    poseStack.scale(f8, f8, f8);
+                    float f9 = player.tickCount + partialTicks;
+                    setupRotations(player,poseStack,f9, f, partialTicks, f8);
+                    poseStack.scale(-1.0F, -1.0F, 1.0F);
+                    poseStack.translate(0.0F, -1.501F, 0.0F);
+                    float f4 = 0.0F;
+                    float f5 = 0.0F;
+
+                    if (!shouldSit && player.isAlive()) {
+                        f4 = player.walkAnimation.speed(partialTicks);
+                        f5 = player.walkAnimation.position(partialTicks);
+                        if (player.isBaby()) {
+                            f5 *= 3.0F;
+                        }
+
+                        if (f4 > 1.0F) {
+                            f4 = 1.0F;
+                        }
+                    }
+
+                    AvatarRenderState stateOld = (AvatarRenderState) event.getRenderState();
+                    SpiderAvatarRenderState state = new SpiderAvatarRenderState();
+                    state.ageInTicks = stateOld.ageInTicks;
+                    state.idle.copyFrom(ArachneAttachment.get(player).get().idle);
+//                    setModelProperties(player,model);
+
+                    model.setupAnim(state);
+
+                    event.getSubmitNodeCollector().submitModel(model,state,poseStack,RenderTypes.entityCutout(LOCATION_COCOON),state.lightCoords,LivingEntityRenderer.getOverlayCoords(state,0.0F), state.outlineColor, null);
                     poseStack.popPose();
                 }
             });
@@ -312,7 +413,7 @@ public class AracneModClient {
     public static void fogRender(ViewportEvent.RenderFog event){
         if (Minecraft.getInstance().player.level().dimension()==NRegistry.THE_VOID){
             if (Minecraft.getInstance().level.getData(NRegistry.THE_VOID_ATTACHMENT.get()).flash){
-                event.setFarPlaneDistance(256 + 800 * Minecraft.getInstance().level.getData(NRegistry.THE_VOID_ATTACHMENT.get()).getIntensityFlash(1.0F));
+                event.setFarPlaneDistance(256 + 800 * Minecraft.getInstance().level.getData(NRegistry.THE_VOID_ATTACHMENT.get()).getIntensityFlash(0.0F));
             }
 
         }

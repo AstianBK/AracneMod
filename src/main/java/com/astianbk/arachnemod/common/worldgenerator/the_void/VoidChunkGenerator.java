@@ -76,7 +76,7 @@ public class VoidChunkGenerator extends ChunkGenerator {
 
     @Override
     public int getSeaLevel() {
-        return 0;
+        return 250;
     }
 
     @Override

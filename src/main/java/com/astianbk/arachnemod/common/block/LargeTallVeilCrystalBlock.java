@@ -1,10 +1,13 @@
 package com.astianbk.arachnemod.common.block;
 
+import com.astianbk.arachnemod.AracneMod;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -15,9 +18,17 @@ public class LargeTallVeilCrystalBlock extends Block {
 
     public LargeTallVeilCrystalBlock(Properties properties) {
         super(properties);
-
         this.registerDefaultState(this.stateDefinition.any().setValue(THICKNESS, SpeleothemThickness.BASE));
     }
+
+    @Override
+    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
+        if (!this.canSurvive(state, level, pos)) {
+            return Blocks.AIR.defaultBlockState();
+        }
+        return super.updateShape(state, level, ticks, pos, directionToNeighbour, neighbourPos, neighbourState, random);
+    }
+
 
     @Override
     protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
@@ -47,11 +58,20 @@ public class LargeTallVeilCrystalBlock extends Block {
     }
 
     @Override
+    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        super.randomTick(state, level, pos, random);
+    }
+
+    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        AracneMod.LOGGER.info("LORE ");
+        if (!this.canSurvive(state, level, pos)) {
+            level.destroyBlock(pos, true);
+        }
+    }
+    @Override
     protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         SpeleothemThickness thickness = state.getValue(THICKNESS);
-
         switch (thickness) {
-
             case BASE -> {
                 BlockState middle = level.getBlockState(pos.above());
                 BlockState tip = level.getBlockState(pos.above(2));

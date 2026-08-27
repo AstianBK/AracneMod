@@ -364,10 +364,6 @@ public class VoidNeedleEntity extends Monster {
             if (target != null) {
                 if (VoidNeedleEntity.this.getBoundingBox().inflate(0.20000000298023224).intersects(target.getBoundingBox())) {
                     VoidNeedleEntity.this.doHurtTarget(getServerLevel(VoidNeedleEntity.this.level()), target);
-                    VoidNeedleEntity.this.attackPhase = VoidNeedleEntity.AttackPhase.CIRCLE;
-                    if (!VoidNeedleEntity.this.isSilent()) {
-                        VoidNeedleEntity.this.level().levelEvent(1039, VoidNeedleEntity.this.blockPosition(), 0);
-                    }
                 } else if (VoidNeedleEntity.this.hurtTime > 0) {
                     VoidNeedleEntity.this.attackPhase = VoidNeedleEntity.AttackPhase.CIRCLE;
                 }
@@ -529,12 +525,9 @@ public class VoidNeedleEntity extends Monster {
                 double t = Mth.clamp((double) chargeTick / 20.0F, 0.0, 1.0);
 
                 double parabola = 2.0 * t - 1.0;
-                double enemyDist=0;
-                if (VoidNeedleEntity.this.getTarget()!=null){
-                    enemyDist = VoidNeedleEntity.this.getTarget().getY()-VoidNeedleEntity.this.getY();
-                }
-                double chargeYVelocity = -enemyDist* parabola / 20.0F;
-                chargeYVelocity /= chargeYVelocity;
+
+                double chargeYVelocity = parabola / 20.0F;
+                chargeYVelocity = -chargeYVelocity/Math.abs(chargeYVelocity);
                 double yRelativeScale = 1.0 - Math.abs(tdy * 0.699999988079071) / sd;
                 tdx *= yRelativeScale;
                 tdz *= yRelativeScale;

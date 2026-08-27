@@ -6,6 +6,7 @@ import com.astianbk.arachnemod.common.block.*;
 import com.astianbk.arachnemod.common.effect.ArachnophobiaEffect;
 import com.astianbk.arachnemod.common.effect.DamnationEffect;
 import com.astianbk.arachnemod.common.effect.SilentEffect;
+import com.astianbk.arachnemod.common.items.OsmiumArmorItem;
 import com.astianbk.arachnemod.common.items.SealingCrystalItem;
 import com.astianbk.arachnemod.common.items.VoidKnightArmorItem;
 import com.astianbk.arachnemod.common.items.VoidMaterial;
@@ -49,6 +50,8 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.OreFeature;
+import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 import net.minecraft.world.level.levelgen.feature.configurations.SpeleothemClusterConfiguration;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
@@ -57,6 +60,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.*;
+import org.codehaus.plexus.util.Os;
 
 import java.util.Set;
 import java.util.function.Supplier;
@@ -116,7 +120,7 @@ public class NRegistry {
     public static final DeferredHolder<MobEffect, DamnationEffect> DAMNATION = EFFECTS.register("damnation", DamnationEffect::new);
     public static final DeferredHolder<MobEffect, ArachnophobiaEffect> ARACHNOPHOBIA = EFFECTS.register("arachnophobia", ArachnophobiaEffect::new);
 
-    public static final DeferredBlock<Block> WEAVER_IDOL_BLOCK = BLOCKS.registerBlock("arachne_idol", (ArachneIdolBlock::new));
+    public static final DeferredBlock<Block> WEAVER_IDOL_BLOCK = BLOCKS.registerBlock("arachne_idol",properties -> new ArachneIdolBlock(properties.noOcclusion()));
     public static final DeferredBlock<Block> BEDCRUST_BLOCK = BLOCKS.registerBlock("bedcrust", properties -> new Block(properties.strength(-1.0F, 3600000.0F)));
     public static final DeferredBlock<Block> VOID_PUDDLE_BLOCK = BLOCKS.registerBlock("void_puddle", properties -> new Block(properties.sound(SoundType.MUD).strength(-1.0F, 3600000.0F)));
 
@@ -132,8 +136,12 @@ public class NRegistry {
     public static final DeferredBlock<Block> COCOONCHEST_BLOCK = BLOCKS.registerBlock("cocoonchest",(p)->new Block(p.noOcclusion().sound(SoundType.COBWEB).strength(2.0F)));
     public static final DeferredBlock<Block> VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("veil_crystal",(p)->new Block(p.lightLevel(statex -> 5).sound(SoundType.AMETHYST).noOcclusion()));
     public static final DeferredBlock<Block> TALL_VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("tall_veil_crystal",(p)->new TallVeilCrystalBlock(p.lightLevel(statex -> 8).sound(SoundType.AMETHYST).noOcclusion()));
-    public static final DeferredBlock<Block> LARGE_VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("large_tall_veil_crystal",(p)->new LargeTallVeilCrystalBlock(p.lightLevel(statex -> 8).sound(SoundType.AMETHYST).noOcclusion()));
+    public static final DeferredBlock<Block> LARGE_VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("large_tall_veil_crystal",(p)->new LargeTallVeilCrystalBlock(p.lightLevel(statex -> 8).sound(SoundType.AMETHYST).randomTicks().noOcclusion()));
     public static final DeferredBlock<Block> BEDROCK_TRANSPARENT_BLOCK = BLOCKS.registerBlock("bedrock_transparent", (properties)->new FallingBedrock(properties.strength(-1.0F, 3600000.0F).noOcclusion().isValidSpawn(Blocks::never).isRedstoneConductor((s,e,s1)->false).isSuffocating((s,e,s1)->false).isViewBlocking((s,e,s1)->false)));
+    public static final DeferredBlock<Block> BEDSTONE_GOLD_ORE_BLOCK = BLOCKS.registerBlock("bedstone_gold_ore", (properties -> new Block(properties.noOcclusion().strength(2.0F, 3600000.0F))));
+    public static final DeferredBlock<Block> BEDSTONE_IRON_ORE_BLOCK = BLOCKS.registerBlock("bedstone_iron_ore", (properties -> new Block(properties.noOcclusion().strength(2.0F, 3600000.0F))));
+    public static final DeferredBlock<Block> BEDSTONE_OSMIUM_ORE_BLOCK = BLOCKS.registerBlock("bedstone_osmium_ore", (properties -> new Block(properties.noOcclusion().strength(2.0F, 3600000.0F))));
+
     public static final DeferredHolder<BlockEntityType<?>,BlockEntityType<ArachneIdolBlockEntity>> ARACHNE_IDOL_BLOCK_ENTITY = BLOCK_ENTITY_TYPE.register("arachne_idol_block_entity", () -> new BlockEntityType<>(ArachneIdolBlockEntity::new, Set.of(WEAVER_IDOL_BLOCK.get())));
 
     public static final DeferredBlock<Block> POINTED_BEDROCK_BLOCK = BLOCKS.registerBlock("pointed_bedrock", (properties)->new PointedUpBlock(properties
@@ -155,6 +163,10 @@ public class NRegistry {
     public static final DeferredItem<BlockItem> BEDCRUST_ITEM = ITEMS.registerSimpleBlockItem("bedcrust_item",BEDCRUST_BLOCK);
     public static final DeferredItem<BlockItem> BEDSLAG_ITEM = ITEMS.registerSimpleBlockItem("bedslag_item",BEDSLAG_BLOCK);
     public static final DeferredItem<BlockItem> BEDSTONE_ITEM = ITEMS.registerSimpleBlockItem("bedstone_item",BEDSTONE_BLOCK);
+    public static final DeferredItem<BlockItem> BEDSTONE_GOLD_ORE = ITEMS.registerSimpleBlockItem("bedstone_gold_ore_item",BEDSTONE_GOLD_ORE_BLOCK);
+    public static final DeferredItem<BlockItem> BEDSTONE_IRON_ORE = ITEMS.registerSimpleBlockItem("bedstone_iron_ore_item",BEDSTONE_IRON_ORE_BLOCK);
+    public static final DeferredItem<BlockItem> BEDSTONE_OSMIUM_ORE = ITEMS.registerSimpleBlockItem("bedstone_osmium_ore_item",BEDSTONE_OSMIUM_ORE_BLOCK);
+
     public static final DeferredItem<BlockItem> CRACKED_BEDROCK_ITEM = ITEMS.registerSimpleBlockItem("cracked_bedrock_item",CRACKED_BEDROCK_BLOCK);
     public static final DeferredItem<BlockItem> CHISELED_BEDROCK_ITEM = ITEMS.registerSimpleBlockItem("chiseled_bedrock_item",CHISELED_BEDROCK_BLOCK);
     public static final DeferredItem<BlockItem> COBBLED_BEDROCK_ITEM = ITEMS.registerSimpleBlockItem("cobbled_bedrock_item",COBBLED_BEDROCK_BLOCK);
@@ -173,6 +185,13 @@ public class NRegistry {
     public static final DeferredItem<Item> POWER_FRAGMENT = ITEMS.registerItem("power_fragment", Item::new);
     public static final DeferredItem<Item> VOID_STRING = ITEMS.registerItem("void_string", Item::new);
     public static final DeferredItem<Item> VOID_CHITIN = ITEMS.registerItem("void_chitin", Item::new);
+    public static final DeferredItem<Item> RAW_OSMIUM = ITEMS.registerItem("raw_osmium", Item::new);
+    public static final DeferredItem<Item> OSMIUM_INGOT = ITEMS.registerItem("osmium_ingot", Item::new);
+
+    public static final DeferredItem<Item> OSMIUM_HELMET = ITEMS.registerItem("osmium_helmet",(properties)->new OsmiumArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.OSMIUM, ArmorType.HELMET).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"osmium_helmet" )))));
+    public static final DeferredItem<Item> OSMIUM_CHESTPLATE = ITEMS.registerItem("osmium_chestplate",(properties)->new OsmiumArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.OSMIUM, ArmorType.CHESTPLATE).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"osmium_chestplate" )))));
+    public static final DeferredItem<Item> OSMIUM_LEGGINGS = ITEMS.registerItem("osmium_leggings",(properties)->new OsmiumArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.OSMIUM, ArmorType.LEGGINGS).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"osmium_leggings" )))));
+    public static final DeferredItem<Item> OSMIUM_BOOTS = ITEMS.registerItem("osmium_boots",(properties)->new OsmiumArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.OSMIUM, ArmorType.BOOTS).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"osmium_boots" )))));
 
     public static final DeferredItem<Item> VOID_HELMET = ITEMS.registerItem("void_helmet",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.HELMET).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_helmet" )))));
     public static final DeferredItem<Item> VOID_CHESTPLATE = ITEMS.registerItem("void_chestplate",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.CHESTPLATE).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_chestplate" )))));
@@ -187,6 +206,8 @@ public class NRegistry {
                 output.accept(POWER_FRAGMENT.get());
                 output.accept(VOID_STRING.get());
                 output.accept(VOID_CHITIN.get());
+                output.accept(RAW_OSMIUM.get());
+                output.accept(OSMIUM_INGOT.get());
                 output.accept(SEALING_CRYSTAL_ITEM.get());
                 output.accept(WEAVER_IDOL_ITEM.get());
                 output.accept(BEDCRUST_ITEM.get());
@@ -199,6 +220,9 @@ public class NRegistry {
                 output.accept(SLATED_BEDROCK_ITEM.get());
                 output.accept(COBBLED_BEDROCK_ITEM.get());
                 output.accept(POINTED_BEDROCK_ITEM.get());
+                output.accept(BEDSTONE_GOLD_ORE.get());
+                output.accept(BEDSTONE_IRON_ORE.get());
+                output.accept(BEDSTONE_OSMIUM_ORE.get());
                 output.accept(VEIL_CRYSTAL_ITEM.get());
                 output.accept(TALL_VEIL_CRYSTAL_ITEM.get());
                 output.accept(COCOONCHEST_ITEM.get());
@@ -307,6 +331,12 @@ public class NRegistry {
             STRUCTURE_TYPE.register("bone_remains",()-> () -> VoidBoneRemainsStructure.CODEC);
     public static final DeferredHolder<Feature<?>,Feature<VoidCrystalFeatureConfiguration>> BONES =
             FEATURE.register("bones",()->new BonesFeature(VoidCrystalFeatureConfiguration.CODEC));
+    public static final DeferredHolder<Feature<?>,Feature<OreConfiguration>> BEDSTONE_GOLD_ORE_FEATURE =
+            FEATURE.register("bedstone_gold_ore",()->new OreFeature(OreConfiguration.CODEC));
+    public static final DeferredHolder<Feature<?>,Feature<OreConfiguration>> BEDSTONE_IRON_ORE_FEATURE =
+            FEATURE.register("bedstone_iron_ore",()->new OreFeature(OreConfiguration.CODEC));
+    public static final DeferredHolder<Feature<?>,Feature<OreConfiguration>> BEDSTONE_OSMIUM_ORE_FEATURE =
+            FEATURE.register("bedstone_osmium_ore",()->new OreFeature(OreConfiguration.CODEC));
 
     public static final DeferredHolder<Feature<?>,Feature<VoidCrystalFeatureConfiguration>> VOID_CRYSTAL =
             FEATURE.register("void_crystal",()->new VoidCrystalFeature(VoidCrystalFeatureConfiguration.CODEC));

@@ -1,0 +1,9 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "arachnemod:block/bedstone_gold_ore"
+      }
+    ]
+  }
+}

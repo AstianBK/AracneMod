@@ -1,5 +1,6 @@
 package com.astianbk.arachnemod.server.entity;
 
+import com.astianbk.arachnemod.server.goal.SummonFollowOwnerGoal;
 import com.astianbk.arachnemod.server.goal.SummonOwnerHurtByTargetGoal;
 import com.astianbk.arachnemod.server.goal.SummonOwnerHurtTargetGoal;
 import net.minecraft.core.BlockPos;
@@ -39,8 +40,8 @@ import java.util.Optional;
 
 public class SummoneableSpiderEntity extends Monster implements OwnableEntity {
     public static final EntityDataAccessor<Optional<EntityReference<LivingEntity>>> DATA_OWNERUUID_ID =
-            SynchedEntityData.defineId(SummoneableSpiderEntity.class, EntityDataSerializers.OPTIONAL_LIVING_ENTITY_REFERENCE);;
-
+            SynchedEntityData.defineId(SummoneableSpiderEntity.class, EntityDataSerializers.OPTIONAL_LIVING_ENTITY_REFERENCE);
+    public int summonTimer = 0;
     public SummoneableSpiderEntity(EntityType<? extends Monster> type, Level level) {
         super(type, level);
     }
@@ -49,7 +50,7 @@ public class SummoneableSpiderEntity extends Monster implements OwnableEntity {
         this.goalSelector.addGoal(2, new AvoidEntityGoal(this, Armadillo.class, 6.0F, 1.0, 1.2, (entity) -> {
             return !((Armadillo)entity).isScared();
         }));
-
+        this.goalSelector.addGoal(3,new SummonFollowOwnerGoal(this,1.3F,15,6));
         this.goalSelector.addGoal(3, new LeapAtTargetGoal(this, 0.4F));
         this.goalSelector.addGoal(4, new SummoneableSpiderEntity.SpiderAttackGoal(this));
         this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.8));
@@ -96,8 +97,12 @@ public class SummoneableSpiderEntity extends Monster implements OwnableEntity {
 
     public void tick() {
         super.tick();
-
-
+        if (!this.level().isClientSide()){
+            this.summonTimer++;
+            if (this.summonTimer > 400){
+                this.discard();
+            }
+        }
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -129,7 +134,7 @@ public class SummoneableSpiderEntity extends Monster implements OwnableEntity {
     }
 
     public boolean canBeAffected(MobEffectInstance newEffect) {
-        return newEffect.is(MobEffects.POISON) ? false : super.canBeAffected(newEffect);
+        return !newEffect.is(MobEffects.POISON) && super.canBeAffected(newEffect);
     }
 
 

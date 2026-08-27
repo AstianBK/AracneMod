@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "arachnemod:pilar",
+  "features": "arachnemod:bedstone_gold_ore",
+  "step": "underground_ores"
+}
