@@ -89,7 +89,7 @@ public class ArachneAttachment {
     public String text = "";
     public boolean completeText = false;
     public int time = 0;
-
+    public int cocoonTime = 0;
     public String getTimeInMinuteAndSeconds(){
         int seconds = this.timeQuest/20;
         int minutes = seconds/60;
@@ -99,7 +99,8 @@ public class ArachneAttachment {
         return sMinutes+":"+sSeconds;
     }
 
-    public void tick(Player player){
+    public boolean tick(Player player){
+        boolean flag = true;
         if(player instanceof ServerPlayer serverPlayer){
             boolean questActive = this.currentQuest!=null;
             event.setVisible(questActive);
@@ -192,6 +193,26 @@ public class ArachneAttachment {
             previousTimesChanged = inventory.getTimesChanged();
             this.refreshQuest(player);
         }
+        if (isCocoon){
+            flag = false;
+
+            if (!player.level().isClientSide()){
+
+                if (this.cocoonTime>0){
+                    this.cocoonTime--;
+                    if (this.cocoonTime%5==0){
+                        player.heal(1.0F);
+                        int food = player.getFoodData().getFoodLevel();
+                        player.getFoodData().setFoodLevel(Math.max(1,food-1));
+                    }
+                    if (this.cocoonTime==0){
+                        isCocoon = false;
+                        player.syncData(NRegistry.ARACNE);
+
+                    }
+                }
+            }
+        }
 
 
         if(player.level().isClientSide()){
@@ -203,7 +224,7 @@ public class ArachneAttachment {
 
             if(this.idleTimer<=0){
                 this.idle.start(player.tickCount);
-                this.idleTimer = 20;
+                this.idleTimer = 60;
             }else {
                 this.idleTimer--;
             }
@@ -213,7 +234,6 @@ public class ArachneAttachment {
             //this.attack.animateWhen(player.getAttackAnim(1.0F)>0,player.tickCount);
             this.swim.animateWhen(player.isSwimming(),player.tickCount);
             this.block.animateWhen(player.getUseItem().getItem() instanceof ShieldItem,player.tickCount);
-
         }
         this.updateText(player);
         for (BlessingData data : blessingData){
@@ -221,6 +241,7 @@ public class ArachneAttachment {
                 data.cooldownData.tick();
             }
         }
+        return flag;
     }
 
     public void acceptQuest(ServerPlayer player,Quest quest){
@@ -248,7 +269,7 @@ public class ArachneAttachment {
         }
     }
 
-    private void checkAvailableBlessing() {
+    public void checkAvailableBlessing() {
         for (BlessingData data : this.blessingData){
             if (currentReputation >= data.reputation){
                 data.unlock=true;
@@ -431,7 +452,6 @@ public class ArachneAttachment {
                                 data.unlock = true;
                                 playDialog(Identifier.parse(compendiumEvent.getDialog()));
                                 player.syncData(NRegistry.ARACNE);
-
                             }
                         }
                     }
@@ -546,6 +566,13 @@ public class ArachneAttachment {
                         for (BlessingData data : attachment.blessingData){
                             data.save(buf);
                         }
+                        buf.writeUtf(attachment.text);
+                        buf.writeInt(attachment.bufferText.size());
+                        for (String s : attachment.bufferText){
+                            buf.writeUtf(s);
+                        }
+                        buf.writeBoolean(attachment.isCocoon);
+                        buf.writeInt(attachment.cocoonTime);
                     }
 
                     @Override
@@ -580,6 +607,13 @@ public class ArachneAttachment {
                         for (int i = 0; i< blessingSize ; i++){
                             attachment.blessingData.add(new BlessingData(buf));
                         }
+                        attachment.text = buf.readUtf();
+                        int bufferSize = buf.readInt();
+                        for (int i = 0; i < bufferSize ; i++){
+                            attachment.bufferText.add(buf.readUtf());
+                        }
+                        attachment.isCocoon = buf.readBoolean();
+                        attachment.cocoonTime = buf.readInt();
                         return attachment;
                     }
                 };

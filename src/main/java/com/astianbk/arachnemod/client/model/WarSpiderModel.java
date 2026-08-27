@@ -210,6 +210,7 @@ public class WarSpiderModel<T extends AvatarRenderState> extends EntityModel<T> 
 	@Override
 	public void setupAnim(T state) {
 		super.setupAnim(state);
+
 		this.walkBody.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
 		this.walkLegs.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
 	}

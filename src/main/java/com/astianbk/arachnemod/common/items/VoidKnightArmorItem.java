@@ -7,4 +7,6 @@ public class VoidKnightArmorItem extends Item {
     public VoidKnightArmorItem(Properties properties) {
         super(properties);
     }
+
+
 }

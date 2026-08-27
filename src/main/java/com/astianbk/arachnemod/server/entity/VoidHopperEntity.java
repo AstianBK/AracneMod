@@ -6,9 +6,13 @@ import com.astianbk.arachnemod.server.cap.ArachneAttachment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -27,10 +31,17 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
+import java.util.List;
+import java.util.Random;
+
 public class VoidHopperEntity extends Monster {
+    private static final EntityDataAccessor<String> BLESSING = SynchedEntityData.defineId(VoidHopperEntity.class, EntityDataSerializers.STRING);
+
 
     public AnimationState idle = new AnimationState();
     public AnimationState flee = new AnimationState();
@@ -86,18 +97,45 @@ public class VoidHopperEntity extends Monster {
 
             }
         }
-        if (this.prevBlessing==Blessing.NONE){
-            if (this.sleepCastingTime > 0){
-                this.sleepCastingTime--;
+        if (!level().isClientSide()){
+            if (this.getBlessing()==Blessing.NONE){
+                if (this.sleepCastingTime > 0){
+                    this.sleepCastingTime--;
+                }
+                if (this.sleepCastingTime==0){
+                    this.setBlessing(getRandomBlessing(random).name());
+                    this.sleepCastingTime = 200;
+                }
             }
-            if (this.sleepCastingTime==0){
-                this.prevBlessing = random.nextFloat() > 0.5F ? Blessing.SILENT : Blessing.DAMNATION;
-                this.sleepCastingTime = 200;
+        }else {
+            AracneMod.LOGGER.info("blessing :{}",getBlessing());
+        }
+
+    }
+    public Blessing getRandomBlessing(RandomSource random){
+        int randomI = random.nextInt(0,3);
+        switch (randomI){
+            case 0->{
+                return Blessing.SILENT;
+            }
+            case 1->{
+                return Blessing.DAMNATION;
+            }
+            case 2->{
+                return Blessing.ARACHNOPHOBIA;
             }
         }
+        return Blessing.NONE;
     }
 
+
+
     public void setupAnimation(){
+        if (getBlessing()!= Blessing.NONE){
+            this.casting.animateWhen(true,tickCount);
+            this.idleResetTimer--;
+            return;
+        }
         if (this.idleResetTimer--<=0){
             this.idleResetTimer = 30;
             this.emerge.stop();
@@ -106,6 +144,29 @@ public class VoidHopperEntity extends Monster {
             this.idle.start(this.tickCount);
         }
 
+    }
+
+    public Blessing getBlessing(){
+        return Blessing.valueOf(this.entityData.get(BLESSING));
+    }
+    public void setBlessing(String blessing){
+        this.entityData.set(BLESSING,blessing);
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder entityData) {
+        super.defineSynchedData(entityData);
+        entityData.define(BLESSING,"NONE");
+    }
+
+    @Override
+    protected void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+    }
+
+    @Override
+    protected void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
     }
 
     @Override
@@ -117,9 +178,11 @@ public class VoidHopperEntity extends Monster {
             ArachneAttachment.get(player).ifPresent(arachneAttachment -> {
                 int size = arachneAttachment.hexes.size();
                 if (size==3){
+                    level().playSound(null,living,SoundEvents.ALLAY_HURT, SoundSource.NEUTRAL,2.0F,1.0F);
                     arachneAttachment.clearHexes(player);
                     living.addEffect(new MobEffectInstance(effectHolder,500,0));
                 }else  {
+                    level().playSound(null,living,SoundEvents.ALLAY_DEATH, SoundSource.NEUTRAL,2.0F,1.0F);
                     arachneAttachment.addHex(level(), player);
                 }
             });
@@ -185,6 +248,7 @@ public class VoidHopperEntity extends Monster {
             }
         }
 
+
         super.onSyncedDataUpdated(accessor);
     }
 
@@ -240,7 +304,7 @@ public class VoidHopperEntity extends Monster {
 
         @Override
         public boolean canUse() {
-            return VoidHopperEntity.this.prevBlessing==Blessing.NONE &&  (VoidHopperEntity.this.getTarget() != null && VoidHopperEntity.this.distanceToSqr(VoidHopperEntity.this.getTarget()) < 15.0F) || level().getBrightness(LightLayer.BLOCK,VoidHopperEntity.this.blockPosition())>0;
+            return VoidHopperEntity.this.getBlessing()==Blessing.NONE &&  (VoidHopperEntity.this.getTarget() != null && VoidHopperEntity.this.distanceToSqr(VoidHopperEntity.this.getTarget()) < 15.0F) || level().getBrightness(LightLayer.BLOCK,VoidHopperEntity.this.blockPosition())>0;
         }
     }
     public abstract class BlessingGoal extends Goal{
@@ -262,6 +326,9 @@ public class VoidHopperEntity extends Monster {
         @Override
         public void tick() {
             super.tick();
+            if (this.castingTime == this.durationTime){
+                finalBlessing();
+            }
             if (!VoidHopperEntity.this.level().isClientSide()){
                 if (this.chargeBlessing()){
                     if ((this.castingTime % chargeTime)==0){
@@ -271,23 +338,21 @@ public class VoidHopperEntity extends Monster {
             }
 
 
-            if (this.castingTime == this.durationTime){
-                finalBlessing();
-            }
+
             this.castingTime++;
         }
         public boolean chargeBlessing(){
             return false;
         }
         private void finalBlessing(){
-            VoidHopperEntity.this.prevBlessing =Blessing.NONE;
+            VoidHopperEntity.this.setBlessing("NONE");
         }
         abstract void blessing();
         abstract Blessing getType();
 
         @Override
         public boolean canUse() {
-            return !VoidHopperEntity.this.hasPose(Pose.DIGGING) && !VoidHopperEntity.this.hasPose(Pose.EMERGING) && VoidHopperEntity.this.getTarget() != null && VoidHopperEntity.this.prevBlessing == getType();
+            return !VoidHopperEntity.this.hasPose(Pose.DIGGING) && !VoidHopperEntity.this.hasPose(Pose.EMERGING) && VoidHopperEntity.this.getTarget() != null && VoidHopperEntity.this.getBlessing() == getType();
         }
     }
     public class SilentCastingGoal extends BlessingGoal{
