@@ -90,7 +90,7 @@ public class TheVoidAttachment {
                     arachneAttachment.checkCompendiumEvents((ServerPlayer) player, Identifier.fromNamespaceAndPath(AracneMod.MODID,"flash"),null);
                 });
             }
-            level.playSound(null,player,event,SoundSource.AMBIENT,2.0F,1.0F);
+            level.playSound(null,player,event,SoundSource.AMBIENT,4.0F,1.0F);
         });
     }
     public void stopFlash(Level level){
@@ -115,7 +115,7 @@ public class TheVoidAttachment {
         checkTick = 0;
 
         level.players().forEach(player -> {
-            level.playSound(null,player,NRegistry.BEDROCKFALL.get(), SoundSource.AMBIENT,2.0F,1.0F);
+            level.playSound(null,player,NRegistry.BEDROCKFALL.get(), SoundSource.AMBIENT,3.0F,1.0F);
             if (!level.isClientSide()){
                 ArachneAttachment.get(player).ifPresent(arachneAttachment -> arachneAttachment.checkCompendiumEvents((ServerPlayer) player, Identifier.fromNamespaceAndPath(AracneMod.MODID,"bedrockfall"),null));
             }

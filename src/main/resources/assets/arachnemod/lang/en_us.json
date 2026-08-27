@@ -8,10 +8,16 @@
   "entity.arachnemod.void_needle": "VoidNeedle",
   "entity.arachnemod.void_hopper": "VoidHexer",
 
+  "effect.arachnemod.arachnophobia": "Hex: Arthropodophobia",
+  "effect.arachnemod.damnation": "Hex: Damned",
+  "effect.arachnemod.silent": "Hex: Dull",
+
   "item.arachnemod.power_fragment": "Power Fragment",
   "item.arachnemod.sealing_crystal_item": "Sealing Crystal",
   "item.arachnemod.void_string": "Void String",
   "item.arachnemod.void_chitin": "Void Chitin",
+  "item.arachnemod.raw_osmium": "Raw Osmium Ore",
+  "item.arachnemod.osmium_ingot": "Osmium Ingot",
 
   "block.arachnemod.arachne_idol_item": "Forgotten Idol",
   "block.arachnemod.cracked_bedrock_item": "Shattered Bedrock",
@@ -20,6 +26,9 @@
   "block.arachnemod.bedslag_item": "Voidtaken Bedrock",
 
   "block.arachnemod.stone_bedrock_item": "Bedstone",
+  "block.arachnemod.bedstone_gold_ore_item": "Bedstone Gold Ore",
+  "block.arachnemod.bedstone_iron_ore_item": "Bedstone Iron Ore",
+  "block.arachnemod.bedstone_osmium_ore_item": "Bedstone Osmium Ore",
   "block.arachnemod.chiseled_bedrock_item": "Chiseled Bedstone",
   "block.arachnemod.bricked_bedrock_item": "Bedstone Bricks",
   "block.arachnemod.slated_bedrock_item": "Slated Bedstone",

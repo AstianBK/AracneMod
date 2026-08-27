@@ -6,6 +6,7 @@ import com.astianbk.arachnemod.common.worldgenerator.the_void.BedrockUtils;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -31,7 +32,17 @@ public class FallingBedrock extends FallingBlock {
     public void onLand(Level level, BlockPos pos, BlockState state, BlockState replacedBlock, FallingBlockEntity entity) {
         BlockState belowState = level.getBlockState(pos.below());
         level.setBlock(pos,Blocks.AIR.defaultBlockState(),3);
-        level.playSound(null,pos, SoundEvents.CALCITE_BREAK, SoundSource.NEUTRAL,2.0F,1.0F);
+        level.playSound(null,pos, SoundEvents.CREAKING_ATTACK, SoundSource.NEUTRAL,2.0F,-2.0F);
+
+        if (level instanceof ServerLevel serverLevel) {
+            serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
+                    pos.getX() + 0.5D,
+                    pos.getY() + 0.1D,
+                    pos.getZ() + 0.5D,
+                    15, 0.6D, 0.15D, 0.6D, 0.05D
+            );
+        }
+
         if (belowState.getBlock() instanceof PointedUpBlock){
 
             PointedUpBlock.grow((ServerLevel) level,pos.below(), Direction.UP);
