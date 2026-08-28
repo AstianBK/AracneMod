@@ -15,8 +15,8 @@ public class VoidMaterial implements ArmorMaterials {
     static ResourceKey<? extends Registry<EquipmentAsset>> ROOT_ID = ResourceKey.createRegistryKey(Identifier.withDefaultNamespace("equipment_asset"));
     public static ResourceKey<EquipmentAsset> ASSET_VOID = createId("void");
     public static ResourceKey<EquipmentAsset> ASSET_OSMIUM = createId("osmium");
-    public static ArmorMaterial VOID = new ArmorMaterial(5, makeDefense(1, 2, 3, 1, 3), 15, SoundEvents.ARMOR_EQUIP_IRON, 0.0F, 0.0F, ItemTags.REPAIRS_LEATHER_ARMOR,ASSET_VOID);
-    public static ArmorMaterial OSMIUM = new ArmorMaterial(5, makeDefense(1, 2, 3, 1, 3), 15, SoundEvents.ARMOR_EQUIP_IRON, 0.0F, 0.0F, ItemTags.REPAIRS_LEATHER_ARMOR,ASSET_OSMIUM);
+    public static ArmorMaterial VOID = new ArmorMaterial(5, makeDefense(3, 6, 8, 3, 0), 2, SoundEvents.ARMOR_EQUIP_NETHERITE, 7.0F, 0.0F, ItemTags.REPAIRS_LEATHER_ARMOR,ASSET_VOID);
+    public static ArmorMaterial OSMIUM = new ArmorMaterial(8, makeDefense(2, 2, 3, 2, 0), 20, SoundEvents.ARMOR_EQUIP_DIAMOND, 5.0F, 0.0F, ItemTags.REPAIRS_LEATHER_ARMOR,ASSET_OSMIUM);
 
     private static Map<ArmorType, Integer> makeDefense(int boots, int legs, int chest, int helm, int body) {
         return Maps.newEnumMap(Map.of(ArmorType.BOOTS, boots, ArmorType.LEGGINGS, legs, ArmorType.CHESTPLATE, chest, ArmorType.HELMET, helm, ArmorType.BODY, body));

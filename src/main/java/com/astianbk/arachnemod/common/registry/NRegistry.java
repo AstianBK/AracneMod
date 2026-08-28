@@ -91,6 +91,10 @@ public class NRegistry {
             SOUNDS.register("scarab_idle2", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "scarab_idle2")));
     public static final DeferredHolder<SoundEvent, SoundEvent> NEEDLE_LOOP =
             SOUNDS.register("needle_loop", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "needle_loop")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> HOPPER_HEX =
+            SOUNDS.register("hopper_hex", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "hopper_hex")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> HOPPER_CHANNEL =
+            SOUNDS.register("hopper_channel", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "hopper_channel")));
     public static final DeferredHolder<SoundEvent, SoundEvent> BEDROCKFALL =
             SOUNDS.register("bedrockfall", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "bedrockfall")));
     public static final DeferredHolder<SoundEvent, SoundEvent> ORB_SELECT =
@@ -208,6 +212,10 @@ public class NRegistry {
                 output.accept(VOID_CHITIN.get());
                 output.accept(RAW_OSMIUM.get());
                 output.accept(OSMIUM_INGOT.get());
+                output.accept(OSMIUM_HELMET.get());
+                output.accept(OSMIUM_CHESTPLATE.get());
+                output.accept(OSMIUM_LEGGINGS.get());
+                output.accept(OSMIUM_BOOTS.get());
                 output.accept(SEALING_CRYSTAL_ITEM.get());
                 output.accept(WEAVER_IDOL_ITEM.get());
                 output.accept(BEDCRUST_ITEM.get());

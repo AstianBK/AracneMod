@@ -178,11 +178,11 @@ public class VoidHopperEntity extends Monster {
             ArachneAttachment.get(player).ifPresent(arachneAttachment -> {
                 int size = arachneAttachment.hexes.size();
                 if (size==3){
-                    level().playSound(null,living,SoundEvents.ALLAY_HURT, SoundSource.NEUTRAL,2.0F,1.0F);
+                    level().playSound(null,living,NRegistry.HOPPER_CHANNEL.get(), SoundSource.HOSTILE,1.0F,1.0F);
                     arachneAttachment.clearHexes(player);
                     living.addEffect(new MobEffectInstance(effectHolder,500,0));
                 }else  {
-                    level().playSound(null,living,SoundEvents.ALLAY_DEATH, SoundSource.NEUTRAL,2.0F,1.0F);
+                    level().playSound(null,living,NRegistry.HOPPER_HEX.get(), SoundSource.HOSTILE,3.0F,-1.0F);
                     arachneAttachment.addHex(level(), player);
                 }
             });
