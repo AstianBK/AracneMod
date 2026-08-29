@@ -58,7 +58,10 @@ public class WebElevatorEntity extends Entity {
     @Override
     public void handleEntityEvent(byte id) {
         if (id == 4){
-            Minecraft.getInstance().getSoundManager().play(new SimpleSoundInstance(SoundEvents.ALLAY_HURT, SoundSource.NEUTRAL,2.0F,1.0F,random,blockPosition()));
+            Minecraft.getInstance().getSoundManager().play(new SimpleSoundInstance(SoundEvents.WEEPING_VINES_PLACE, SoundSource.BLOCKS,3.0F,1.0F,random,blockPosition()));
+            Minecraft.getInstance().getSoundManager().play(new SimpleSoundInstance(SoundEvents.COBWEB_PLACE, SoundSource.BLOCKS,2.0F,-1.0F,random,blockPosition()));
+            Minecraft.getInstance().getSoundManager().play(new SimpleSoundInstance(SoundEvents.HONEY_BLOCK_PLACE, SoundSource.BLOCKS,2.0F,-1.0F,random,blockPosition()));
+
         }
         super.handleEntityEvent(id);
     }

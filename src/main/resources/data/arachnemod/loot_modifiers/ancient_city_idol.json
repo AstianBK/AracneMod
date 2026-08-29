@@ -7,7 +7,7 @@
     },
     {
       "condition": "minecraft:random_chance",
-      "chance": 0.3
+      "chance": 0.8
     }
   ],
   "table": "arachnemod:arachne_idol_item"
