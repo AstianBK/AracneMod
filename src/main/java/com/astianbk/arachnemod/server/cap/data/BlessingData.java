@@ -20,6 +20,7 @@ public class BlessingData {
     public BlessingData(BlessingType type,CooldownData cooldownData,int reputation,boolean unlock,boolean hasCooldown){
         this.type =  type;
         this.cooldownData = cooldownData;
+        this.reputation = reputation;
         this.unlock = unlock;
         this.hasCooldown = hasCooldown;
     }

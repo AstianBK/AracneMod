@@ -3,6 +3,10 @@ package com.astianbk.arachnemod.server.entity;
 import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.Events;
 import com.astianbk.arachnemod.server.network.PacketSetScreen;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -53,6 +57,9 @@ public class EnterDimensionEntity extends Entity {
             this.setupAnimation();
         }
         if (!this.level().isClientSide()){
+            if (this.tickCount%10==0){
+                this.level().broadcastEntityEvent(this,(byte) 7);
+            }
             List<LivingEntity> list = new ArrayList<>();
             boolean entityAbove = false;
             for (LivingEntity living : this.level().getEntitiesOfClass(LivingEntity.class,getBoundingBox().inflate(0D,2D,0D))){
@@ -114,6 +121,10 @@ public class EnterDimensionEntity extends Entity {
             this.spawnTime = 40;
             this.idle.stop();
             this.idleResetTimer = 40;
+        }else if (id == 7){
+            for (int i = 0 ; i < 5 ; i++){
+                Particle particle = Minecraft.getInstance().particleEngine.createParticle(new DustParticleOptions(0,3.0F),getRandomX(0.75F),getY(),getRandomZ(0.75F),random.nextFloat(),0.3F,random.nextFloat());
+            }
         }
         super.handleEntityEvent(id);
     }

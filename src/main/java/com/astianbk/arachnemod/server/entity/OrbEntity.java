@@ -21,6 +21,8 @@ import net.minecraft.world.phys.Vec3;
 
 public class OrbEntity extends Entity {
     private static final EntityDataAccessor<String> TYPE = SynchedEntityData.defineId(OrbEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<Boolean> LOCK = SynchedEntityData.defineId(OrbEntity.class, EntityDataSerializers.BOOLEAN);
+
     private Type type=Type.CANCEL;
     public BlockPos sourceBlock = null;
     public OrbEntity(EntityType<?> type, Level level) {
@@ -30,11 +32,13 @@ public class OrbEntity extends Entity {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(TYPE,"CANCEL");
+        builder.define(LOCK,false);
     }
 
     public void setType(Type type){
         this.type = type;
         entityData.set(TYPE,type.name());
+
     }
 
     public Type getOrbType(){
@@ -49,6 +53,12 @@ public class OrbEntity extends Entity {
         }
     }
 
+    public void setLock(boolean lock){
+        this.entityData.set(LOCK,lock);
+    }
+    public boolean isLock(){
+        return this.entityData.get(LOCK);
+    }
 
 
     @Override
@@ -86,7 +96,6 @@ public class OrbEntity extends Entity {
         super.tick();
         if (!level().isClientSide()){
             if (this.sourceBlock==null){
-                AracneMod.LOGGER.info("discard xd.");
                 discard();
             }else {
                 if (level().getBlockEntity(this.sourceBlock) instanceof ArachneIdolBlockEntity arachneIdolBlockEntity){
@@ -100,13 +109,13 @@ public class OrbEntity extends Entity {
 
     @Override
     public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
-        if (sourceBlock!=null && level().getBlockEntity(sourceBlock) instanceof ArachneIdolBlockEntity arachneIdol){
-            if (arachneIdol.orbs.contains(this)){
-                arachneIdol.selectOrb(player, getOrbType(),level(),sourceBlock);
-            }
+        if (sourceBlock != null && level().getBlockEntity(sourceBlock) instanceof ArachneIdolBlockEntity idol && idol.orbs.contains(this)) {
+            idol.selectOrb(this, player, getOrbType(), level(), sourceBlock);
+
+            return InteractionResult.Success.SUCCESS;
         }
 
-        return super.interact(player, hand, location);
+        return InteractionResult.Success.SUCCESS;
     }
 
     @Override
@@ -120,7 +129,13 @@ public class OrbEntity extends Entity {
         QUEST,
         QUEST_KILL,
         QUEST_REPUTATION,
-        QUEST_GET;
-
+        QUEST_GET,
+        ARACHNE_MOVE,
+        ARACHNE_ANTI_FALL,
+        ARACHNE_FANG,
+        ARACHNE_ALLIE,
+        ARACHNE_INFECTION,
+        ARACHNE_PROTECTION,
+        ARACHNE_FORM;
     }
 }

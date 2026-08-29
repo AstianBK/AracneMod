@@ -24,6 +24,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -40,6 +42,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -59,6 +66,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
+import java.util.List;
 import java.util.Random;
 
 @EventBusSubscriber(modid = AracneMod.MODID)
@@ -88,20 +96,14 @@ public class Events {
             return;
         }
 
-        if (!stack.isDamageableItem()) {
-            return;
-        }
-
         float damageRatio = (float) stack.getDamageValue() / (float) stack.getMaxDamage();
 
         double maxBonus = 8.0D;
         double armorBonus = maxBonus * damageRatio;
 
-        if (armorBonus <= 0.0D) {
-            return;
+        if (armorBonus > 0.0D) {
+            event.addModifier(Attributes.ARMOR, new AttributeModifier(Identifier.fromNamespaceAndPath(AracneMod.MODID, "osmium_durability_armor"), armorBonus, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.ARMOR);
         }
-
-        event.addModifier(Attributes.ARMOR, new AttributeModifier(Identifier.fromNamespaceAndPath(AracneMod.MODID, "osmium_durability_armor"), armorBonus, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.ARMOR);
     }
     @SubscribeEvent
     public static void onDie(LivingDeathEvent event){
@@ -110,7 +112,7 @@ public class Events {
         if(entity instanceof Player player){
             ArachneAttachment.get(player).ifPresent(e->{
                 if (e.blessingIsActive(BlessingData.BlessingType.ARACHNE_INFECTION)){
-                    if (entity.getRandom().nextFloat()<0.3F){
+                    if (entity.getRandom().nextFloat()<0.5F){
                         SummoneableSpiderEntity summoneableSpider = new SummoneableSpiderEntity(NRegistry.VOID_SPIDER.get(),player.level());
                         summoneableSpider.setPos(event.getEntity().position());
                         summoneableSpider.setOwner(player);
@@ -132,9 +134,7 @@ public class Events {
         }
         if (death instanceof Player player){
             ArachneAttachment.get(player).ifPresent(e->{
-                AracneMod.LOGGER.info("die");
                 if (e.blessingIsActive(BlessingData.BlessingType.ARACHNE_PROTECTION)){
-                    AracneMod.LOGGER.info("tiene arachne protetion");
                     e.isCocoon = true;
                     e.cocoonTime = 100;
                     event.setCanceled(true);
@@ -274,6 +274,33 @@ public class Events {
                 }
             });
         }
+        if (event.getSource().getEntity() instanceof Player player && !event.getSource().is(DamageTypes.SONIC_BOOM)){
+            LivingEntity living = event.getEntity();
+            ArachneAttachment.get(player).ifPresent(arachneAttachment -> {
+                Level level = player.level();
+                if ((arachneAttachment.blessingIsActive(BlessingData.BlessingType.ARACHNE_FANG))){
+                    double angle = Math.atan2(living.position().x-player.getX(),living.position().z-player.getZ());
+                    for (int d = -30 ; d <= 31 ; d+=30){
+                        float currentAngle = (float) angle + d *Mth.PI/180.0F;
+                        double r = 1;
+                        for (int e = 0; e < 8 ; e++){
+                            double xSin = player.getX()+Mth.sin(currentAngle) * r;
+                            double zCos = player.getZ()+ Mth.cos(currentAngle) * r;
+                            ArachneLegEntity leg = new ArachneLegEntity(NRegistry.ARACHNE_LEG.get(),level);
+                            leg.owner = player;
+                            leg.setPos(xSin,level.getHeight(Heightmap.Types.WORLD_SURFACE, (int) xSin, (int) zCos),zCos);
+                            leg.delay = 2*e;
+                            leg.spawnTime=10;
+                            leg.setYRot((float) player.getYRot() + 90);
+
+                            level.addFreshEntity(leg);
+                            r+=1.5F;
+                        }
+
+                    }
+                }
+            });
+        }
         if (!event.getEntity().hasEffect(NRegistry.DAMNATION))return;
         if (event.getEntity() instanceof Player){
             event.setNewDamage(event.getOriginalDamage()+3);
@@ -282,6 +309,7 @@ public class Events {
             event.setNewDamage(event.getOriginalDamage()-3);
         }
     }
+
     @SubscribeEvent
     public static void onSwing(AttackEntityEvent event){
         if (event.getEntity().hasEffect(NRegistry.ARACHNOPHOBIA)) {
@@ -297,8 +325,8 @@ public class Events {
                 }
             }
         }
-
     }
+
     @SubscribeEvent
     public static void povMove(ViewportEvent.ComputeCameraAngles event){
         Minecraft mc = Minecraft.getInstance();
@@ -366,7 +394,20 @@ public class Events {
 
     @SubscribeEvent
     public static void onUse(PlayerInteractEvent.RightClickItem event){
-        if (!event.getItemStack().getItem().equals(NRegistry.BEDSTONE_ITEM.get())) {
+        if (event.getItemStack().getItem().equals(NRegistry.WEAVER_COCOON.get()) && event.getLevel() instanceof ServerLevel serverLevel) {
+            ResourceKey<LootTable> key = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath("minecraft","chests/simple_dungeon"));
+
+            LootTable lootTable = serverLevel.getServer().reloadableRegistries().getLootTable(key);
+
+            LootParams params = new LootParams.Builder(serverLevel)
+                    .withParameter(LootContextParams.ORIGIN,event.getEntity().position())
+                    .create(LootContextParamSets.CHEST);
+
+            List<ItemStack> drops = lootTable.getRandomItems(params);
+            for (ItemStack drop : drops){
+                event.getEntity().spawnAtLocation(serverLevel,drop);
+            }
+            event.getItemStack().shrink(1);
         }
     }
     public static void teleportToTheDepth(Vec3 position, Level level, LivingEntity living){

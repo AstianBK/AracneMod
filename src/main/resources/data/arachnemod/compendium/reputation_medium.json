@@ -1,0 +1,5 @@
+{
+  "type" : "EVENT",
+  "idEvent" : "arachnemod:reputation_medium",
+  "idDialog" : "arachnemod:arachne_reputation_medium"
+}

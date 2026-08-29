@@ -36,18 +36,6 @@
     "misc": [],
     "monster": [
       {
-        "type": "arachnemod:scarab",
-        "weight": 10,
-        "minCount": 2,
-        "maxCount": 4
-      },
-      {
-        "type": "arachnemod:void_hopper",
-        "weight": 20,
-        "minCount": 1,
-        "maxCount": 1
-      },
-      {
         "type": "arachnemod:void_beetle",
         "weight": 40,
         "minCount": 1,

@@ -1,0 +1,5 @@
+{
+  "type" : "EVENT",
+  "idEvent" : "arachnemod:first_contact",
+  "idDialog" : "arachnemod:arachne_first_introduction"
+}

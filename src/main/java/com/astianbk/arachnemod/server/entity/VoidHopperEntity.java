@@ -87,6 +87,7 @@ public class VoidHopperEntity extends Monster {
                 if (this.fleePos != null){
                     this.setPose(Pose.EMERGING);
                     this.teleportTo(fleePos.x,fleePos.y,fleePos.z);
+                    this.fleePos=null;
                 }
             }
         }
@@ -94,23 +95,26 @@ public class VoidHopperEntity extends Monster {
             this.emergeAnimationTimer--;
             if (this.emergeAnimationTimer==0){
                 this.setPose(Pose.STANDING);
-
+                this.emerge.stop();
             }
         }
+
         if (!level().isClientSide()){
-            if (this.getBlessing()==Blessing.NONE){
-                if (this.sleepCastingTime > 0){
-                    this.sleepCastingTime--;
+            if (this.getTarget()!=null){
+                if (this.getBlessing()==Blessing.NONE){
+                    if (this.sleepCastingTime > 0){
+                        this.sleepCastingTime--;
+                    }
+                    if (this.sleepCastingTime==0){
+                        this.setBlessing(getRandomBlessing(random).name());
+                        this.sleepCastingTime = 200;
+                    }
                 }
-                if (this.sleepCastingTime==0){
-                    this.setBlessing(getRandomBlessing(random).name());
-                    this.sleepCastingTime = 200;
-                }
+            }else {
+                this.idleResetTimer=0;
+                this.setBlessing("NONE");
             }
-        }else {
-            AracneMod.LOGGER.info("blessing :{}",getBlessing());
         }
-
     }
     public Blessing getRandomBlessing(RandomSource random){
         int randomI = random.nextInt(0,3);
@@ -178,7 +182,6 @@ public class VoidHopperEntity extends Monster {
             ArachneAttachment.get(player).ifPresent(arachneAttachment -> {
                 int size = arachneAttachment.hexes.size();
                 if (size==3){
-                    level().playSound(null,living,NRegistry.HOPPER_CHANNEL.get(), SoundSource.HOSTILE,1.0F,1.0F);
                     arachneAttachment.clearHexes(player);
                     living.addEffect(new MobEffectInstance(effectHolder,500,0));
                 }else  {
@@ -222,6 +225,7 @@ public class VoidHopperEntity extends Monster {
             this.flee.stop();
             this.emerge.stop();
             this.casting.start(this.tickCount);
+
         }
         super.handleEntityEvent(id);
     }
@@ -299,18 +303,18 @@ public class VoidHopperEntity extends Monster {
         }
         public boolean validPos(double x , double y, double z){
             BlockPos pos = new BlockPos((int) x, (int) y, (int) z);
-            return !level().getBlockState(pos.below()).isAir() && level().getBrightness(LightLayer.BLOCK,VoidHopperEntity.this.blockPosition())==0;
+            return !level().getBlockState(pos.below()).isAir() && level().getBrightness(LightLayer.BLOCK,pos)==0;
         }
 
         @Override
         public boolean canUse() {
-            return VoidHopperEntity.this.getBlessing()==Blessing.NONE &&  (VoidHopperEntity.this.getTarget() != null && VoidHopperEntity.this.distanceToSqr(VoidHopperEntity.this.getTarget()) < 15.0F) || level().getBrightness(LightLayer.BLOCK,VoidHopperEntity.this.blockPosition())>0;
+            return VoidHopperEntity.this.fleePos==null && ((VoidHopperEntity.this.getBlessing()==Blessing.NONE &&  (VoidHopperEntity.this.getTarget() != null && VoidHopperEntity.this.distanceToSqr(VoidHopperEntity.this.getTarget()) < 15.0F)) || level().getBrightness(LightLayer.BLOCK,VoidHopperEntity.this.blockPosition())>0);
         }
     }
     public abstract class BlessingGoal extends Goal{
         public int castingTime = 0;
-        public int durationTime = 0;
-        public int chargeTime = 0;
+        public int durationTime;
+        public int chargeTime;
         public BlessingGoal(int durationTime){
             this.durationTime = durationTime;
             this.chargeTime = this.durationTime/4;
@@ -321,6 +325,7 @@ public class VoidHopperEntity extends Monster {
             super.start();
             this.castingTime = 0;
             VoidHopperEntity.this.level().broadcastEntityEvent(VoidHopperEntity.this,(byte) 4);
+            level().playSound(null,VoidHopperEntity.this,NRegistry.HOPPER_CHANNEL.get(), SoundSource.HOSTILE,1.0F,1.0F);
         }
 
         @Override

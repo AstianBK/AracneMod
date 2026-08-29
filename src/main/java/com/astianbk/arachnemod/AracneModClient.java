@@ -1,10 +1,11 @@
 package com.astianbk.arachnemod;
 
 import com.astianbk.arachnemod.client.gui.ArachneSpeechGui;
+import com.astianbk.arachnemod.client.gui.CocoonGui;
 import com.astianbk.arachnemod.client.layer.MarkSilentLayer;
 import com.astianbk.arachnemod.client.render_state.SpiderAvatarRenderState;
 import com.astianbk.arachnemod.client.renderer.*;
-import com.astianbk.arachnemod.client.gui.IdolSpeechGui;
+import com.astianbk.arachnemod.client.gui.DarknessGui;
 import com.astianbk.arachnemod.client.model.*;
 import com.astianbk.arachnemod.common.items.VoidKnightArmorItem;
 import com.astianbk.arachnemod.common.registry.NRegistry;
@@ -14,10 +15,8 @@ import com.google.common.reflect.TypeToken;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.*;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
@@ -29,7 +28,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Input;
 import net.minecraft.world.entity.player.Player;
@@ -107,16 +105,17 @@ public class AracneModClient {
         event.registerLayerDefinition(VoidGrubModel.LAYER_LOCATION,Suppliers.ofInstance(VoidGrubModel.createBodyLayer()));
         event.registerLayerDefinition(SealingCrystalModel.LAYER_LOCATION,Suppliers.ofInstance(SealingCrystalModel.createBodyLayer()));
         event.registerLayerDefinition(ShieldCocoonModel.LAYER_LOCATION,Suppliers.ofInstance(ShieldCocoonModel.createBodyLayer()));
+        event.registerLayerDefinition(ArachneLegModel.LAYER_LOCATION,Suppliers.ofInstance(ArachneLegModel.createBodyLayer()));
+
         //        event.registerLayerDefinition(ScarabModel.ARMOR_LOCATION,Suppliers.ofInstance(ScarabModel.createBodyLayer(new CubeDeformation(1.0F))));
     }
+
 
     @SubscribeEvent
     public static void RenderArm(RenderArmEvent event){
 //        event.setCanceled(true);
     }
 
-    public static void onkey(InputEvent.Key event){
-    }
     @SubscribeEvent
     public static void onMovementInput(MovementInputUpdateEvent event) {
         ArachneAttachment.get(event.getEntity()).ifPresent(arachneAttachment -> {
@@ -421,7 +420,8 @@ public class AracneModClient {
 
     @SubscribeEvent
     public static void registerOverlays(RegisterGuiLayersEvent event) {
-        event.registerAbove(VanillaGuiLayers.HOTBAR, Identifier.fromNamespaceAndPath(AracneMod.MODID,"idol_speech"),new IdolSpeechGui());
+        event.registerAbove(VanillaGuiLayers.HOTBAR, Identifier.fromNamespaceAndPath(AracneMod.MODID,"cocoon_overlay"),new CocoonGui());
+        event.registerAbove(VanillaGuiLayers.HOTBAR, Identifier.fromNamespaceAndPath(AracneMod.MODID,"darkness"),new DarknessGui());
         event.registerAbove(VanillaGuiLayers.HOTBAR, Identifier.fromNamespaceAndPath(AracneMod.MODID,"arachne_speech"),new ArachneSpeechGui());
 
     }
@@ -439,5 +439,6 @@ public class AracneModClient {
         event.registerEntityRenderer(NRegistry.ENTER_DIMENSION.get(),EnterDimensionRenderer::new);
         event.registerEntityRenderer(NRegistry.WEB_ELEVATOR.get(),WebElevatorRenderer::new);
         event.registerEntityRenderer(NRegistry.VOID_SPIDER.get(),SummoneableSpiderRenderer::new);
+        event.registerEntityRenderer(NRegistry.ARACHNE_LEG.get(),ArachneLegRenderer::new);
     }
 }

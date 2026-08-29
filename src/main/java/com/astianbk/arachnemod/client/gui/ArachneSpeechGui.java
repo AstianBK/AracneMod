@@ -45,6 +45,7 @@ public class ArachneSpeechGui implements GuiLayer {
                 guiGraphics.centeredText(mc.font, Component.literal(s), j1+45, k1-10-10*e,ARGB.color(255,0,0));
                 e++;
             }
+
             guiGraphics.centeredText(mc.font, Component.literal(arachneAttachment.text), j1+45, k1,ARGB.color(255,0,0));
         });
     }

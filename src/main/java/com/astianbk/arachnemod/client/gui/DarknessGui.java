@@ -11,7 +11,7 @@ import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 
-public class IdolSpeechGui implements GuiLayer {
+public class DarknessGui implements GuiLayer {
     public static final Identifier[] LOCATIONS = {
             Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/gui/darkness/void_darkness_0.png"),
             Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/gui/darkness/void_darkness_1.png"),

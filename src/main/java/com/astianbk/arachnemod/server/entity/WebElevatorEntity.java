@@ -1,6 +1,8 @@
 package com.astianbk.arachnemod.server.entity;
 
 import com.astianbk.arachnemod.server.cap.ArachneAttachment;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -8,6 +10,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -49,6 +53,14 @@ public class WebElevatorEntity extends Entity {
         }
 
         return super.interact(player, hand, location);
+    }
+
+    @Override
+    public void handleEntityEvent(byte id) {
+        if (id == 4){
+            Minecraft.getInstance().getSoundManager().play(new SimpleSoundInstance(SoundEvents.ALLAY_HURT, SoundSource.NEUTRAL,2.0F,1.0F,random,blockPosition()));
+        }
+        super.handleEntityEvent(id);
     }
 
     @Override

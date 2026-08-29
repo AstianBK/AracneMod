@@ -25,7 +25,7 @@
                   }
                 }
               ],
-              "name": "minecraft:iron_ore"
+              "name": "arachnemod:bedstone_osmium_ore_item"
             },
             {
               "type": "minecraft:item",

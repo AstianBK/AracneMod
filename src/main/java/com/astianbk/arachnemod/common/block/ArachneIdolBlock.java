@@ -41,8 +41,14 @@ public class ArachneIdolBlock extends BaseEntityBlock {
     public static Map<ArachneIdolBlockEntity.State,OrbEntity.Type[]> typesForState = Map.of(ArachneIdolBlockEntity.State.MENU
             ,new OrbEntity.Type[]{OrbEntity.Type.CANCEL, OrbEntity.Type.QUEST, OrbEntity.Type.BLESSING, OrbEntity.Type.QUEST_REPUTATION}
     , ArachneIdolBlockEntity.State.SELECT_QUEST
-            ,new OrbEntity.Type[]{OrbEntity.Type.QUEST_GET, OrbEntity.Type.QUEST_KILL});
+            ,new OrbEntity.Type[]{OrbEntity.Type.QUEST_GET, OrbEntity.Type.QUEST_KILL},ArachneIdolBlockEntity.State.MENU_BLESSING,
+            new OrbEntity.Type[]{ OrbEntity.Type.ARACHNE_MOVE,OrbEntity.Type.ARACHNE_ANTI_FALL,OrbEntity.Type.ARACHNE_FANG, OrbEntity.Type.ARACHNE_ALLIE,OrbEntity.Type.ARACHNE_INFECTION, OrbEntity.Type.ARACHNE_PROTECTION,OrbEntity.Type.ARACHNE_FORM, OrbEntity.Type.CANCEL});
 
+    public static Identifier[] DIALOG_GREETING = {
+            Identifier.fromNamespaceAndPath(AracneMod.MODID,"arachne_dialogue_greeting_1"),
+            Identifier.fromNamespaceAndPath(AracneMod.MODID,"arachne_dialogue_greeting_2"),
+            Identifier.fromNamespaceAndPath(AracneMod.MODID,"arachne_dialogue_greeting_3")
+    };
     public ArachneIdolBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.getStateDefinition().any().setValue(LIT,false).setValue(DIRECTION,Direction.EAST));
@@ -67,8 +73,16 @@ public class ArachneIdolBlock extends BaseEntityBlock {
                 if (arachneIdol.currentState == ArachneIdolBlockEntity.State.NONE){
                     if(!state.getValue(LIT)){
                         if (e.currentQuest==null){
+                            Identifier id = Identifier.fromNamespaceAndPath(AracneMod.MODID,"first_contact");
+                            if (e.isCompleteCompendium(id)){
+                                AracneMod.LOGGER.info("complete");
+                                e.playDialog(DIALOG_GREETING[level.getRandom().nextInt(0,3)]);
+                                player.syncData(NRegistry.ARACNE);
+                            }else {
+                                AracneMod.LOGGER.info("incomplete");
+                                e.checkCompendiumEvents(((ServerPlayer)player),id,null);
+                            }
                             level.setBlock(pos,state.setValue(LIT,true),3);
-                            PacketDistributor.sendToPlayer((ServerPlayer) player,new PacketPlayDialog(Identifier.fromNamespaceAndPath(AracneMod.MODID,"arachne_first_introduction"),player.getId()));
                             arachneIdol.startMenu(player,level,pos,typesForState.get(ArachneIdolBlockEntity.State.MENU));
                         }
                     }else {

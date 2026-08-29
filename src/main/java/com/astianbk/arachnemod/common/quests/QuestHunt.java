@@ -16,7 +16,6 @@ public class QuestHunt extends Quest{
                             Codec.STRING.fieldOf("title").forGetter(Quest::getTitle),
                             Codec.STRING.fieldOf("dialogDescription").forGetter(Quest::getDescription),
                             Codec.STRING.fieldOf("dialogFail").forGetter(Quest::getDialogFail),
-                            Codec.STRING.fieldOf("dialogComplete").forGetter(Quest::getDialogComplete),
                             TierQuest.CODEC.fieldOf("tier").forGetter(Quest::getTier),
                             Codec.INT.fieldOf("reputation").forGetter(Quest::getReputation),
                             Codec.INT.fieldOf("xp").forGetter(Quest::getXp),
@@ -25,8 +24,8 @@ public class QuestHunt extends Quest{
                     ).apply(instance, QuestHunt::new));
     public String entityTypeId;
     public int toHuntEntities;
-    public QuestHunt(String title,String dialogDescription,String dialogFail,String dialogComplete, TierQuest tier, int reputation, int xp, String id,int toHunt) {
-        super(title, QuestsType.HUNT,dialogDescription,dialogFail,dialogComplete, tier,reputation,xp);
+    public QuestHunt(String title,String dialogDescription,String dialogFail, TierQuest tier, int reputation, int xp, String id,int toHunt) {
+        super(title, QuestsType.HUNT,dialogDescription,dialogFail, tier,reputation,xp);
         this.entityTypeId = id;
         this.toHuntEntities = toHunt;
     }

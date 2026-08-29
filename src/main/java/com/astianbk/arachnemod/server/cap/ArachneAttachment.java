@@ -32,9 +32,13 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.Util;
 import net.minecraft.world.BossEvent;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AnimationState;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -90,6 +94,8 @@ public class ArachneAttachment {
     public boolean completeText = false;
     public int time = 0;
     public int cocoonTime = 0;
+    public final Map<QuestsType,String[]> DIALOGS_FOR_TYPE = Map.of(QuestsType.HUNT,new String[]{"arachnemod:arachne_quest_kill_complete1","arachnemod:arachne_quest_kill_complete2","arachnemod:arachne_quest_kill_complete3","arachnemod:arachne_quest_kill_complete4","arachnemod:arachne_quest_kill_complete5","arachnemod:arachne_quest_kill_complete6"},
+            QuestsType.COLLECT,new String[]{"arachnemod:arachne_quest_collect_complete1","arachnemod:arachne_quest_collect_complete2","arachnemod:arachne_quest_collect_complete3","arachnemod:arachne_quest_collect_complete4","arachnemod:arachne_quest_collect_complete5","arachnemod:arachne_quest_collect_complete6"});
     public String getTimeInMinuteAndSeconds(){
         int seconds = this.timeQuest/20;
         int minutes = seconds/60;
@@ -195,9 +201,7 @@ public class ArachneAttachment {
         }
         if (isCocoon){
             flag = false;
-
             if (!player.level().isClientSide()){
-
                 if (this.cocoonTime>0){
                     this.cocoonTime--;
                     if (this.cocoonTime%5==0){
@@ -207,6 +211,13 @@ public class ArachneAttachment {
                     }
                     if (this.cocoonTime==0){
                         isCocoon = false;
+                        player.level().getEntities(player,player.getBoundingBox().inflate(5)).forEach(e->{
+                            Vec3 direction = player.position().subtract(e.position()).normalize().scale(1.25F);
+                            e.push(-direction.x,0.4F,-direction.z);
+                            if (e instanceof LivingEntity living){
+                                living.addEffect(new MobEffectInstance(MobEffects.SLOWNESS,60,2));
+                            }
+                        });
                         player.syncData(NRegistry.ARACNE);
 
                     }
@@ -250,32 +261,40 @@ public class ArachneAttachment {
         PacketDistributor.sendToPlayer(player,new PacketPlayDialog(Identifier.parse(quest.getDescription()),player.getId()));
         this.progressQuest = 0;
     }
+
     public void failQuest(ServerPlayer serverPlayer){
         if (this.currentQuest != null){
             PacketDistributor.sendToPlayer(serverPlayer,new PacketPlayDialog(Identifier.parse(currentQuest.getDialogFail()),serverPlayer.getId()));
             currentReputation= Math.max(0,currentReputation-10);
             this.currentQuest = null;
-
         }
     }
 
     public void completeQuest(ServerPlayer serverPlayer){
         if (this.currentQuest != null){
-            playDialog(Identifier.parse(currentQuest.getDialogComplete()));
-            currentReputation= Math.min(100,currentReputation+currentQuest.getReputation());
-            this.checkAvailableBlessing();
+            playDialog(Identifier.parse(DIALOGS_FOR_TYPE.get(currentQuest.getType())[serverPlayer.getRandom().nextInt(0,6)]));
+            setCurrentReputation(serverPlayer,currentReputation + currentQuest.getReputation());
             this.currentQuest = null;
             serverPlayer.syncData(NRegistry.ARACNE);
         }
     }
 
-    public void checkAvailableBlessing() {
-        for (BlessingData data : this.blessingData){
-            if (currentReputation >= data.reputation){
-                data.unlock=true;
-            }
+    public void setCurrentReputation(ServerPlayer serverPlayer,int reputation){
+        currentReputation= Math.min(100,reputation);
+        if (this.currentReputation==100){
+            checkCompendiumEvents(serverPlayer,Identifier.fromNamespaceAndPath(AracneMod.MODID,"reputation_full"),null);
+        }else if (this.currentReputation>75){
+            checkCompendiumEvents(serverPlayer,Identifier.fromNamespaceAndPath(AracneMod.MODID,"reputation_high"),null);
+        }else if (this.currentReputation>50){
+            checkCompendiumEvents(serverPlayer,Identifier.fromNamespaceAndPath(AracneMod.MODID,"reputation_medium"),null);
+        }else if (this.currentReputation>25){
+            checkCompendiumEvents(serverPlayer,Identifier.fromNamespaceAndPath(AracneMod.MODID,"reputation_low"),null);
+        }else if (this.currentReputation>0){
+            checkCompendiumEvents(serverPlayer,Identifier.fromNamespaceAndPath(AracneMod.MODID,"reputation_none"),null);
         }
     }
+
+
 
     public static float getSpiderCrosshairAmount(Player player, double maxDistance) {
         Vec3 eyePos = player.getEyePosition();
@@ -326,7 +345,6 @@ public class ArachneAttachment {
                         this.bufferText.addFirst(text);
                     }
                 }
-
                 text="";
             }
             return;
@@ -336,7 +354,6 @@ public class ArachneAttachment {
         }
 
         if (dialog.answers().size()==index){
-
             completeText = true;
             return;
         }
@@ -420,7 +437,7 @@ public class ArachneAttachment {
         this.blessingData.add(new BlessingData(BlessingData.BlessingType.ARACHNE_FANG,new CooldownData(0),40,false,false));
         this.blessingData.add(new BlessingData(BlessingData.BlessingType.ARACHNE_ALLIE,new CooldownData(0),50,false,false));
         this.blessingData.add(new BlessingData(BlessingData.BlessingType.ARACHNE_INFECTION,new CooldownData(0),70,false,false));
-        this.blessingData.add(new BlessingData(BlessingData.BlessingType.ARACHNE_PROTECTION,new CooldownData(0),90,false,false));
+        this.blessingData.add(new BlessingData(BlessingData.BlessingType.ARACHNE_PROTECTION,new CooldownData(200),90,false,true));
         this.blessingData.add(new BlessingData(BlessingData.BlessingType.ARACHNE_FORM,new CooldownData(0),100,false,false));
     }
 
@@ -429,7 +446,14 @@ public class ArachneAttachment {
             this.compendiumData.add(new CompendiumData(entry.getKey(),entry.getValue(),false));
         }
     }
-
+    public boolean isCompleteCompendium(Identifier id){
+        for (CompendiumData data : compendiumData){
+            if (data.identifier.toString().equals(id.toString())) {
+                return data.unlock;
+            }
+        }
+        return false;
+    }
     public void checkCompendiumEvents(ServerPlayer player,Identifier id, Action action){
         for (CompendiumData data : compendiumData){
             if (!data.unlock) {
@@ -440,7 +464,6 @@ public class ArachneAttachment {
                             data.unlock = true;
                             playDialog(Identifier.parse(compendiumEvent.getDialog()));
                             player.syncData(NRegistry.ARACNE);
-
                         }
                     }
                 }else {
@@ -516,6 +539,7 @@ public class ArachneAttachment {
     }
 
     public void playDialog(Identifier identifier) {
+        if (!DialogsManager.getDialog().containsKey(identifier))return;
         if (this.currentDialog != null){
             Dialog dialog = DialogsManager.getDialog().get(Identifier.parse(currentDialog));
             for (String id : dialog.sounds()){
@@ -573,6 +597,8 @@ public class ArachneAttachment {
                         }
                         buf.writeBoolean(attachment.isCocoon);
                         buf.writeInt(attachment.cocoonTime);
+                        buf.writeInt(attachment.timeDarkness);
+                        buf.writeInt(attachment.previousTimesChanged);
                     }
 
                     @Override
@@ -614,6 +640,9 @@ public class ArachneAttachment {
                         }
                         attachment.isCocoon = buf.readBoolean();
                         attachment.cocoonTime = buf.readInt();
+                        attachment.timeDarkness = buf.readInt();
+                        attachment.prevTimeDarkness = attachment.timeDarkness;
+                        attachment.previousTimesChanged = buf.readInt();
                         return attachment;
                     }
                 };

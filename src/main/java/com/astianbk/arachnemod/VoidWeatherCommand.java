@@ -72,8 +72,7 @@ public class VoidWeatherCommand {
 
                                                 ServerPlayer player = context.getSource().getPlayer();
                                                 ArachneAttachment.get(player).ifPresent(arachneAttachment -> {
-                                                    arachneAttachment.currentReputation = rep;
-                                                    arachneAttachment.checkAvailableBlessing();
+                                                    arachneAttachment.setCurrentReputation(player,rep);
                                                     player.syncData(NRegistry.ARACNE);
                                                 });
                                             }

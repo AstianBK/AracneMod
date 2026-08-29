@@ -4,6 +4,8 @@ import com.astianbk.arachnemod.server.goal.SummonFollowOwnerGoal;
 import com.astianbk.arachnemod.server.goal.SummonOwnerHurtByTargetGoal;
 import com.astianbk.arachnemod.server.goal.SummonOwnerHurtTargetGoal;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -29,6 +31,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
@@ -99,10 +102,23 @@ public class SummoneableSpiderEntity extends Monster implements OwnableEntity {
         super.tick();
         if (!this.level().isClientSide()){
             this.summonTimer++;
-            if (this.summonTimer > 400){
+            if (this.summonTimer > 600){
                 this.discard();
             }
+            if (this.summonTimer==599){
+                this.level().broadcastEntityEvent(this,(byte) 3);
+            }
         }
+    }
+
+    @Override
+    public void handleEntityEvent(byte id) {
+        if (id == 3){
+            for (int i = 0 ; i < 15 ; i++){
+                level().addParticle(ParticleTypes.POOF,getRandomX(0.5F),getY(),getRandomZ(0.5F),0.0F,0.05F,0.0F);
+            }
+        }
+        super.handleEntityEvent(id);
     }
 
     public static AttributeSupplier.Builder createAttributes() {

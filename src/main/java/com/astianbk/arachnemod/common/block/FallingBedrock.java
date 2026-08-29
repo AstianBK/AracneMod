@@ -35,18 +35,12 @@ public class FallingBedrock extends FallingBlock {
         level.playSound(null,pos, SoundEvents.CREAKING_ATTACK, SoundSource.NEUTRAL,2.0F,-2.0F);
 
         if (level instanceof ServerLevel serverLevel) {
-            serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                    pos.getX() + 0.5D,
-                    pos.getY() + 0.1D,
-                    pos.getZ() + 0.5D,
-                    15, 0.6D, 0.15D, 0.6D, 0.05D
-            );
+            serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.getX() + 0.5D, pos.getY() + 0.1D, pos.getZ() + 0.5D, 15, 0.6D, 0.15D, 0.6D, 0.05D);
         }
 
         if (belowState.getBlock() instanceof PointedUpBlock){
-
             PointedUpBlock.grow((ServerLevel) level,pos.below(), Direction.UP);
-        }else if (belowState.is(NRegistry.LARGE_VEIL_CRYSTAL_BLOCK) || belowState.is(NRegistry.VEIL_CRYSTAL_BLOCK) || belowState.is(NRegistry.TALL_VEIL_CRYSTAL_BLOCK)){
+        }else if (belowState.getLightEmission(level,pos)>0){
             level.setBlock(pos.below(), Blocks.AIR.defaultBlockState(),3);
         }else if(level.getRandom().nextFloat()<0.15F){
             level.setBlock(pos,NRegistry.POINTED_BEDROCK_BLOCK.get().defaultBlockState().setValue(PointedUpBlock.TIP_DIRECTION,Direction.UP).setValue(PointedUpBlock.THICKNESS, SpeleothemThickness.BASE),3);
@@ -59,6 +53,7 @@ public class FallingBedrock extends FallingBlock {
     protected void falling(FallingBlockEntity entity) {
         entity.setHurtsEntities(2.0F, 40);
     }
+
     protected VoxelShape getVisualShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return Shapes.empty();
     }
@@ -70,6 +65,7 @@ public class FallingBedrock extends FallingBlock {
     protected boolean propagatesSkylightDown(BlockState state) {
         return true;
     }
+
     @Override
     protected MapCodec<? extends FallingBlock> codec() {
         return CODEC;
@@ -79,4 +75,5 @@ public class FallingBedrock extends FallingBlock {
     public int getDustColor(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos) {
         return 0;
     }
+
 }

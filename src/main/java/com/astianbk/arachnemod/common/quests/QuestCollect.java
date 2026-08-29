@@ -14,7 +14,6 @@ public class QuestCollect extends Quest{
                             Codec.STRING.fieldOf("title").forGetter(Quest::getTitle),
                             Codec.STRING.fieldOf("dialogDescription").forGetter(Quest::getDescription),
                             Codec.STRING.fieldOf("dialogFail").forGetter(Quest::getDialogFail),
-                            Codec.STRING.fieldOf("dialogComplete").forGetter(Quest::getDialogComplete),
                             TierQuest.CODEC.fieldOf("tier").forGetter(Quest::getTier),
                             Codec.INT.fieldOf("reputation").forGetter(Quest::getReputation),
                             Codec.INT.fieldOf("xp").forGetter(Quest::getXp),
@@ -24,8 +23,8 @@ public class QuestCollect extends Quest{
             );
     public String itemId;
     public int toCollect;
-    public QuestCollect(String title, String dialogDescription,String dialogFail,String dialogComplete, TierQuest tier, int reputation, int xp, String itemId,int toCollect) {
-        super(title, QuestsType.COLLECT,dialogDescription,dialogFail,dialogComplete, tier,reputation,xp);
+    public QuestCollect(String title, String dialogDescription,String dialogFail, TierQuest tier, int reputation, int xp, String itemId,int toCollect) {
+        super(title, QuestsType.COLLECT,dialogDescription,dialogFail, tier,reputation,xp);
         this.itemId = itemId;
         this.toCollect = toCollect;
     }

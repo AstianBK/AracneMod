@@ -6,10 +6,7 @@ import com.astianbk.arachnemod.common.block.*;
 import com.astianbk.arachnemod.common.effect.ArachnophobiaEffect;
 import com.astianbk.arachnemod.common.effect.DamnationEffect;
 import com.astianbk.arachnemod.common.effect.SilentEffect;
-import com.astianbk.arachnemod.common.items.OsmiumArmorItem;
-import com.astianbk.arachnemod.common.items.SealingCrystalItem;
-import com.astianbk.arachnemod.common.items.VoidKnightArmorItem;
-import com.astianbk.arachnemod.common.items.VoidMaterial;
+import com.astianbk.arachnemod.common.items.*;
 import com.astianbk.arachnemod.common.worldgenerator.structure_placement.VoidZiguratPlacement;
 import com.astianbk.arachnemod.common.worldgenerator.the_depths.TheDepthsChunkGenerator;
 import com.astianbk.arachnemod.common.worldgenerator.the_void.VoidChunkGenerator;
@@ -35,13 +32,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.Consumable;
+import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
@@ -133,7 +133,7 @@ public class NRegistry {
     public static final DeferredBlock<Block> CHISELED_BEDROCK_BLOCK = BLOCKS.registerBlock("chiseled_bedrock", properties -> new Block(properties.sound(SoundType.DEEPSLATE_BRICKS).strength(-1.0F, 3600000.0F)));
     public static final DeferredBlock<Block> COBBLED_BEDROCK_BLOCK = BLOCKS.registerBlock("cobbled_bedrock", properties -> new Block(properties.sound(SoundType.BASALT).strength(-1.0F, 3600000.0F)));
     public static final DeferredBlock<Block> BRICKED_BEDROCK_BLOCK = BLOCKS.registerBlock("bricked_bedrock", properties -> new Block(properties.sound(SoundType.DEEPSLATE_BRICKS).strength(-1.0F, 3600000.0F)));
-    public static final DeferredBlock<Block> STONE_BEDROCK_BLOCK = BLOCKS.registerBlock("stone_bedrock", properties -> new Block(properties.sound(SoundType.DEEPSLATE).strength(-1.0F, 3600000.0F)));
+    public static final DeferredBlock<Block> STONE_BEDROCK_BLOCK = BLOCKS.registerBlock("stone_bedrock", properties -> new Block(properties.sound(SoundType.DEEPSLATE).strength(2.0F, 3600000.0F)));
     public static final DeferredBlock<Block> SLATED_BEDROCK_BLOCK = BLOCKS.registerBlock("slated_bedrock", properties -> new Block(properties.sound(SoundType.BASALT).strength(-1.0F, 3600000.0F)));
     public static final DeferredBlock<Block> CRACKED_BEDROCK_BLOCK = BLOCKS.registerBlock("cracked_bedrock", properties -> new Block(properties.strength(-1.0F, 3600000.0F)));
     public static final DeferredBlock<Block> VOID_WEB_BLOCK = BLOCKS.registerBlock("void_web", (properties -> new WebBlock(properties.noOcclusion().noCollision().sound(SoundType.COBWEB).strength(3.0F, 3600000.0F))));
@@ -188,14 +188,22 @@ public class NRegistry {
     public static final DeferredItem<Item> SEALING_CRYSTAL_ITEM = ITEMS.registerItem("sealing_crystal_item",(properties)->new SealingCrystalItem(properties.component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)));
     public static final DeferredItem<Item> POWER_FRAGMENT = ITEMS.registerItem("power_fragment", Item::new);
     public static final DeferredItem<Item> VOID_STRING = ITEMS.registerItem("void_string", Item::new);
+    public static final DeferredItem<Item> ESCAPE_STRING = ITEMS.registerItem("escape_string", EscapeStringItem::new);
+    public static final DeferredItem<Item> ARTHROPOD_EYE = ITEMS.registerItem("arthropod_eye", properties -> new Item(properties.food((new FoodProperties.Builder()).nutrition(4).saturationModifier(0.1F).build(),defaultFood().onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.HUNGER, 600, 0), 0.8F)).build())));
+    public static final DeferredItem<Item> CHITIN_LEG = ITEMS.registerItem("chitin_leg", properties -> new Item(properties.food((new FoodProperties.Builder()).nutrition(4).saturationModifier(0.1F).build(),defaultFood().onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.HUNGER, 600, 0), 0.8F)).build())));
+
     public static final DeferredItem<Item> VOID_CHITIN = ITEMS.registerItem("void_chitin", Item::new);
     public static final DeferredItem<Item> RAW_OSMIUM = ITEMS.registerItem("raw_osmium", Item::new);
     public static final DeferredItem<Item> OSMIUM_INGOT = ITEMS.registerItem("osmium_ingot", Item::new);
+    public static final DeferredItem<Item> WEAVER_COCOON = ITEMS.registerItem("weaver_cocoon", Item::new);
 
     public static final DeferredItem<Item> OSMIUM_HELMET = ITEMS.registerItem("osmium_helmet",(properties)->new OsmiumArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.OSMIUM, ArmorType.HELMET).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"osmium_helmet" )))));
     public static final DeferredItem<Item> OSMIUM_CHESTPLATE = ITEMS.registerItem("osmium_chestplate",(properties)->new OsmiumArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.OSMIUM, ArmorType.CHESTPLATE).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"osmium_chestplate" )))));
     public static final DeferredItem<Item> OSMIUM_LEGGINGS = ITEMS.registerItem("osmium_leggings",(properties)->new OsmiumArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.OSMIUM, ArmorType.LEGGINGS).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"osmium_leggings" )))));
     public static final DeferredItem<Item> OSMIUM_BOOTS = ITEMS.registerItem("osmium_boots",(properties)->new OsmiumArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.OSMIUM, ArmorType.BOOTS).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"osmium_boots" )))));
+    public static final DeferredItem<Item> VOID_SCARAB_SPAWN_EGG = ITEMS.registerItem("void_scarab_spawn_egg",(properties)->new SpawnEggItem(properties.spawnEgg(NRegistry.SCARAB.get())));
+    public static final DeferredItem<Item> VOID_HOPPER_SPAWN_EGG = ITEMS.registerItem("void_hopper_spawn_egg",(properties)->new SpawnEggItem(properties.spawnEgg(NRegistry.VOID_HOPPER.get())));
+    public static final DeferredItem<Item> VOID_NEEDLE_SPAWN_EGG = ITEMS.registerItem("void_needle_spawn_egg",(properties)->new SpawnEggItem(properties.spawnEgg(NRegistry.VOID_NEEDLE.get())));
 
     public static final DeferredItem<Item> VOID_HELMET = ITEMS.registerItem("void_helmet",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.HELMET).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_helmet" )))));
     public static final DeferredItem<Item> VOID_CHESTPLATE = ITEMS.registerItem("void_chestplate",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.CHESTPLATE).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_chestplate" )))));
@@ -207,9 +215,16 @@ public class NRegistry {
             .withTabsBefore(CreativeModeTabs.COMBAT)
             .icon(() -> WEAVER_IDOL_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
+                output.accept(VOID_SCARAB_SPAWN_EGG.get());
+                output.accept(VOID_HOPPER_SPAWN_EGG.get());
+                output.accept(VOID_NEEDLE_SPAWN_EGG.get());
+                output.accept(CHITIN_LEG.get());
+                output.accept(ARTHROPOD_EYE.get());
+                output.accept(ESCAPE_STRING.get());
                 output.accept(POWER_FRAGMENT.get());
                 output.accept(VOID_STRING.get());
                 output.accept(VOID_CHITIN.get());
+                output.accept(WEAVER_COCOON.get());
                 output.accept(RAW_OSMIUM.get());
                 output.accept(OSMIUM_INGOT.get());
                 output.accept(OSMIUM_HELMET.get());
@@ -290,6 +305,12 @@ public class NRegistry {
                     () -> EntityType.Builder.of(VoidGrubEntity::new, MobCategory.MONSTER)
                             .sized(0.25F, 0.5F).clientTrackingRange(10).updateInterval(2)
                             .build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_grub"))));
+    public static final DeferredHolder<EntityType<?>, EntityType<ArachneLegEntity>> ARACHNE_LEG =
+            ENTITY_TYPES.register("arachne_leg",
+                    () -> EntityType.Builder.of(ArachneLegEntity::new, MobCategory.MONSTER)
+                            .sized(1F, 1.5F).clientTrackingRange(10).updateInterval(2)
+                            .build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(AracneMod.MODID,"arachne_leg"))));
+
     public static final DeferredHolder<EntityType<?>, EntityType<SummoneableSpiderEntity>> VOID_SPIDER =
             ENTITY_TYPES.register("void_spider",
                     () -> EntityType.Builder.of(SummoneableSpiderEntity::new, MobCategory.MONSTER)
@@ -350,5 +371,7 @@ public class NRegistry {
             FEATURE.register("void_crystal",()->new VoidCrystalFeature(VoidCrystalFeatureConfiguration.CODEC));
     public static final DeferredHolder<Feature<?>,Feature<SpeleothemClusterConfiguration>> POINTED_BEDROCK =
             FEATURE.register("pointed_bedrock",()->new PoitedBedrockFeature(SpeleothemClusterConfiguration.CODEC));
-
+    public static Consumable.Builder defaultFood() {
+        return Consumable.builder().consumeSeconds(1.6F).animation(ItemUseAnimation.EAT).sound(SoundEvents.GENERIC_EAT).hasConsumeParticles(true);
+    }
 }

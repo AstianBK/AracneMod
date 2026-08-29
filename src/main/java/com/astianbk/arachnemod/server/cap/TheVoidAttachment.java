@@ -12,6 +12,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -34,10 +35,9 @@ public class TheVoidAttachment {
             NRegistry.AMBIENCE_2.get(),
             NRegistry.AMBIENCE_3.get()
     };
+    public int MAX_FALL_BLOCk_FOR_TICK = 20;
 
     public void tick(Level level){
-
-
         if (this.flash){
             oldTick = tick;
             if (tick>=600){
@@ -48,12 +48,15 @@ public class TheVoidAttachment {
         }else if (this.bedrockfall){
             if (!level.isClientSide()){
                 if (level.getRandom().nextFloat()<0.2){
-                    level.players().forEach(player -> {
+                    int fall = 0;
+                    for (Player player : level.players()){
+                        if (fall == MAX_FALL_BLOCk_FOR_TICK)break;
                         for (int i = 0 ; i < 3 ; i++){
                             FallingBlockEntity entity = FallingBlockEntity.fall(level,new BlockPos((int) (player.getRandomX(40)),300, (int)(  player.getRandomZ(40))),NRegistry.BEDROCK_TRANSPARENT_BLOCK.get().defaultBlockState());
                             level.addFreshEntity(entity);
+                            fall++;
                         }
-                    });
+                    }
                 }
             }
             oldShakeTime = shakeTime;
@@ -78,6 +81,7 @@ public class TheVoidAttachment {
             }
         }
     }
+
     public void startFlash(Level level){
         flash = true;
         oldTick = 0;
@@ -121,14 +125,17 @@ public class TheVoidAttachment {
             }
         });
     }
+
     public float getIntensityFlash(float partial) {
         float t = Mth.clamp(Mth.lerp(partial, oldTick, tick) / 600.0F, 0.0F, 1.0F);
         return Mth.sin(t * Mth.PI) ;
     }
+
     public float getIntensityShake(float partial) {
         float t = Mth.clamp(Mth.lerp(partial, oldShakeTime, shakeTime) / 600.0F, 0.0F, 1.0F);
         return Mth.sin(t * Mth.PI) ;
     }
+
     public static class TheVoidSerializer implements IAttachmentSerializer<TheVoidAttachment> {
         public static final StreamCodec<RegistryFriendlyByteBuf, TheVoidAttachment> STREAM_CODEC =
                 new StreamCodec<>() {
