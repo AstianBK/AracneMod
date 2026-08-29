@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "show_notification": false,
+  "ingredients": [
+    "arachnemod:void_chitin"
+  ],
+  "result": {
+    "id": "minecraft:bone",
+    "count": 7
+  }
+}
