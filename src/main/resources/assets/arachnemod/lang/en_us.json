@@ -18,6 +18,9 @@
   "item.arachnemod.void_chitin": "Void Chitin",
   "item.arachnemod.raw_osmium": "Raw Osmium Ore",
   "item.arachnemod.osmium_ingot": "Osmium Ingot",
+  "item.arachnemod.escape_string": "Escape String",
+  "item.arachnemod.chitin_leg": "Chitinous Leg",
+  "item.arachnemod.arthropod_eye": "Arthropod Eye",
 
   "block.arachnemod.arachne_idol_item": "Forgotten Idol",
   "block.arachnemod.cracked_bedrock_item": "Shattered Bedrock",
