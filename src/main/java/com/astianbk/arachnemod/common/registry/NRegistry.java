@@ -189,8 +189,8 @@ public class NRegistry {
     public static final DeferredItem<Item> POWER_FRAGMENT = ITEMS.registerItem("power_fragment", Item::new);
     public static final DeferredItem<Item> VOID_STRING = ITEMS.registerItem("void_string", Item::new);
     public static final DeferredItem<Item> ESCAPE_STRING = ITEMS.registerItem("escape_string", EscapeStringItem::new);
-    public static final DeferredItem<Item> ARTHROPOD_EYE = ITEMS.registerItem("arthropod_eye", properties -> new Item(properties.food((new FoodProperties.Builder()).nutrition(4).saturationModifier(0.1F).build(),defaultFood().onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.HUNGER, 600, 0), 0.8F)).build())));
-    public static final DeferredItem<Item> CHITIN_LEG = ITEMS.registerItem("chitin_leg", properties -> new Item(properties.food((new FoodProperties.Builder()).nutrition(4).saturationModifier(0.1F).build(),defaultFood().onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.HUNGER, 600, 0), 0.8F)).build())));
+    public static final DeferredItem<Item> ARTHROPOD_EYE = ITEMS.registerItem("arthropod_eye", properties -> new Item(properties.food((new FoodProperties.Builder()).nutrition(4).saturationModifier(0.1F).build(),defaultFood().onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.HUNGER, 200, 0), 0.4F)).build())));
+    public static final DeferredItem<Item> CHITIN_LEG = ITEMS.registerItem("chitin_leg", properties -> new Item(properties.food((new FoodProperties.Builder()).nutrition(2).saturationModifier(0.3F).build(),defaultFood().onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.HUNGER, 200, 0), 0.2F)).build())));
 
     public static final DeferredItem<Item> VOID_CHITIN = ITEMS.registerItem("void_chitin", Item::new);
     public static final DeferredItem<Item> RAW_OSMIUM = ITEMS.registerItem("raw_osmium", Item::new);
@@ -218,12 +218,12 @@ public class NRegistry {
                 output.accept(VOID_SCARAB_SPAWN_EGG.get());
                 output.accept(VOID_HOPPER_SPAWN_EGG.get());
                 output.accept(VOID_NEEDLE_SPAWN_EGG.get());
-                output.accept(CHITIN_LEG.get());
-                output.accept(ARTHROPOD_EYE.get());
                 output.accept(ESCAPE_STRING.get());
                 output.accept(POWER_FRAGMENT.get());
                 output.accept(VOID_STRING.get());
                 output.accept(VOID_CHITIN.get());
+                output.accept(CHITIN_LEG.get());
+                output.accept(ARTHROPOD_EYE.get());
                 output.accept(WEAVER_COCOON.get());
                 output.accept(RAW_OSMIUM.get());
                 output.accept(OSMIUM_INGOT.get());
