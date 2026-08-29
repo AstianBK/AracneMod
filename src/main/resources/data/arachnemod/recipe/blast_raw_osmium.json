@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:blasting",
+  "show_notification": false,
+  "experience": 25,
+  "cookingtime": 100,
+  "ingredient": "arachnemod:raw_osmium",
+  "result": {
+    "id": "arachnemod:osmium_ingot"
+  }
+}
