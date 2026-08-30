@@ -4,7 +4,7 @@ package com.astianbk.arachnemod.common.worldgenerator.the_void.density;
 import com.astianbk.arachnemod.common.worldgenerator.the_void.WorldNoise;
 import net.minecraft.world.phys.Vec3;
 
-public class IslandSource implements com.astianbk.arachnemod.common.worldgenerator.density.DensitySource {
+public class IslandSource implements DensitySource {
 
     public final double centerX;
     public final double centerY;

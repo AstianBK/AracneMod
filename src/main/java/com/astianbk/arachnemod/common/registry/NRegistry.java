@@ -7,7 +7,6 @@ import com.astianbk.arachnemod.common.effect.ArachnophobiaEffect;
 import com.astianbk.arachnemod.common.effect.DamnationEffect;
 import com.astianbk.arachnemod.common.effect.SilentEffect;
 import com.astianbk.arachnemod.common.items.*;
-import com.astianbk.arachnemod.common.worldgenerator.structure_placement.VoidZiguratPlacement;
 import com.astianbk.arachnemod.common.worldgenerator.the_depths.TheDepthsChunkGenerator;
 import com.astianbk.arachnemod.common.worldgenerator.the_void.VoidChunkGenerator;
 import com.astianbk.arachnemod.common.worldgenerator.the_void.feature.BonesFeature;
@@ -22,6 +21,7 @@ import com.astianbk.arachnemod.common.worldgenerator.the_void.structure_piece.Cr
 import com.astianbk.arachnemod.common.worldgenerator.the_void.structure_piece.VoidBoneRemainsStructurePiece;
 import com.astianbk.arachnemod.common.worldgenerator.the_void.structure_piece.VoidNeedleHiveStructurePiece;
 import com.astianbk.arachnemod.common.worldgenerator.the_void.structure_piece.VoidZiguratStructurePiece;
+import com.astianbk.arachnemod.common.worldgenerator.the_void.structure_placement.VoidZiguratPlacement;
 import com.astianbk.arachnemod.server.cap.ArachneAttachment;
 import com.astianbk.arachnemod.server.entity.*;
 import com.astianbk.arachnemod.server.cap.TheVoidAttachment;
@@ -186,7 +186,7 @@ public class NRegistry {
 
     public static final DeferredItem<BlockItem> POINTED_BEDROCK_ITEM = ITEMS.registerSimpleBlockItem("pointed_bedrock_item",POINTED_BEDROCK_BLOCK);
     public static final DeferredItem<Item> SEALING_CRYSTAL_ITEM = ITEMS.registerItem("sealing_crystal_item",(properties)->new SealingCrystalItem(properties.component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)));
-    public static final DeferredItem<Item> POWER_FRAGMENT = ITEMS.registerItem("power_fragment", Item::new);
+    public static final DeferredItem<Item> POWER_FRAGMENT = ITEMS.registerItem("power_fragment", (properties -> new Item(properties.rarity(Rarity.COMMON))));
     public static final DeferredItem<Item> VOID_STRING = ITEMS.registerItem("void_string", Item::new);
     public static final DeferredItem<Item> ESCAPE_STRING = ITEMS.registerItem("escape_string", EscapeStringItem::new);
     public static final DeferredItem<Item> ARTHROPOD_EYE = ITEMS.registerItem("arthropod_eye", properties -> new Item(properties.food((new FoodProperties.Builder()).nutrition(4).saturationModifier(0.1F).build(),defaultFood().onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.HUNGER, 200, 0), 0.4F)).build())));
@@ -348,7 +348,8 @@ public class NRegistry {
     public static final DeferredHolder<MapCodec<? extends ChunkGenerator>, MapCodec<TheDepthsChunkGenerator>> THE_DEPTHS =
             CHUNK_GENERATORS.register("the_depths",
                     () -> TheDepthsChunkGenerator.CODEC);
-    public static final DeferredHolder<StructurePlacementType<?>,StructurePlacementType<VoidZiguratPlacement>> VOID_PLACEMENT = STRUCTURE_PLACEMENT_TYPE.register("void_placement",()-> (StructurePlacementType<VoidZiguratPlacement>) () -> VoidZiguratPlacement.CODEC);
+    public static final DeferredHolder<StructurePlacementType<?>,StructurePlacementType<VoidZiguratPlacement>> VOID_PLACEMENT =
+            STRUCTURE_PLACEMENT_TYPE.register("void_placement",()-> (StructurePlacementType<VoidZiguratPlacement>) () -> VoidZiguratPlacement.CODEC);
     public static final DeferredHolder<StructureType<?>,StructureType<VoidZiguratStructure>> VOID_ZIGURAT =
             STRUCTURE_TYPE.register("void_zigurat",()-> () -> VoidZiguratStructure.CODEC);
     public static final DeferredHolder<StructureType<?>,StructureType<CrystalMonumentStructure>> CRYSTAL_MONUMENT =

@@ -3,7 +3,7 @@ package com.astianbk.arachnemod.common.worldgenerator.the_void.density;
 import com.astianbk.arachnemod.common.worldgenerator.the_void.WorldNoise;
 import net.minecraft.world.phys.Vec3;
 
-public class BridgeSource implements com.astianbk.arachnemod.common.worldgenerator.density.DensitySource {
+public class BridgeSource implements DensitySource {
     public final Vec3 from;
     public final Vec3 to;
     public final IslandSource islandA;
