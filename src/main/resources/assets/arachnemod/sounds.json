@@ -17,6 +17,30 @@
       "arachnemod:arachne_talk3"
     ]
   },
+  "scythe_attack": {
+    "subtitle": "sounds.arachnemod.scythe_attack",
+    "sounds": [
+      "arachnemod:scythe_attack"
+    ]
+  },
+  "scythe_idle": {
+    "subtitle": "sounds.arachnemod.scythe_idle",
+    "sounds": [
+      "arachnemod:scythe_idle"
+    ]
+  },
+  "scythe_hurt": {
+    "subtitle": "sounds.arachnemod.scythe_hurt",
+    "sounds": [
+      "arachnemod:scythe_hurt"
+    ]
+  },
+  "scythe_parry": {
+    "subtitle": "sounds.arachnemod.scythe_parry",
+    "sounds": [
+      "arachnemod:scythe_parry"
+    ]
+  },
     "hopper_hex": {
     "subtitle": "sounds.arachnemod.hopper_hex",
     "sounds": [

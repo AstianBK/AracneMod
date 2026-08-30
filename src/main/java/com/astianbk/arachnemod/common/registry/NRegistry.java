@@ -95,6 +95,14 @@ public class NRegistry {
             SOUNDS.register("hopper_hex", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "hopper_hex")));
     public static final DeferredHolder<SoundEvent, SoundEvent> HOPPER_CHANNEL =
             SOUNDS.register("hopper_channel", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "hopper_channel")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> SCYTHE_IDLE =
+            SOUNDS.register("scythe_idle", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "scythe_idle")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> SCYTHE_HURT =
+            SOUNDS.register("scythe_hurt", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "scythe_hurt")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> SCYTHE_ATTACK =
+            SOUNDS.register("scythe_attack", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "scythe_attack")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> SCYTHE_PARRY =
+            SOUNDS.register("scythe_parry", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "scythe_parry")));
     public static final DeferredHolder<SoundEvent, SoundEvent> BEDROCKFALL =
             SOUNDS.register("bedrockfall", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "bedrockfall")));
     public static final DeferredHolder<SoundEvent, SoundEvent> ORB_SELECT =
