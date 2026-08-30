@@ -1,4 +1,4 @@
-package com.astianbk.arachnemod.common.worldgenerator.density;
+package com.astianbk.arachnemod.common.worldgenerator.the_void.density;
 
 public interface DensitySource {
 

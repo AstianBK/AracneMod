@@ -2,7 +2,7 @@ package com.astianbk.arachnemod.common.worldgenerator.the_void.density;
 
 import com.astianbk.arachnemod.common.worldgenerator.the_void.WorldNoise;
 
-public class TunnelSource implements com.astianbk.arachnemod.common.worldgenerator.density.DensitySource {
+public class TunnelSource implements DensitySource {
 
     private final IslandSource island;
 

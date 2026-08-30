@@ -59,6 +59,14 @@
   "sounds.arachnemod.scarab_idle1":"VoidReaver Clicks",
   "sounds.arachnemod.scarab_idle2":"VoidReaver Clicks",
 
+  "item.arachnemod.power_fragment.tooltip": "",
+  "item.arachnemod.arthropod_eye.tooltip": "",
+  "item.arachnemod.chitin_leg.tooltip": "",
+  "item.arachnemod.forgotten_idol.tooltip": "",
+  "item.arachnemod.osmium_ingot.tooltip": "",
+  "item.arachnemod.escape_string.tooltip": "",
+  "item.arachnemod.sealing_crystal_item.tooltip": "",
+
   "sounds.arachnemod.needle_loop":"VoidNeedle Flapping Wings",
 
   "sounds.arachnemod.veil_crystal_shimmer":"Veil Crystal Shimmering",

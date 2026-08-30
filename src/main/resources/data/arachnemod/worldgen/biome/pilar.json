@@ -36,6 +36,12 @@
     "misc": [],
     "monster": [
       {
+        "type": "arachnemod:void_needle",
+        "weight": 60,
+        "minCount": 1,
+        "maxCount": 2
+      },
+      {
         "type": "arachnemod:void_beetle",
         "weight": 40,
         "minCount": 1,
@@ -46,12 +52,6 @@
         "weight": 40,
         "minCount": 1,
         "maxCount": 1
-      },
-      {
-        "type": "arachnemod:void_needle",
-        "weight": 40,
-        "minCount": 1,
-        "maxCount": 2
       }
     ],
     "underground_water_creature": [],

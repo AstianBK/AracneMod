@@ -1,4 +1,4 @@
-package com.astianbk.arachnemod.common.worldgenerator.structure_placement;
+package com.astianbk.arachnemod.common.worldgenerator.the_void.structure_placement;
 
 import com.astianbk.arachnemod.common.registry.NRegistry;
 import com.mojang.serialization.Codec;

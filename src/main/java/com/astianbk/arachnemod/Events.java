@@ -15,9 +15,11 @@ import com.astianbk.arachnemod.server.goal.SpiderTargetGoal;
 import com.astianbk.arachnemod.server.network.PacketNerubianData;
 import com.astianbk.arachnemod.server.network.PacketPlayDialog;
 import com.astianbk.arachnemod.server.network.PacketSetScreen;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -25,6 +27,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
+import net.minecraft.util.SpawnUtil;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -71,6 +74,7 @@ import java.util.Random;
 
 @EventBusSubscriber(modid = AracneMod.MODID)
 public class Events {
+
     @SubscribeEvent
     public static void tickEvent(PlayerTickEvent.Post event){
         if(event.getEntity() instanceof Player player){
@@ -91,11 +95,9 @@ public class Events {
     @SubscribeEvent
     public static void itemModifierEvent(ItemAttributeModifierEvent event){
         ItemStack stack = event.getItemStack();
-
         if (!(stack.getItem() instanceof OsmiumArmorItem)) {
             return;
         }
-
         float damageRatio = (float) stack.getDamageValue() / (float) stack.getMaxDamage();
 
         double maxBonus = 8.0D;
@@ -105,6 +107,7 @@ public class Events {
             event.addModifier(Attributes.ARMOR, new AttributeModifier(Identifier.fromNamespaceAndPath(AracneMod.MODID, "osmium_durability_armor"), armorBonus, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.ARMOR);
         }
     }
+
     @SubscribeEvent
     public static void onDie(LivingDeathEvent event){
         Entity entity = event.getSource().getEntity();
@@ -175,11 +178,11 @@ public class Events {
 
         }
     }
+
     @SubscribeEvent
     public static void registerCommands(RegisterCommandsEvent event) {
         VoidWeatherCommand.register(event.getDispatcher());
     }
-
 
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {
@@ -225,8 +228,8 @@ public class Events {
 
         event.register(NRegistry.VOID_NEEDLE.get(),
                 SpawnPlacementTypes.NO_RESTRICTIONS,
-                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                Mob::checkMobSpawnRules,
+                Heightmap.Types.OCEAN_FLOOR_WG,
+                VoidNeedleEntity::checNeedleSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
         event.register(NRegistry.SCARAB.get(),
@@ -235,7 +238,24 @@ public class Events {
                 Mob::checkMobSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
-
+    @SubscribeEvent
+    public static void onItemTooltip(ItemTooltipEvent event) {
+        if (event.getItemStack().is(NRegistry.POWER_FRAGMENT)){
+            event.getToolTip().add(Component.translatable("item.arachnemod.power_fragment.tooltip"));
+        }else if (event.getItemStack().is(NRegistry.ARTHROPOD_EYE)){
+            event.getToolTip().add(Component.translatable("item.arachnemod.arthropod_eye.tooltip"));
+        }else if (event.getItemStack().is(NRegistry.CHITIN_LEG)){
+            event.getToolTip().add(Component.translatable("item.arachnemod.chitin_leg.tooltip"));
+        }else if (event.getItemStack().is(NRegistry.WEAVER_IDOL_ITEM)){
+            event.getToolTip().add(Component.translatable("item.arachnemod.forgotten_idol.tooltip"));
+        }else if (event.getItemStack().is(NRegistry.OSMIUM_INGOT)){
+            event.getToolTip().add(Component.translatable("item.arachnemod.osmium_ingot.tooltip"));
+        }else if (event.getItemStack().is(NRegistry.ESCAPE_STRING)){
+            event.getToolTip().add(Component.translatable("item.arachnemod.escape_string.tooltip"));
+        }else if (event.getItemStack().is(NRegistry.SEALING_CRYSTAL_ITEM)){
+            event.getToolTip().add(Component.translatable("item.arachnemod.sealing_crystal_item.tooltip"));
+        }
+    }
     @SubscribeEvent
     public static void registerPackets(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(AracneMod.MODID).versioned("1.0");
@@ -265,6 +285,7 @@ public class Events {
             }
         });
     }
+
     @SubscribeEvent
     public static void hurtEvent(LivingDamageEvent.Pre event){
         if (event.getEntity() instanceof Player player){
@@ -395,7 +416,7 @@ public class Events {
     @SubscribeEvent
     public static void onUse(PlayerInteractEvent.RightClickItem event){
         if (event.getItemStack().getItem().equals(NRegistry.WEAVER_COCOON.get()) && event.getLevel() instanceof ServerLevel serverLevel) {
-            ResourceKey<LootTable> key = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath("minecraft","chests/simple_dungeon"));
+            ResourceKey<LootTable> key = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath("arachnemod","weaver_cocoon_loot"));
 
             LootTable lootTable = serverLevel.getServer().reloadableRegistries().getLootTable(key);
 
@@ -435,6 +456,7 @@ public class Events {
             }
         }));
     }
+
     private static Vec3 getCenterIsland(ServerLevel serverLevel, long seed, int cellX, int cellZ) {
         int cellSize = 256;
 

@@ -1,5 +1,6 @@
 package com.astianbk.arachnemod.server.entity;
 
+import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.common.registry.NRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -10,6 +11,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -25,6 +27,7 @@ import net.minecraft.world.entity.monster.Monster;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -147,7 +150,19 @@ public class VoidNeedleEntity extends Monster {
             }
         }
     }
+    public static boolean checNeedleSpawnRules(EntityType<? extends Mob> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
+        if (EntitySpawnReason.isSpawner(spawnReason)) {
+            return true;
+        }
+        AracneMod.LOGGER.info("Check y :{}",pos);
+        int y = pos.getY();
+        if (y < 230 || y > 270) {
+            return false;
+        }
+        BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
 
+        return true;
+    }
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new VoidNeedleEntityAttackStrategyGoal());
         this.goalSelector.addGoal(2, new VoidNeedleEntitySweepAttackGoal());
@@ -328,10 +343,8 @@ public class VoidNeedleEntity extends Monster {
                     if (VoidNeedleEntity.this.tickCount > this.catSearchTick) {
                         this.catSearchTick = VoidNeedleEntity.this.tickCount + 20;
                         List<Cat> cats = VoidNeedleEntity.this.level().getEntitiesOfClass(Cat.class, VoidNeedleEntity.this.getBoundingBox().inflate(16.0), EntitySelector.ENTITY_STILL_ALIVE);
-                        Iterator var4 = cats.iterator();
 
-                        while(var4.hasNext()) {
-                            Cat cat = (Cat)var4.next();
+                        for (Cat cat : cats) {
                             cat.hiss();
                         }
 
@@ -431,6 +444,7 @@ public class VoidNeedleEntity extends Monster {
             }
         }
 
+
         private void selectNext() {
             if (VoidNeedleEntity.this.anchorPoint == null) {
                 VoidNeedleEntity.this.anchorPoint = VoidNeedleEntity.this.blockPosition();
@@ -438,7 +452,6 @@ public class VoidNeedleEntity extends Monster {
 
             this.angle += this.clockwise * 15.0F * 0.017453292F;
             VoidNeedleEntity.this.moveTargetPoint = Vec3.atLowerCornerOf(VoidNeedleEntity.this.anchorPoint).add((double)(this.distance * Mth.cos((double)this.angle)), (double)(-4.0F + this.height), (double)(this.distance * Mth.sin((double)this.angle)));
-
         }
 
     }

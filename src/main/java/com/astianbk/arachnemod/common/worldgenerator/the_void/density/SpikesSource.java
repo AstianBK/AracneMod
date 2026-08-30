@@ -3,7 +3,7 @@ package com.astianbk.arachnemod.common.worldgenerator.the_void.density;
 import com.astianbk.arachnemod.common.worldgenerator.the_void.WorldNoise;
 import net.minecraft.world.phys.Vec3;
 
-public class SpikesSource implements com.astianbk.arachnemod.common.worldgenerator.density.DensitySource {
+public class SpikesSource implements DensitySource {
     public final double centerX;
     public final double centerY;
     public final double centerZ;

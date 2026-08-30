@@ -7,8 +7,8 @@
     },
     {
       "condition": "minecraft:random_chance",
-      "chance": 0.8
+      "chance": 0.3
     }
   ],
-  "table": "arachnemod:arachne_idol_item"
+  "table": "arachnemod:chests/ancient_city_additions"
 }
