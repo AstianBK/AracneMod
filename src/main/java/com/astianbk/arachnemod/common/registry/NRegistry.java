@@ -193,17 +193,17 @@ public class NRegistry {
     public static final DeferredItem<BlockItem> COCOONCHEST_ITEM = ITEMS.registerSimpleBlockItem("cocoonchest_item",COCOONCHEST_BLOCK);
 
     public static final DeferredItem<BlockItem> POINTED_BEDROCK_ITEM = ITEMS.registerSimpleBlockItem("pointed_bedrock_item",POINTED_BEDROCK_BLOCK);
-    public static final DeferredItem<Item> SEALING_CRYSTAL_ITEM = ITEMS.registerItem("sealing_crystal_item",(properties)->new SealingCrystalItem(properties.component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)));
-    public static final DeferredItem<Item> POWER_FRAGMENT = ITEMS.registerItem("power_fragment", (properties -> new Item(properties.rarity(Rarity.COMMON))));
+    public static final DeferredItem<Item> SEALING_CRYSTAL_ITEM = ITEMS.registerItem("sealing_crystal_item",(properties)->new SealingCrystalItem(properties.rarity(Rarity.EPIC).component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)));
+    public static final DeferredItem<Item> POWER_FRAGMENT = ITEMS.registerItem("power_fragment", (properties -> new Item(properties.rarity(Rarity.EPIC))));
     public static final DeferredItem<Item> VOID_STRING = ITEMS.registerItem("void_string", Item::new);
-    public static final DeferredItem<Item> ESCAPE_STRING = ITEMS.registerItem("escape_string", EscapeStringItem::new);
+    public static final DeferredItem<Item> ESCAPE_STRING = ITEMS.registerItem("escape_string", (properties -> new EscapeStringItem(properties.rarity(Rarity.UNCOMMON))));
     public static final DeferredItem<Item> ARTHROPOD_EYE = ITEMS.registerItem("arthropod_eye", properties -> new Item(properties.food((new FoodProperties.Builder()).nutrition(4).saturationModifier(0.1F).build(),defaultFood().onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.HUNGER, 200, 0), 0.4F)).build())));
     public static final DeferredItem<Item> CHITIN_LEG = ITEMS.registerItem("chitin_leg", properties -> new Item(properties.food((new FoodProperties.Builder()).nutrition(2).saturationModifier(0.3F).build(),defaultFood().onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.HUNGER, 200, 0), 0.2F)).build())));
 
     public static final DeferredItem<Item> VOID_CHITIN = ITEMS.registerItem("void_chitin", Item::new);
     public static final DeferredItem<Item> RAW_OSMIUM = ITEMS.registerItem("raw_osmium", Item::new);
     public static final DeferredItem<Item> OSMIUM_INGOT = ITEMS.registerItem("osmium_ingot", Item::new);
-    public static final DeferredItem<Item> WEAVER_COCOON = ITEMS.registerItem("weaver_cocoon", Item::new);
+    public static final DeferredItem<Item> WEAVER_COCOON = ITEMS.registerItem("weaver_cocoon", (properties -> new Item(properties.rarity(Rarity.RARE))));
 
     public static final DeferredItem<Item> OSMIUM_HELMET = ITEMS.registerItem("osmium_helmet",(properties)->new OsmiumArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.OSMIUM, ArmorType.HELMET).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"osmium_helmet" )))));
     public static final DeferredItem<Item> OSMIUM_CHESTPLATE = ITEMS.registerItem("osmium_chestplate",(properties)->new OsmiumArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.OSMIUM, ArmorType.CHESTPLATE).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"osmium_chestplate" )))));

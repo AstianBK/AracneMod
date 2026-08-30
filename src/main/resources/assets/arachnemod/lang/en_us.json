@@ -22,10 +22,17 @@
   "item.arachnemod.osmium_chestplate": "Osmium Chestplate",
   "item.arachnemod.osmium_leggings": "Osmium Leggings",
   "item.arachnemod.osmium_boots": "Osmium Boots",
+  "item.arachnemod.void_mantle": "Void Mantle",
   "item.arachnemod.escape_string": "Escape String",
   "item.arachnemod.chitin_leg": "Tiny Chitinous Leg",
   "item.arachnemod.arthropod_eye": "Tiny Arthropod Eye",
   "item.arachnemod.veilshard": "Veilshard",
+  "item.arachnemod.weaver_cocoon": "Loot Cocoon",
+  "item.arachnemod.void_scarab_spawn_egg": "VoidReaver Spawn Egg",
+  "item.arachnemod.void_hopper_spawn_egg": "VoidHexer Spawn Egg",
+  "item.arachnemod.void_needle_spawn_egg": "VoidNeedle Spawn Egg",
+  "item.arachnemod.void_scythe_spawn_egg": "VoidScythe Spawn Egg",
+  "item.arachnemod.void_stalker_spawn_egg": "VoidStalker Spawn Egg",
 
   "block.arachnemod.arachne_idol_item": "Forgotten Idol",
   "block.arachnemod.cracked_bedrock_item": "Shattered Bedrock",
@@ -53,19 +60,22 @@
   "sounds.arachnemod.arachne_talk2":"Arachne Talking",
   "sounds.arachnemod.arachne_talk3":"Arachne Talking",
 
+  "sounds.arachnemod.scythe_parry":"VoidScythe Parries Attack",
+
   "sounds.arachnemod.hopper_hex":"Getting Hexed",
   "sounds.arachnemod.hopper_channel":"VoidHexer Praying",
 
   "sounds.arachnemod.scarab_idle1":"VoidReaver Clicks",
   "sounds.arachnemod.scarab_idle2":"VoidReaver Clicks",
 
-  "item.arachnemod.power_fragment.tooltip": "",
-  "item.arachnemod.arthropod_eye.tooltip": "",
-  "item.arachnemod.chitin_leg.tooltip": "",
-  "item.arachnemod.forgotten_idol.tooltip": "",
-  "item.arachnemod.osmium_ingot.tooltip": "",
-  "item.arachnemod.escape_string.tooltip": "",
-  "item.arachnemod.sealing_crystal_item.tooltip": "",
+  "item.arachnemod.power_fragment.tooltip": "§7§oIt pulsates with power",
+  "item.arachnemod.arthropod_eye.tooltip": "§7§oSlimy, barely edible...",
+  "item.arachnemod.chitin_leg.tooltip": "§7§oCrunchy, barely edible...",
+  "item.arachnemod.forgotten_idol.tooltip":"§7§oA faint echo whispers within",
+  "item.arachnemod.osmium_ingot.tooltip": "§7§oIt hardens when struck",
+  "item.arachnemod.escape_string.tooltip": "§7§oCreates a temporary escape web out of the void",
+  "item.arachnemod.sealing_crystal_item.tooltip": "§7§oCapable of sealing power within it",
+  "item.arachnemod.weaver_cocoon.tooltip": "§7§oTear it open and enjoy the loot!",
 
   "sounds.arachnemod.needle_loop":"VoidNeedle Flapping Wings",
 
