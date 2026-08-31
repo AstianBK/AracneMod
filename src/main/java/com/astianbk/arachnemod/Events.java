@@ -12,6 +12,7 @@ import com.astianbk.arachnemod.server.cap.data.BlessingData;
 import com.astianbk.arachnemod.server.entity.*;
 import com.astianbk.arachnemod.server.goal.SpiderTargetEnemyGoal;
 import com.astianbk.arachnemod.server.goal.SpiderTargetGoal;
+import com.astianbk.arachnemod.server.network.PacketHandlerParticle;
 import com.astianbk.arachnemod.server.network.PacketNerubianData;
 import com.astianbk.arachnemod.server.network.PacketPlayDialog;
 import com.astianbk.arachnemod.server.network.PacketSetScreen;
@@ -24,6 +25,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
@@ -110,6 +113,7 @@ public class Events {
 
     @SubscribeEvent
     public static void onDie(LivingDeathEvent event){
+        if (event.getSource().is(DamageTypes.FELL_OUT_OF_WORLD))return;
         Entity entity = event.getSource().getEntity();
         LivingEntity death = event.getEntity();
         if(entity instanceof Player player){
@@ -135,6 +139,7 @@ public class Events {
                 }
             });
         }
+
         if (death instanceof Player player){
             ArachneAttachment.get(player).ifPresent(e->{
                 if (e.blessingIsActive(BlessingData.BlessingType.ARACHNE_PROTECTION)){
@@ -143,6 +148,11 @@ public class Events {
                     event.setCanceled(true);
                     death.setHealth(1.0F);
                     player.syncData(NRegistry.ARACNE);
+                }
+                if (!event.isCanceled()){
+                    e.failQuest((ServerPlayer) player);
+                    e.progressQuest = 0;
+                    e.timeQuest = 0;
                 }
             });
         }
@@ -260,6 +270,8 @@ public class Events {
             event.getToolTip().add(Component.translatable("item.arachnemod.escape_string.tooltip"));
         }else if (event.getItemStack().is(NRegistry.SEALING_CRYSTAL_ITEM)){
             event.getToolTip().add(Component.translatable("item.arachnemod.sealing_crystal_item.tooltip"));
+        }else if (event.getItemStack().is(NRegistry.WEAVER_COCOON)){
+            event.getToolTip().add(Component.translatable("item.arachnemod.weaver_cocoon.tooltip"));
         }
     }
     @SubscribeEvent
@@ -268,6 +280,8 @@ public class Events {
         registrar.playToClient(PacketPlayDialog.TYPE, PacketPlayDialog.STREAM_CODEC, PacketPlayDialog::handle);
         registrar.playToClient(PacketNerubianData.TYPE, PacketNerubianData.STREAM_CODEC, PacketNerubianData::handle);
         registrar.playToClient(PacketSetScreen.TYPE, PacketSetScreen.STREAM_CODEC,PacketSetScreen::handle);
+        registrar.playToClient(PacketHandlerParticle.TYPE, PacketHandlerParticle.STREAM_CODEC, PacketHandlerParticle::handle);
+
     }
 
     @SubscribeEvent
@@ -436,6 +450,7 @@ public class Events {
             for (ItemStack drop : drops){
                 event.getEntity().spawnAtLocation(serverLevel,drop);
             }
+            event.getLevel().playSound(null,event.getEntity(), SoundEvents.CHICKEN_DEATH_BABY.value(), SoundSource.PLAYERS,2.0F,1.0F);
             event.getItemStack().shrink(1);
         }
     }

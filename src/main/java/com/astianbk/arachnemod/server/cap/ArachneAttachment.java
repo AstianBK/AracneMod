@@ -13,6 +13,7 @@ import com.astianbk.arachnemod.common.registry.NRegistry;
 import com.astianbk.arachnemod.server.cap.data.BlessingData;
 import com.astianbk.arachnemod.server.cap.data.CompendiumData;
 import com.astianbk.arachnemod.server.cap.data.CooldownData;
+import com.astianbk.arachnemod.server.network.PacketHandlerParticle;
 import com.astianbk.arachnemod.server.network.PacketPlayDialog;
 import com.mojang.serialization.Codec;
 import net.minecraft.client.Minecraft;
@@ -43,6 +44,8 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -54,6 +57,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.*;
 
@@ -218,6 +222,7 @@ public class ArachneAttachment {
                                 living.addEffect(new MobEffectInstance(MobEffects.SLOWNESS,60,2));
                             }
                         });
+                        PacketDistributor.sendToPlayer((ServerPlayer) player,new PacketHandlerParticle(0,player.blockPosition()));
                         player.syncData(NRegistry.ARACNE);
 
                     }
@@ -239,12 +244,6 @@ public class ArachneAttachment {
             }else {
                 this.idleTimer--;
             }
-
-
-            this.crouching.animateWhen(player.isCrouching(),player.tickCount);
-            //this.attack.animateWhen(player.getAttackAnim(1.0F)>0,player.tickCount);
-            this.swim.animateWhen(player.isSwimming(),player.tickCount);
-            this.block.animateWhen(player.getUseItem().getItem() instanceof ShieldItem,player.tickCount);
         }
         this.updateText(player);
         for (BlessingData data : blessingData){
@@ -257,7 +256,7 @@ public class ArachneAttachment {
 
     public void acceptQuest(ServerPlayer player,Quest quest){
         this.currentQuest = quest;
-        this.timeQuest = 5600;
+        this.timeQuest = quest.getType() == QuestsType.HUNT ? 24000 : 3600;
         PacketDistributor.sendToPlayer(player,new PacketPlayDialog(Identifier.parse(quest.getDescription()),player.getId()));
         this.progressQuest = 0;
     }
@@ -272,6 +271,11 @@ public class ArachneAttachment {
 
     public void completeQuest(ServerPlayer serverPlayer){
         if (this.currentQuest != null){
+            if (this.currentQuest.getType() == QuestsType.COLLECT){
+                Item item = BuiltInRegistries.ITEM.getValue(Identifier.parse(currentQuest.getTargetId()));
+                AracneMod.LOGGER.info("info : {}",item);
+                serverPlayer.getInventory().clearOrCountMatchingItems((itemStack -> itemStack.is(item)),currentQuest.getMaxProgress(),serverPlayer.inventoryMenu.getCraftSlots());
+            }
             playDialog(Identifier.parse(DIALOGS_FOR_TYPE.get(currentQuest.getType())[serverPlayer.getRandom().nextInt(0,6)]));
             setCurrentReputation(serverPlayer,currentReputation + currentQuest.getReputation());
             this.currentQuest = null;
@@ -478,6 +482,7 @@ public class ArachneAttachment {
         Item itemQuest = BuiltInRegistries.ITEM.get(Identifier.parse(this.currentQuest.getTargetId())).get().value();
 
         int countItem = player.getInventory().countItem(itemQuest);
+
         this.progressQuest = Math.min(countItem,this.currentQuest.getMaxProgress());
         player.syncData(NRegistry.ARACNE);
     }

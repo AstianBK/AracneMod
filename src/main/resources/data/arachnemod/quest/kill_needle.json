@@ -1,12 +1,11 @@
 {
   "type" : "HUNT",
-  "title" : "Slain 10 Scarab",
+  "title" : "Slain 5 Needle",
   "dialogDescription" : "arachnemod:arachne_quest_kill",
   "dialogFail" : "arachnemod:arachne_quest_fail",
-
-  "entityTypeId" : "arachnemod:scarab",
+  "entityTypeId" : "arachnemod:void_needle",
   "tier" : 0,
-  "toHuntEntities" : 15,
-  "reputation" : 5,
+  "toHuntEntities" : 10,
+  "reputation" : 10,
   "xp" : 34
 }

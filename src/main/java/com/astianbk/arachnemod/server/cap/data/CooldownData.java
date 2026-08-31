@@ -11,8 +11,8 @@ public class CooldownData {
                     Codec.INT.fieldOf("max_time").forGetter(data -> data.maxTime)
             ).apply(instance, CooldownData::new)
     );
-    public int cooldown=0;
-    public int maxTime=0;
+    public int cooldown;
+    public int maxTime;
     public CooldownData(int maxTime){
         this.cooldown = 0;
         this.maxTime = maxTime;
@@ -24,7 +24,7 @@ public class CooldownData {
 
     public CooldownData(int cooldown,int maxTime) {
         this.cooldown = cooldown;
-        this.maxTime =maxTime;
+        this.maxTime = maxTime;
     }
 
     public void save(FriendlyByteBuf buf){

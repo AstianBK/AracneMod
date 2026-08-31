@@ -120,7 +120,6 @@ public class ArachneIdolBlockEntity extends BlockEntity {
                 currentState = State.NONE;
                 level.setBlock(pos,level.getBlockState(pos).setValue(ArachneIdolBlock.LIT,false),3);
                 ArachneAttachment.get(player).ifPresent(arachnePlayer->{
-                    player.sendSystemMessage(Component.literal("Reputation :"+arachnePlayer.currentReputation));
                     if (arachnePlayer.currentReputation==100){
                         arachnePlayer.playDialog(Identifier.parse(CompendiumManager.getCompendiumForId(Identifier.fromNamespaceAndPath(AracneMod.MODID,"reputation_full")).getDialog()));
                     }else if (arachnePlayer.currentReputation>75){

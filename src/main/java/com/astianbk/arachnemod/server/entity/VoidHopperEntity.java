@@ -39,7 +39,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.List;
 import java.util.Random;
 
-public class VoidHopperEntity extends Monster {
+public class VoidHopperEntity extends PathfinderMob {
     private static final EntityDataAccessor<String> BLESSING = SynchedEntityData.defineId(VoidHopperEntity.class, EntityDataSerializers.STRING);
 
 
@@ -54,7 +54,7 @@ public class VoidHopperEntity extends Monster {
     public Blessing prevBlessing = Blessing.NONE;
     public Vec3 fleePos = null;
 
-    public VoidHopperEntity(EntityType<? extends Monster> type, Level level) {
+    public VoidHopperEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
     }
     public static AttributeSupplier.Builder createAttributes() {
@@ -246,7 +246,7 @@ public class VoidHopperEntity extends Monster {
                     this.emerge.stop();
                     this.casting.stop();
                     this.idleResetTimer = 60;
-                    this.diggingAnimationTimer = 60;
+                    this.diggingAnimationTimer = 57;
                     this.flee.start(this.tickCount);
                     break;
             }

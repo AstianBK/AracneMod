@@ -155,9 +155,9 @@ public class NRegistry {
     public static final DeferredBlock<Block> TALL_VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("tall_veil_crystal",(p)->new TallVeilCrystalBlock(p.lightLevel(statex -> 8).sound(SoundType.AMETHYST).noOcclusion()));
     public static final DeferredBlock<Block> LARGE_VEIL_CRYSTAL_BLOCK = BLOCKS.registerBlock("large_tall_veil_crystal",(p)->new LargeTallVeilCrystalBlock(p.lightLevel(statex -> 8).sound(SoundType.AMETHYST).randomTicks().noOcclusion()));
     public static final DeferredBlock<Block> BEDROCK_TRANSPARENT_BLOCK = BLOCKS.registerBlock("bedrock_transparent", (properties)->new FallingBedrock(properties.strength(-1.0F, 3600000.0F).noOcclusion().isValidSpawn(Blocks::never).isRedstoneConductor((s,e,s1)->false).isSuffocating((s,e,s1)->false).isViewBlocking((s,e,s1)->false)));
-    public static final DeferredBlock<Block> BEDSTONE_GOLD_ORE_BLOCK = BLOCKS.registerBlock("bedstone_gold_ore", (properties -> new Block(properties.noOcclusion().strength(2.0F, 3600000.0F))));
-    public static final DeferredBlock<Block> BEDSTONE_IRON_ORE_BLOCK = BLOCKS.registerBlock("bedstone_iron_ore", (properties -> new Block(properties.noOcclusion().strength(2.0F, 3600000.0F))));
-    public static final DeferredBlock<Block> BEDSTONE_OSMIUM_ORE_BLOCK = BLOCKS.registerBlock("bedstone_osmium_ore", (properties -> new Block(properties.noOcclusion().strength(2.0F, 3600000.0F))));
+    public static final DeferredBlock<Block> BEDSTONE_GOLD_ORE_BLOCK = BLOCKS.registerBlock("bedstone_gold_ore", (properties -> new Block(properties.noOcclusion().requiresCorrectToolForDrops().strength(4.5F, 3600000.0F))));
+    public static final DeferredBlock<Block> BEDSTONE_IRON_ORE_BLOCK = BLOCKS.registerBlock("bedstone_iron_ore", (properties -> new Block(properties.noOcclusion().requiresCorrectToolForDrops().strength(4.5F, 3600000.0F))));
+    public static final DeferredBlock<Block> BEDSTONE_OSMIUM_ORE_BLOCK = BLOCKS.registerBlock("bedstone_osmium_ore", (properties -> new Block(properties.noOcclusion().requiresCorrectToolForDrops().strength(4.5F, 3600000.0F))));
 
     public static final DeferredHolder<BlockEntityType<?>,BlockEntityType<ArachneIdolBlockEntity>> ARACHNE_IDOL_BLOCK_ENTITY = BLOCK_ENTITY_TYPE.register("arachne_idol_block_entity", () -> new BlockEntityType<>(ArachneIdolBlockEntity::new, Set.of(WEAVER_IDOL_BLOCK.get())));
 

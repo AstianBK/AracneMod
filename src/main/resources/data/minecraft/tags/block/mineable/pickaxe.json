@@ -1,0 +1,8 @@
+{
+  "replace" : false,
+  "values": [
+    "arachnemod:bedstone_iron_ore",
+    "arachnemod:bedstone_gold_ore",
+    "arachnemod:bedstone_osmium_ore"
+  ]
+}

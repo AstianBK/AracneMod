@@ -26,7 +26,6 @@ public class SealingCrystalItem extends Item {
     public InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
-        BlockState blockState = level.getBlockState(pos);
         BlockPos above = pos.above();
         if (!level.isEmptyBlock(above)) {
             return InteractionResult.FAIL;

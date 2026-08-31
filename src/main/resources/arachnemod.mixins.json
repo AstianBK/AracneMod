@@ -7,7 +7,6 @@
     "HumanoidArmorLayerMixin",
     "LevelRendererMixin",
     "LightmapRenderStateExtractorMixin",
-    "NaturalSpawnerMixin",
     "WebBlockMixin"
   ],
   "injectors": {

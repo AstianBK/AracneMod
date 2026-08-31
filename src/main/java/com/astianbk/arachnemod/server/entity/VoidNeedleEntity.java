@@ -1,6 +1,8 @@
 package com.astianbk.arachnemod.server.entity;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -34,7 +36,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
-public class VoidNeedleEntity extends Monster {
+public class VoidNeedleEntity extends PathfinderMob {
     public static final EntityDataAccessor<Boolean> STUN = SynchedEntityData.defineId(VoidNeedleEntity.class, EntityDataSerializers.BOOLEAN);
     private Vec3 moveTargetPoint;
     private @Nullable BlockPos anchorPoint;
@@ -54,7 +56,7 @@ public class VoidNeedleEntity extends Monster {
     @Nullable private Vec3 chargeEndPoint;
     private int swoopStage;
     @Nullable private Vec3 swoopStart;
-    public VoidNeedleEntity(EntityType<? extends VoidNeedleEntity> type, Level level) {
+    public VoidNeedleEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
         this.moveTargetPoint = Vec3.ZERO;
         this.attackPhase = AttackPhase.CIRCLE;
@@ -88,6 +90,13 @@ public class VoidNeedleEntity extends Monster {
     public void tick() {
         super.tick();
         if (!this.level().isClientSide()) {
+            if (this.attackPhase != AttackPhase.CIRCLE
+                    && !this.hasValidSwoopTarget()) {
+
+                this.cancelSwoop();
+                this.setTarget(null);
+            }
+
             if (this.attackPhase == AttackPhase.PREPARE_SWOOP){
                 this.changeTick++;
                 if (this.changeTick > 20){
@@ -138,22 +147,10 @@ public class VoidNeedleEntity extends Monster {
             }
         }
 
-        if (this.level().isClientSide()) {
-            float anim = Mth.cos((double)((float)(this.getUniqueFlapTickOffset() + this.tickCount) * 7.448451F * 0.017453292F + 3.1415927F));
-            float nextAnim = Mth.cos((double)((float)(this.getUniqueFlapTickOffset() + this.tickCount + 1) * 7.448451F * 0.017453292F + 3.1415927F));
-            if (anim > 0.0F && nextAnim <= 0.0F) {
-                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.PHANTOM_FLAP, this.getSoundSource(), 0.95F + this.random.nextFloat() * 0.05F, 0.95F + this.random.nextFloat() * 0.05F, false);
-            }
-
-            float width = this.getBbWidth() * 1.48F;
-            float c = Mth.cos((double)(this.getYRot() * 0.017453292F)) * width;
-            float s = Mth.sin((double)(this.getYRot() * 0.017453292F)) * width;
-            float h = (0.3F + anim * 0.45F) * this.getBbHeight() * 2.5F;
-            this.level().addParticle(ParticleTypes.MYCELIUM, this.getX() + (double)c, this.getY() + (double)h, this.getZ() + (double)s, 0.0, 0.0, 0.0);
-            this.level().addParticle(ParticleTypes.MYCELIUM, this.getX() - (double)c, this.getY() + (double)h, this.getZ() - (double)s, 0.0, 0.0, 0.0);
-        }
-
         if (this.level().isClientSide()){
+            this.level().addParticle(ParticleTypes.MYCELIUM, this.getX(), this.getY() , this.getZ(), 0.0, 0.0, 0.0);
+            this.level().addParticle(ParticleTypes.MYCELIUM, this.getX() , this.getY(), this.getZ() , 0.0, 0.0, 0.0);
+
             this.setupAnimation();
         }
     }
@@ -205,7 +202,6 @@ public class VoidNeedleEntity extends Monster {
     public void handleEntityEvent(byte id) {
         if (id == 4){
             this.changeTick = 0;
-            this.attackPhase = AttackPhase.PREPARE_SWOOP;
             this.change.start(this.tickCount);
             this.idle.stop();
             this.idleResetTimer = 18;
@@ -222,6 +218,10 @@ public class VoidNeedleEntity extends Monster {
             this.changeLoop.stop();
             this.stun.stop();
             this.idleResetTimer = 25;
+        } else if (id == 32){
+            for (int i = 0 ; i < 15 ; i++){
+                Minecraft.getInstance().particleEngine.createParticle(new DustParticleOptions(16711680,167116802.0F),getRandomX(0.5F),getY(),getRandomZ(0.5F),0.0F,0.05F,0.0F);
+            }
         }
         super.handleEntityEvent(id);
     }
@@ -249,6 +249,37 @@ public class VoidNeedleEntity extends Monster {
         Vec3 ab = this.chargeControlPoint.subtract(this.swoopStart);
         Vec3 am = this.position().subtract(this.swoopStart);
         return am.dot(ab) >= ab.lengthSqr();
+    }
+
+    private boolean hasValidSwoopTarget() {
+        LivingEntity target = this.getTarget();
+
+        if (target == null || !target.isAlive()) {
+            return false;
+        }
+
+        if (target instanceof Player player) {
+            return !player.isCreative() && !player.isSpectator();
+        }
+
+        return true;
+    }
+
+    private void cancelSwoop() {
+        this.setDeltaMovement(Vec3.ZERO);
+
+        this.attackPhase = AttackPhase.CIRCLE;
+        this.chargeTick = 0;
+        this.changeTick = 0;
+        this.swoopStage = 0;
+
+        this.swoopStart = null;
+        this.chargeControlPoint = null;
+        this.chargeEndPoint = null;
+
+        this.anchorPoint = this.blockPosition().above(6);
+
+        this.level().broadcastEntityEvent(this, (byte) 16);
     }
     public enum AttackPhase {
         CIRCLE,
@@ -299,9 +330,7 @@ public class VoidNeedleEntity extends Monster {
         }
 
         public void stop() {
-            if (VoidNeedleEntity.this.anchorPoint != null) {
-                VoidNeedleEntity.this.anchorPoint = VoidNeedleEntity.this.anchorPoint.above(10 + VoidNeedleEntity.this.random.nextInt(20));
-            }
+
         }
 
         public void tick() {
@@ -335,6 +364,7 @@ public class VoidNeedleEntity extends Monster {
             VoidNeedleEntity.this.moveTargetPoint = launchPoint;
             VoidNeedleEntity.this.attackPhase = AttackPhase.PREPARE_SWOOP;
             VoidNeedleEntity.this.level().broadcastEntityEvent(VoidNeedleEntity.this, (byte) 4);
+
         }
 
         @Nullable
@@ -344,7 +374,6 @@ public class VoidNeedleEntity extends Monster {
 
             return target.position();
         }
-
     }
 
 
@@ -426,6 +455,16 @@ public class VoidNeedleEntity extends Monster {
             super();
             this.attackTargeting = TargetingConditions.forCombat().range(64.0);
             this.nextScanTick = reducedTickDelay(20);
+        }
+
+        @Override
+        public void stop() {
+            LivingEntity target = VoidNeedleEntity.this.getTarget();
+
+            if (target instanceof Player player && (player.isCreative() || player.isSpectator())) {
+                VoidNeedleEntity.this.cancelSwoop();
+                VoidNeedleEntity.this.setTarget(null);
+            }
         }
 
         public boolean canUse() {
@@ -513,11 +552,7 @@ public class VoidNeedleEntity extends Monster {
             }
             if (VoidNeedleEntity.this.attackPhase==AttackPhase.SWOOP){
                 if (VoidNeedleEntity.this.swoopStage == 1 && toTarget.lengthSqr() <= 1.0D) {
-                    VoidNeedleEntity.this.setDeltaMovement(Vec3.ZERO);
-                    VoidNeedleEntity.this.attackPhase = AttackPhase.CIRCLE;
-                    VoidNeedleEntity.this.swoopStart = null;
-                    VoidNeedleEntity.this.chargeControlPoint = null;
-                    VoidNeedleEntity.this.chargeEndPoint = null;
+                    VoidNeedleEntity.this.cancelSwoop();
                     return;
                 }
 

@@ -5,12 +5,14 @@ import com.astianbk.arachnemod.common.ArachneIdolBlockEntity;
 import com.astianbk.arachnemod.common.registry.NRegistry;
 import com.astianbk.arachnemod.server.entity.OrbEntity;
 import com.astianbk.arachnemod.server.cap.ArachneAttachment;
+import com.astianbk.arachnemod.server.network.PacketHandlerParticle;
 import com.astianbk.arachnemod.server.network.PacketPlayDialog;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -18,6 +20,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -75,11 +78,9 @@ public class ArachneIdolBlock extends BaseEntityBlock {
                         if (e.currentQuest==null){
                             Identifier id = Identifier.fromNamespaceAndPath(AracneMod.MODID,"first_contact");
                             if (e.isCompleteCompendium(id)){
-                                AracneMod.LOGGER.info("complete");
                                 e.playDialog(DIALOG_GREETING[level.getRandom().nextInt(0,3)]);
                                 player.syncData(NRegistry.ARACNE);
                             }else {
-                                AracneMod.LOGGER.info("incomplete");
                                 e.checkCompendiumEvents(((ServerPlayer)player),id,null);
                             }
                             level.setBlock(pos,state.setValue(LIT,true),3);
@@ -90,7 +91,8 @@ public class ArachneIdolBlock extends BaseEntityBlock {
                             level.setBlock(pos,state.setValue(LIT,false),3);
                         }else if (e.currentQuest.isComplete(e)){
                             level.setBlock(pos,state.setValue(LIT,false),3);
-
+                            level.playSound(null,player, SoundEvents.IRON_GOLEM_DEATH,SoundSource.NEUTRAL,2.0F,1.0F);
+                            PacketDistributor.sendToPlayer((ServerPlayer) player,new PacketHandlerParticle(1,pos));
                             e.completeQuest((ServerPlayer) player);
                         }
 
@@ -100,8 +102,6 @@ public class ArachneIdolBlock extends BaseEntityBlock {
         });
         return InteractionResult.SUCCESS;
     }
-
-
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

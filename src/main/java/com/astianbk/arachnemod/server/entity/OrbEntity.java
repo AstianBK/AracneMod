@@ -102,6 +102,8 @@ public class OrbEntity extends Entity {
                     if (!arachneIdolBlockEntity.orbs.contains(this)){
                         arachneIdolBlockEntity.addOrb(this);
                     }
+                }else {
+                    discard();
                 }
             }
         }
