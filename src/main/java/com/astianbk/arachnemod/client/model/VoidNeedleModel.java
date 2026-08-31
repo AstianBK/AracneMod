@@ -37,7 +37,7 @@ public class VoidNeedleModel<T extends NeedleRenderState> extends EntityModel<T>
 	private final ModelPart sectionleft3;
 	private final ModelPart rightwing1;
 	private final ModelPart leftwing1;
-	private KeyframeAnimation attack1;
+	private KeyframeAnimation stun;
 	private KeyframeAnimation change;
 	private KeyframeAnimation loop_charge;
 	private KeyframeAnimation idle;
@@ -68,6 +68,7 @@ public class VoidNeedleModel<T extends NeedleRenderState> extends EntityModel<T>
 		this.idle= VoidNeedleAnim.idle.bake(root);
 		this.change = VoidNeedleAnim.startcharge.bake(root);
 		this.loop_charge = VoidNeedleAnim.charge.bake(root);
+		this.stun = VoidNeedleAnim.stunned.bake(root);
 	}
 
 	public static LayerDefinition createBodyLayer() {
@@ -125,13 +126,14 @@ public class VoidNeedleModel<T extends NeedleRenderState> extends EntityModel<T>
 	@Override
 	public void setupAnim(T state) {
 		super.setupAnim(state);
+		this.stun.apply(state.stun,state.ageInTicks);
 		this.change.apply(state.change,state.ageInTicks,1.0F);
 		this.idle.apply(state.idle,state.ageInTicks,1.0F);
 		this.loop_charge.apply(state.loop_charge,state.ageInTicks);
 		this.wingsState.apply(state.idle,state.ageInTicks,1.0F);
 
 		this.truemain.yRot = state.yRot* 0.017453292F;
-		if (state.phase == VoidNeedleEntity.AttackPhase.CHARGE || state.phase == VoidNeedleEntity.AttackPhase.SWOOP){
+		if (state.phase == VoidNeedleEntity.AttackPhase.PREPARE_SWOOP || state.phase == VoidNeedleEntity.AttackPhase.SWOOP){
 			this.truemain.xRot = state.xRot* 0.017453292F + 90.0F * 0.017453292F;
 		}
 	}

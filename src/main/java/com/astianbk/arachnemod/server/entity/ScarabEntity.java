@@ -2,7 +2,11 @@ package com.astianbk.arachnemod.server.entity;
 
 import com.astianbk.arachnemod.common.registry.NRegistry;
 import com.astianbk.arachnemod.server.goal.FleeBlockLightGoal;
+import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -10,9 +14,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.ByIdMap;
 import net.minecraft.util.Mth;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,9 +37,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jspecify.annotations.Nullable;
+import org.spongepowered.asm.mixin.injection.At;
+
+import java.util.function.IntFunction;
 
 public class ScarabEntity extends PathfinderMob {
-    public static final EntityDataAccessor<Boolean> ATTACKING = SynchedEntityData.defineId(ScarabEntity.class,EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Attack> ATTACK = SynchedEntityData.defineId(ScarabEntity.class,NRegistry.ATTACK_SERIALIZER.get());
     public int idleResetTimer = 0;
     public int attackTimer = 0;
     public AnimationState idle = new AnimationState();
@@ -88,14 +99,40 @@ public class ScarabEntity extends PathfinderMob {
         this.goalSelector.addGoal(4,new MeleeAttackGoal(this,1.0D,false){
             @Override
             protected void checkAndPerformAttack(LivingEntity target) {
-                if (this.canPerformAttack(target)) {
-                    this.resetAttackCooldown();
+                if (this.canPerformAttack(target) && ScarabEntity.this.attackTimer<=0) {
                     this.mob.getNavigation().stop();
-                    this.mob.swing(InteractionHand.MAIN_HAND);
-                    this.mob.doHurtTarget(getServerLevel(this.mob), target);
-                    this.mob.getEntityData().set(ATTACKING,true);
-                    attackTimer = 10;
-                    this.mob.level().broadcastEntityEvent(this.mob,(byte) 4);
+                    ScarabEntity.this.attackTimer=10;
+                    if (ScarabEntity.this.entityData.get(ATTACK)==Attack.NONE){
+                        switch (this.mob.getRandom().nextInt(0,3)){
+                            case 0->{
+                                ScarabEntity.this.entityData.set(ATTACK,Attack.ATTACK_1);
+                                this.mob.level().broadcastEntityEvent(this.mob,(byte) 4);
+                            }
+                            case 1->{
+                                ScarabEntity.this.entityData.set(ATTACK,Attack.ATTACK_2);
+                                this.mob.level().broadcastEntityEvent(this.mob,(byte) 8);
+                            }
+                            case 2->{
+                                ScarabEntity.this.entityData.set(ATTACK,Attack.BITE);
+                                this.mob.level().broadcastEntityEvent(this.mob,(byte) 16);
+                            }
+                        }
+                    }else {
+                        Attack attack = ScarabEntity.this.entityData.get(ATTACK);
+                        ScarabEntity.this.entityData.set(ATTACK, Attack.BY_ID.apply((attack.getId()+1)%3));
+                        switch (ScarabEntity.this.entityData.get(ATTACK).id){
+                            case 0->{
+                                this.mob.level().broadcastEntityEvent(this.mob,(byte) 4);
+                            }
+                            case 1->{
+                                this.mob.level().broadcastEntityEvent(this.mob,(byte) 8);
+                            }
+                            case 2->{
+                                this.mob.level().broadcastEntityEvent(this.mob,(byte) 16);
+                            }
+                        }
+                    }
+
                 }
             }
 
@@ -109,7 +146,7 @@ public class ScarabEntity extends PathfinderMob {
 
             @Override
             public boolean canUse() {
-                return !entityData.get(ATTACKING) && super.canUse() && level().getBrightness(LightLayer.BLOCK,this.mob.getTarget().blockPosition())<=0;
+                return super.canUse() && level().getBrightness(LightLayer.BLOCK,this.mob.getTarget().blockPosition())<=0;
             }
         });
         this.goalSelector.addGoal(1,new FleeBlockLightGoal(this,2.0F));
@@ -119,23 +156,46 @@ public class ScarabEntity extends PathfinderMob {
     @Override
     public void tick() {
         super.tick();
-        if (entityData.get(ATTACKING)){
-            this.attackTimer--;
-            if (this.attackTimer<=0){
-                entityData.set(ATTACKING,false);
-            }
-        }
+
+
+
         LivingEntity target = getTarget();
 
         if (target != null) {
-            double dx = target.getX() - getX();
-            double dz = target.getZ() - getZ();
+            if (!this.level().isClientSide()){
+                if (this.entityData.get(ATTACK) != Attack.NONE){
+                    this.attackTimer--;
+                    switch (this.entityData.get(ATTACK)){
+                        case ATTACK_1 ,ATTACK_2-> {
+                            if (this.attackTimer == 5){
+                                if (target.distanceTo(this)<4){
+                                    this.doHurtTarget((ServerLevel) level(),target);
+                                }
+                            }
+                        }
+                        case BITE -> {
+                            if (this.attackTimer == 5){
+                                if (target.distanceTo(this)<4){
+                                    this.doHurtTarget((ServerLevel) level(),target);
+                                    target.addEffect(new MobEffectInstance(MobEffects.POISON,200,1));
+                                }
+                            }
+                        }
+                    }
+                    if (this.attackTimer==0){
+                        this.entityData.set(ATTACK,Attack.NONE);
+                    }
+                }
+                double dx = target.getX() - getX();
+                double dz = target.getZ() - getZ();
 
-            float yaw = (float)(Mth.atan2(dz, dx) * (180F / Math.PI)) - 90F;
+                float yaw = (float)(Mth.atan2(dz, dx) * (180F / Math.PI)) - 90F;
 
-            setYRot(yaw);
-            setYBodyRot(yaw);
-            setYHeadRot(yaw);
+                setYRot(yaw);
+                setYBodyRot(yaw);
+                setYHeadRot(yaw);
+            }
+
         }
 
         if (this.level().isClientSide()){
@@ -157,18 +217,18 @@ public class ScarabEntity extends PathfinderMob {
         if (id == 4){
             this.idle.stop();
             this.idleResetTimer = 10;
-
-            this.combo++;
-            if (this.combo == 3){
-                this.combo = 0;
-                this.bite.start(this.tickCount);
-            }else if(this.combo == 2){
-                this.attack2.start(this.tickCount);
-            }else {
-                this.attack1.start(this.tickCount);
-            }
-            this.getEntityData().set(ATTACKING,true);
-            attackTimer = 20;
+            attackTimer = 10;
+            this.attack1.start(this.tickCount);
+        }else if (id == 8){
+            this.idle.stop();
+            this.idleResetTimer = 10;
+            attackTimer = 10;
+            this.attack2.start(this.tickCount);
+        }else if (id == 16){
+            this.idle.stop();
+            this.idleResetTimer = 10;
+            attackTimer = 10;
+            this.bite.start(this.tickCount);
         }
         super.handleEntityEvent(id);
     }
@@ -176,7 +236,7 @@ public class ScarabEntity extends PathfinderMob {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder entityData) {
         super.defineSynchedData(entityData);
-        entityData.define(ATTACKING,false);
+        entityData.define(ATTACK,Attack.ATTACK_1);
     }
 
     @Override
@@ -191,5 +251,31 @@ public class ScarabEntity extends PathfinderMob {
 
     @Override
     protected @Nullable SoundEvent getAmbientSound() {
-        return this.random.nextBoolean() ? NRegistry.SCARAB_IDLE1.get() : NRegistry.SCARAB_IDLE2.get();}
+        return this.random.nextBoolean() ? NRegistry.SCARAB_IDLE1.get() : NRegistry.SCARAB_IDLE2.get();
+    }
+    public enum Attack implements StringRepresentable {
+        ATTACK_1("attack_1",0),
+        ATTACK_2("attack_2",1),
+        BITE("bite",2),
+        NONE("none",3);
+        public static final Codec<Attack> CODEC = StringRepresentable.fromEnum(Attack::values);
+        private static final IntFunction<Attack> BY_ID = ByIdMap.continuous(Attack::getId, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
+        public static final StreamCodec<ByteBuf, Attack> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, Attack::getId);
+
+        public final String serialize;
+        public final int id;
+        Attack (String serialize,int id){
+            this.serialize = serialize;
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return this.serialize;
+        }
+    }
 }

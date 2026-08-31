@@ -3,15 +3,18 @@ package com.astianbk.arachnemod.common;
 import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.QuestsType;
 import com.astianbk.arachnemod.common.block.ArachneIdolBlock;
+import com.astianbk.arachnemod.common.compendium.CompendiumManager;
 import com.astianbk.arachnemod.common.quests.QuestManager;
 import com.astianbk.arachnemod.common.registry.NRegistry;
 import com.astianbk.arachnemod.server.cap.ArachneAttachment;
 import com.astianbk.arachnemod.server.cap.data.BlessingData;
+import com.astianbk.arachnemod.server.cap.data.CompendiumData;
 import com.astianbk.arachnemod.server.entity.EnterDimensionEntity;
 import com.astianbk.arachnemod.server.entity.OrbEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -73,7 +76,7 @@ public class ArachneIdolBlockEntity extends BlockEntity {
 
                 Vec3 center = Vec3.atCenterOf(pos).add(forward.scale(2.0));
                 EnterDimensionEntity enterDimension = new EnterDimensionEntity(NRegistry.ENTER_DIMENSION.get(), level);
-                enterDimension.setPos(center.x,level.getHeight(Heightmap.Types.MOTION_BLOCKING, (int) center.x, (int) center.z),center.z);
+                enterDimension.setPos(center.x,getEmptyY(BlockPos.containing(center),level),center.z);
                 level.addFreshEntity(enterDimension);
                 if (!level.isClientSide()){
                     level.broadcastEntityEvent(enterDimension,(byte) 8);
@@ -93,7 +96,7 @@ public class ArachneIdolBlockEntity extends BlockEntity {
 
                 Vec3 center = Vec3.atCenterOf(pos).add(forward.scale(2.0));
                 EnterDimensionEntity enterDimension = new EnterDimensionEntity(NRegistry.ENTER_DIMENSION.get(), level);
-                enterDimension.setPos(center.x,level.getHeight(Heightmap.Types.MOTION_BLOCKING, (int) center.x, (int) center.z),center.z);
+                enterDimension.setPos(center.x,getEmptyY(BlockPos.containing(center),level),center.z);
                 level.addFreshEntity(enterDimension);
                 if (!level.isClientSide()){
                     level.broadcastEntityEvent(enterDimension,(byte) 8);
@@ -105,9 +108,9 @@ public class ArachneIdolBlockEntity extends BlockEntity {
                 level.playSound(null,pos,NRegistry.ORB_SELECT.get(), SoundSource.NEUTRAL,2.0F,1.0F);
 
                 currentState = State.MENU_BLESSING;
+
                 this.startBlessing(player,level,pos,ArachneIdolBlock.typesForState.get(currentState));
                 level.setBlock(pos,level.getBlockState(pos).setValue(ArachneIdolBlock.LIT,false),3);
-                player.sendSystemMessage(Component.literal("No existe nada"));
             }
             case QUEST_REPUTATION -> {
                 orbs.forEach(Entity::discard);
@@ -118,7 +121,18 @@ public class ArachneIdolBlockEntity extends BlockEntity {
                 level.setBlock(pos,level.getBlockState(pos).setValue(ArachneIdolBlock.LIT,false),3);
                 ArachneAttachment.get(player).ifPresent(arachnePlayer->{
                     player.sendSystemMessage(Component.literal("Reputation :"+arachnePlayer.currentReputation));
-
+                    if (arachnePlayer.currentReputation==100){
+                        arachnePlayer.playDialog(Identifier.parse(CompendiumManager.getCompendiumForId(Identifier.fromNamespaceAndPath(AracneMod.MODID,"reputation_full")).getDialog()));
+                    }else if (arachnePlayer.currentReputation>75){
+                        arachnePlayer.playDialog(Identifier.parse(CompendiumManager.getCompendiumForId(Identifier.fromNamespaceAndPath(AracneMod.MODID,"reputation_high")).getDialog()));
+                    }else if (arachnePlayer.currentReputation>35){
+                        arachnePlayer.playDialog(Identifier.parse(CompendiumManager.getCompendiumForId(Identifier.fromNamespaceAndPath(AracneMod.MODID,"reputation_medium")).getDialog()));
+                    }else if (arachnePlayer.currentReputation > 5){
+                        arachnePlayer.playDialog(Identifier.parse(CompendiumManager.getCompendiumForId(Identifier.fromNamespaceAndPath(AracneMod.MODID,"reputation_low")).getDialog()));
+                    }else if (arachnePlayer.currentReputation>=0){
+                        arachnePlayer.playDialog(Identifier.parse(CompendiumManager.getCompendiumForId(Identifier.fromNamespaceAndPath(AracneMod.MODID,"reputation_none")).getDialog()));
+                    }
+                    player.syncData(NRegistry.ARACNE);
                 });
             }
             default -> {
@@ -134,6 +148,18 @@ public class ArachneIdolBlockEntity extends BlockEntity {
                 });
             }
         }
+    }
+    public int getEmptyY(BlockPos start,Level level){
+        if (level.isEmptyBlock(start)){
+            return start.getY();
+        }
+        BlockPos.MutableBlockPos pos = start.mutable();
+        for (int i = start.getY(); i >level.getMinY() ; i--){
+            if (level.isEmptyBlock(pos.above())){
+                return start.getY();
+            }
+        }
+        return start.getY();
     }
     public static <T> T getRandomQuest(List<T> list) {
         if (list == null || list.isEmpty()) {
@@ -193,6 +219,8 @@ public class ArachneIdolBlockEntity extends BlockEntity {
             orbEntity.sourceBlock = pos;
             level.addFreshEntity(orbEntity);
             addOrb(orbEntity);
+
+
         }
 
         currentState = State.MENU_BLESSING;

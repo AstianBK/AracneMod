@@ -281,17 +281,6 @@ public class ArachneAttachment {
 
     public void setCurrentReputation(ServerPlayer serverPlayer,int reputation){
         currentReputation= Math.min(100,reputation);
-        if (this.currentReputation==100){
-            checkCompendiumEvents(serverPlayer,Identifier.fromNamespaceAndPath(AracneMod.MODID,"reputation_full"),null);
-        }else if (this.currentReputation>75){
-            checkCompendiumEvents(serverPlayer,Identifier.fromNamespaceAndPath(AracneMod.MODID,"reputation_high"),null);
-        }else if (this.currentReputation>50){
-            checkCompendiumEvents(serverPlayer,Identifier.fromNamespaceAndPath(AracneMod.MODID,"reputation_medium"),null);
-        }else if (this.currentReputation>25){
-            checkCompendiumEvents(serverPlayer,Identifier.fromNamespaceAndPath(AracneMod.MODID,"reputation_low"),null);
-        }else if (this.currentReputation>0){
-            checkCompendiumEvents(serverPlayer,Identifier.fromNamespaceAndPath(AracneMod.MODID,"reputation_none"),null);
-        }
     }
 
 
@@ -420,15 +409,6 @@ public class ArachneAttachment {
             }
         }
         return false;
-    }
-
-    public void unlockBlessing(Player player,BlessingData.BlessingType type){
-        for (BlessingData data : this.blessingData){
-            if (data.type == type){
-                data.unlock = true;
-            }
-        }
-        player.syncData(NRegistry.ARACNE);
     }
 
     private void initBlessingData() {

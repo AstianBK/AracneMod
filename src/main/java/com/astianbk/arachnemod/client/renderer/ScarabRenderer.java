@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.Vec3;
 
 public class ScarabRenderer<T extends ScarabEntity,R extends ScarabRenderState,M extends ScarabModel<R>> extends MobRenderer<T,R,M> {
     public ScarabRenderer(EntityRendererProvider.Context context) {
@@ -46,6 +47,8 @@ public class ScarabRenderer<T extends ScarabEntity,R extends ScarabRenderState,M
         state.attack2.copyFrom(entity.attack2);
         state.bite.copyFrom(entity.bite);
         state.isAgressive = entity.isAggressive();
+        Vec3 velocity = entity.getDeltaMovement();
+        state.isMoving = velocity.x != 0.0D || velocity.z != 0.0D;
     }
 
 

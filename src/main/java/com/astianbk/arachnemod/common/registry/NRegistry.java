@@ -29,6 +29,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
@@ -73,8 +74,12 @@ public class NRegistry {
     public static final DeferredRegister<Feature<?>> FEATURE = DeferredRegister.create(Registries.FEATURE,AracneMod.MODID);
     public static final DeferredRegister<StructureType<?>> STRUCTURE_TYPE = DeferredRegister.create(Registries.STRUCTURE_TYPE,AracneMod.MODID);
     public static final DeferredRegister<StructurePlacementType<?>> STRUCTURE_PLACEMENT_TYPE = DeferredRegister.create(Registries.STRUCTURE_PLACEMENT,AracneMod.MODID);
-
+    public static final DeferredRegister<EntityDataSerializer<?>> ENTITY_DATA_SERIALIZER_DEFERRED_REGISTER = DeferredRegister.create(NeoForgeRegistries.ENTITY_DATA_SERIALIZERS,AracneMod.MODID);
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT,AracneMod.MODID);
+    public static final DeferredHolder<EntityDataSerializer<?>,EntityDataSerializer<VoidScytheEntity.Phase>> PHASE_SERIALIZER = ENTITY_DATA_SERIALIZER_DEFERRED_REGISTER.register("phase_serializer", () -> EntityDataSerializer.forValueType(VoidScytheEntity.Phase.STREAM_CODEC));
+    public static final DeferredHolder<EntityDataSerializer<?>,EntityDataSerializer<VoidScytheEntity.PhaseAttack>> PHASE_ATTACK_SERIALIZER = ENTITY_DATA_SERIALIZER_DEFERRED_REGISTER.register("phase_attack_serializer",(s)->EntityDataSerializer.forValueType(VoidScytheEntity.PhaseAttack.STREAM_CODEC));
+    public static final DeferredHolder<EntityDataSerializer<?>,EntityDataSerializer<ScarabEntity.Attack>> ATTACK_SERIALIZER = ENTITY_DATA_SERIALIZER_DEFERRED_REGISTER.register("attack_serializer",(s)->EntityDataSerializer.forValueType(ScarabEntity.Attack.STREAM_CODEC));
+
     public static final DeferredHolder<SoundEvent, SoundEvent> VOID_AMBIENCE =
             SOUNDS.register("ambience_loop", () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AracneMod.MODID, "ambience_loop")));
     public static final DeferredHolder<SoundEvent, SoundEvent> AMBIENCE_0 =
@@ -171,7 +176,6 @@ public class NRegistry {
 
     public static final DeferredItem<BlockItem> WEAVER_IDOL_ITEM = ITEMS.registerSimpleBlockItem("arachne_idol_item",WEAVER_IDOL_BLOCK);
     public static final DeferredItem<BlockItem> VOID_PUDDLE_ITEM = ITEMS.registerSimpleBlockItem("void_puddle_item",VOID_PUDDLE_BLOCK);
-
     public static final DeferredItem<BlockItem> BEDCRUST_ITEM = ITEMS.registerSimpleBlockItem("bedcrust_item",BEDCRUST_BLOCK);
     public static final DeferredItem<BlockItem> BEDSLAG_ITEM = ITEMS.registerSimpleBlockItem("bedslag_item",BEDSLAG_BLOCK);
     public static final DeferredItem<BlockItem> BEDSTONE_ITEM = ITEMS.registerSimpleBlockItem("bedstone_item",BEDSTONE_BLOCK);
@@ -188,7 +192,6 @@ public class NRegistry {
     public static final DeferredItem<BlockItem> VEIL_CRYSTAL_ITEM = ITEMS.registerSimpleBlockItem("veil_crystal_item",VEIL_CRYSTAL_BLOCK);
     public static final DeferredItem<BlockItem> TALL_VEIL_CRYSTAL_ITEM = ITEMS.registerSimpleBlockItem("tall_veil_crystal_item",TALL_VEIL_CRYSTAL_BLOCK);
     public static final DeferredItem<BlockItem> LARGE_TALL_VEIL_CRYSTAL_ITEM = ITEMS.registerSimpleBlockItem("large_tall_veil_crystal_item",LARGE_VEIL_CRYSTAL_BLOCK);
-
     public static final DeferredItem<BlockItem> VOID_WEB_ITEM = ITEMS.registerSimpleBlockItem("void_web_item",VOID_WEB_BLOCK);
     public static final DeferredItem<BlockItem> COCOONCHEST_ITEM = ITEMS.registerSimpleBlockItem("cocoonchest_item",COCOONCHEST_BLOCK);
 
@@ -212,6 +215,7 @@ public class NRegistry {
     public static final DeferredItem<Item> VOID_SCARAB_SPAWN_EGG = ITEMS.registerItem("void_scarab_spawn_egg",(properties)->new SpawnEggItem(properties.spawnEgg(NRegistry.SCARAB.get())));
     public static final DeferredItem<Item> VOID_HOPPER_SPAWN_EGG = ITEMS.registerItem("void_hopper_spawn_egg",(properties)->new SpawnEggItem(properties.spawnEgg(NRegistry.VOID_HOPPER.get())));
     public static final DeferredItem<Item> VOID_NEEDLE_SPAWN_EGG = ITEMS.registerItem("void_needle_spawn_egg",(properties)->new SpawnEggItem(properties.spawnEgg(NRegistry.VOID_NEEDLE.get())));
+    public static final DeferredItem<Item> VOID_SCYTHE_SPAWN_EGG = ITEMS.registerItem("void_scythe_spawn_egg",(properties)->new SpawnEggItem(properties.spawnEgg(NRegistry.VOID_SCYTHE.get())));
 
     public static final DeferredItem<Item> VOID_HELMET = ITEMS.registerItem("void_helmet",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.HELMET).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_helmet" )))));
     public static final DeferredItem<Item> VOID_CHESTPLATE = ITEMS.registerItem("void_chestplate",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.CHESTPLATE).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_chestplate" )))));
@@ -223,6 +227,7 @@ public class NRegistry {
             .withTabsBefore(CreativeModeTabs.COMBAT)
             .icon(() -> WEAVER_IDOL_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
+                output.accept(VOID_SCYTHE_SPAWN_EGG.get());
                 output.accept(VOID_SCARAB_SPAWN_EGG.get());
                 output.accept(VOID_HOPPER_SPAWN_EGG.get());
                 output.accept(VOID_NEEDLE_SPAWN_EGG.get());
@@ -290,6 +295,13 @@ public class NRegistry {
                             .of(ScarabEntity::new, MobCategory.MONSTER)
                             .sized(1.0F, 2.0F).clientTrackingRange(10).updateInterval(2)
                             .build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(AracneMod.MODID,"scarab"))));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<VoidScytheEntity>> VOID_SCYTHE =
+            ENTITY_TYPES.register("void_scythe",
+                    () -> EntityType.Builder
+                            .of(VoidScytheEntity::new, MobCategory.MONSTER)
+                            .sized(1.0F, 2.0F).clientTrackingRange(10).updateInterval(2)
+                            .build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_scythe"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<VoidNeedleEntity>> VOID_NEEDLE =
             ENTITY_TYPES.register("void_needle",

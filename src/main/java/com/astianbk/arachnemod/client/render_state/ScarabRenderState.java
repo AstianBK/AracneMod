@@ -9,6 +9,8 @@ public class ScarabRenderState extends LivingEntityRenderState {
     public AnimationState attack2 = new AnimationState();
     public AnimationState bite = new AnimationState();
     public boolean isAgressive = false;
+    public boolean isMoving = false;
+
     public ScarabRenderState(){
 
     }

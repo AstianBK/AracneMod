@@ -106,6 +106,7 @@ public class AracneModClient {
         event.registerLayerDefinition(SealingCrystalModel.LAYER_LOCATION,Suppliers.ofInstance(SealingCrystalModel.createBodyLayer()));
         event.registerLayerDefinition(ShieldCocoonModel.LAYER_LOCATION,Suppliers.ofInstance(ShieldCocoonModel.createBodyLayer()));
         event.registerLayerDefinition(ArachneLegModel.LAYER_LOCATION,Suppliers.ofInstance(ArachneLegModel.createBodyLayer()));
+        event.registerLayerDefinition(VoidScytheModel.LAYER_LOCATION,Suppliers.ofInstance(VoidScytheModel.createBodyLayer()));
 
         //        event.registerLayerDefinition(ScarabModel.ARMOR_LOCATION,Suppliers.ofInstance(ScarabModel.createBodyLayer(new CubeDeformation(1.0F))));
     }
@@ -430,6 +431,7 @@ public class AracneModClient {
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(NRegistry.VOID_NEEDLE.get(), VoidNeedleRenderer::new);
         event.registerEntityRenderer(NRegistry.SCARAB.get(), ScarabRenderer::new);
+        event.registerEntityRenderer(NRegistry.VOID_SCYTHE.get(), VoidScytheRenderer::new);
         event.registerEntityRenderer(NRegistry.ORB.get(), OrbRenderer::new);
         event.registerEntityRenderer(NRegistry.VOID_HOPPER.get(), VoidHopperRenderer::new);
         event.registerEntityRenderer(NRegistry.VOID_BEETLE.get(), VoidBeetleRenderer::new);

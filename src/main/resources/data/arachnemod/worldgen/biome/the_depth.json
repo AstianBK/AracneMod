@@ -32,7 +32,14 @@
   "spawners": {
     "ambient": [],
     "axolotls": [],
-    "creature": [],
+    "creature": [
+      {
+        "type": "arachnemod:void_scythe",
+        "weight": 20,
+        "minCount": 1,
+        "maxCount": 1
+      }
+    ],
     "misc": [],
     "monster": [
 

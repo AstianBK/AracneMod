@@ -1,7 +1,5 @@
 package com.astianbk.arachnemod.server.entity;
 
-import com.astianbk.arachnemod.AracneMod;
-import com.astianbk.arachnemod.common.registry.NRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -10,8 +8,8 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -22,15 +20,13 @@ import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.animal.feline.Cat;
 import net.minecraft.world.entity.monster.Monster;
 
+import net.minecraft.world.entity.monster.Phantom;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
@@ -39,10 +35,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.*;
 
 public class VoidNeedleEntity extends Monster {
-    public static final EntityDataAccessor<Boolean> CHARGE = SynchedEntityData.defineId(VoidNeedleEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final float FLAP_DEGREES_PER_TICK = 7.448451F;
-    public static final int TICKS_PER_FLAP = Mth.ceil(24.166098F);
-
+    public static final EntityDataAccessor<Boolean> STUN = SynchedEntityData.defineId(VoidNeedleEntity.class, EntityDataSerializers.BOOLEAN);
     private Vec3 moveTargetPoint;
     private @Nullable BlockPos anchorPoint;
     private AttackPhase attackPhase;
@@ -51,12 +44,16 @@ public class VoidNeedleEntity extends Monster {
 
     public AnimationState idle = new AnimationState();
     public AnimationState change = new AnimationState();
+    public AnimationState changeLoop = new AnimationState();
 
-    private int needleSoundTimer = 0;
-
-    private int changeTick = 0;
+    public AnimationState stun = new AnimationState();
     private int chargeTick = 0;
-
+    private int changeTick = 0;
+    private int stunTick = 0;
+    @Nullable private Vec3 chargeControlPoint;
+    @Nullable private Vec3 chargeEndPoint;
+    private int swoopStage;
+    @Nullable private Vec3 swoopStart;
     public VoidNeedleEntity(EntityType<? extends VoidNeedleEntity> type, Level level) {
         super(type, level);
         this.moveTargetPoint = Vec3.ZERO;
@@ -84,19 +81,60 @@ public class VoidNeedleEntity extends Monster {
 
     @Override
     public boolean shouldDiscardFriction() {
-        return false;
+        return true;
     }
 
     @Override
     public void tick() {
         super.tick();
-
         if (!this.level().isClientSide()) {
-            if (this.needleSoundTimer <= 0) {
-                this.playSound(NRegistry.NEEDLE_LOOP.get(), 1.0F, 1.0F);
-                this.needleSoundTimer = 80;
-            } else {
-                this.needleSoundTimer--;
+            if (this.attackPhase == AttackPhase.PREPARE_SWOOP){
+                this.changeTick++;
+                if (this.changeTick > 20){
+                    this.changeTick=0;
+                    this.attackPhase = AttackPhase.SWOOP;
+                }
+            }
+            if (this.entityData.get(STUN)){
+                this.stunTick++;
+                if (this.stunTick>=60){
+                    this.stunTick = 0;
+                    this.entityData.set(STUN,false);
+                    this.level().broadcastEntityEvent(this,(byte) 16);
+                }
+            }
+            if (VoidNeedleEntity.this.attackPhase == AttackPhase.SWOOP){
+                this.chargeTick++;
+                boolean stun = false;
+                for (Entity living : VoidNeedleEntity.this.level().getEntities(VoidNeedleEntity.this,VoidNeedleEntity.this.getBoundingBox().inflate(1.0F), e->{
+                    if (e instanceof LivingEntity && !e.is(EntityTypeTags.ARTHROPOD)){
+                        return VoidNeedleEntity.this.getBoundingBox().inflate(1).intersects(e.getBoundingBox());
+                    }
+                    return false;
+                })){
+                    if (VoidNeedleEntity.this.doHurtTarget(((ServerLevel) level()), living)){
+                        VoidNeedleEntity.this.heal(3.0F);
+                    }else {
+                        if (living instanceof Player){
+                            if (((LivingEntity)living).isBlocking()){
+                                stun = true;
+                            }
+                        }
+                        break;
+                    }
+                    if (!VoidNeedleEntity.this.isSilent()) {
+                        VoidNeedleEntity.this.level().levelEvent(1039, VoidNeedleEntity.this.blockPosition(), 0);
+                    }
+                }
+                if (stun){
+                    VoidNeedleEntity.this.entityData.set(STUN,true);
+                    VoidNeedleEntity.this.level().broadcastEntityEvent(VoidNeedleEntity.this,(byte) 8);
+                }
+                if (this.chargeTick>70){
+                    this.chargeTick = 0;
+                    VoidNeedleEntity.this.attackPhase = AttackPhase.CIRCLE;
+                    this.level().broadcastEntityEvent(this,(byte) 16);
+                }
             }
         }
 
@@ -114,58 +152,13 @@ public class VoidNeedleEntity extends Monster {
             this.level().addParticle(ParticleTypes.MYCELIUM, this.getX() + (double)c, this.getY() + (double)h, this.getZ() + (double)s, 0.0, 0.0, 0.0);
             this.level().addParticle(ParticleTypes.MYCELIUM, this.getX() - (double)c, this.getY() + (double)h, this.getZ() - (double)s, 0.0, 0.0, 0.0);
         }
+
         if (this.level().isClientSide()){
             this.setupAnimation();
         }
-
-        if (this.attackPhase == AttackPhase.CHARGE){
-            this.changeTick ++;
-            if (this.changeTick > 18){
-                this.attackPhase = AttackPhase.SWOOP;
-                this.changeTick = 0;
-                this.chargeTick = 0;
-                if (this.level().isClientSide()){
-                    this.change.stop();
-                }
-            }
-            LivingEntity target = getTarget();
-
-            if (target != null) {
-                double dx = target.getX() - getX();
-                double dy = target.getY() - getY();
-                double dz = target.getZ() - getZ();
-
-                float yaw = (float)(Mth.atan2(dz, dx) * (180F / Math.PI)) - 90F;
-                float pitch = (float)(Mth.atan2(Math.sqrt(dx*dx+dz*dz),dy) * (180F / Math.PI));
-
-                setYRot(yaw);
-                setYBodyRot(yaw);
-                setYHeadRot(yaw);
-                setXRot(pitch);
-            }
-        }else if (attackPhase == AttackPhase.SWOOP){
-            this.chargeTick++;
-            if (this.chargeTick>=20){
-                this.attackPhase = AttackPhase.CIRCLE;
-            }
-        }
-    }
-    public static boolean checNeedleSpawnRules(EntityType<? extends Mob> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
-        if (EntitySpawnReason.isSpawner(spawnReason)) {
-            return true;
-        }
-        AracneMod.LOGGER.info("Check y :{}",pos);
-        int y = pos.getY();
-        if (y < 230 || y > 270) {
-            return false;
-        }
-        BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
-
-        return true;
     }
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new VoidNeedleEntityAttackStrategyGoal());
-        this.goalSelector.addGoal(2, new VoidNeedleEntitySweepAttackGoal());
         this.goalSelector.addGoal(3, new VoidNeedleEntityCircleAroundAnchorGoal());
         this.targetSelector.addGoal(1, new VoidNeedleEntityAttackPlayerTargetGoal());
     }
@@ -175,6 +168,10 @@ public class VoidNeedleEntity extends Monster {
             this.idleResetTimer = 25;
             this.change.stop();
             this.idle.start(this.tickCount);
+        }
+        if (this.attackPhase == AttackPhase.SWOOP){
+            this.idle.stop();
+            this.changeLoop.animateWhen(true,this.tickCount);
         }
     }
 
@@ -208,10 +205,23 @@ public class VoidNeedleEntity extends Monster {
     public void handleEntityEvent(byte id) {
         if (id == 4){
             this.changeTick = 0;
-            this.attackPhase = AttackPhase.CHARGE;
+            this.attackPhase = AttackPhase.PREPARE_SWOOP;
             this.change.start(this.tickCount);
             this.idle.stop();
             this.idleResetTimer = 18;
+        }else if (id == 8){
+            this.idle.stop();
+            this.change.stop();
+            this.changeLoop.stop();
+            this.stunTick = 0;
+            this.stun.start(this.tickCount);
+            this.idleResetTimer = 60;
+        }else if (id == 16){
+            this.idle.start(this.tickCount);
+            this.change.stop();
+            this.changeLoop.stop();
+            this.stun.stop();
+            this.idleResetTimer = 25;
         }
         super.handleEntityEvent(id);
     }
@@ -219,21 +229,30 @@ public class VoidNeedleEntity extends Monster {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder entityData) {
         super.defineSynchedData(entityData);
-        entityData.define(CHARGE,false);
+        entityData.define(STUN,false);
     }
 
     @Override
     public boolean canCollideWith(Entity entity) {
-        return !this.entityData.get(CHARGE) && super.canCollideWith(entity);
+        return this.attackPhase != AttackPhase.SWOOP && super.canCollideWith(entity);
     }
 
     private boolean canAttack(ServerLevel level, LivingEntity target, TargetingConditions targetConditions) {
         return targetConditions.test(level, this, target);
     }
 
+    private boolean hasPassedPointB() {
+        if (this.swoopStart == null || this.chargeControlPoint == null) {
+            return false;
+        }
+
+        Vec3 ab = this.chargeControlPoint.subtract(this.swoopStart);
+        Vec3 am = this.position().subtract(this.swoopStart);
+        return am.dot(ab) >= ab.lengthSqr();
+    }
     public enum AttackPhase {
         CIRCLE,
-        CHARGE,
+        PREPARE_SWOOP,
         SWOOP;
 
         AttackPhase() {
@@ -267,122 +286,67 @@ public class VoidNeedleEntity extends Monster {
         }
 
         public boolean canUse() {
+            if (VoidNeedleEntity.this.entityData.get(STUN) || VoidNeedleEntity.this.attackPhase != AttackPhase.CIRCLE){
+                return false;
+            }
             LivingEntity target = VoidNeedleEntity.this.getTarget();
             return target != null && VoidNeedleEntity.this.canAttack(getServerLevel(VoidNeedleEntity.this.level()), target, TargetingConditions.DEFAULT);
         }
 
         public void start() {
             this.nextSweepTick = this.adjustedTickDelay(10);
-            VoidNeedleEntity.this.attackPhase = VoidNeedleEntity.AttackPhase.CIRCLE;
-            this.setAnchorAboveTarget();
+
         }
 
         public void stop() {
             if (VoidNeedleEntity.this.anchorPoint != null) {
-                VoidNeedleEntity.this.anchorPoint = VoidNeedleEntity.this.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, VoidNeedleEntity.this.anchorPoint).above(10 + VoidNeedleEntity.this.random.nextInt(20));
+                VoidNeedleEntity.this.anchorPoint = VoidNeedleEntity.this.anchorPoint.above(10 + VoidNeedleEntity.this.random.nextInt(20));
             }
-
         }
 
         public void tick() {
-            if (VoidNeedleEntity.this.attackPhase == VoidNeedleEntity.AttackPhase.CIRCLE) {
-                --this.nextSweepTick;
-                if (this.nextSweepTick <= 0) {
-//                    VoidNeedleEntity.this.attackPhase = AttackPhase.SWOOP;
-//                    this.setAnchorAboveTarget();
-//                    this.nextSweepTick = this.adjustedTickDelay((8 + VoidNeedleEntity.this.random.nextInt(4)) * 20);
-//                    VoidNeedleEntity.this.playSound(SoundEvents.PHANTOM_SWOOP, 10.0F, 0.95F + VoidNeedleEntity.this.random.nextFloat() * 0.1F);
-                }
-            }
-        }
-
-        private void setAnchorAboveTarget() {
-            if (VoidNeedleEntity.this.anchorPoint != null) {
-                VoidNeedleEntity.this.anchorPoint = VoidNeedleEntity.this.getTarget().blockPosition().above(20 + VoidNeedleEntity.this.random.nextInt(20));
-                if (VoidNeedleEntity.this.anchorPoint.getY() < VoidNeedleEntity.this.level().getSeaLevel()) {
-                    VoidNeedleEntity.this.anchorPoint = new BlockPos(VoidNeedleEntity.this.anchorPoint.getX(), VoidNeedleEntity.this.level().getSeaLevel() + 1, VoidNeedleEntity.this.anchorPoint.getZ());
-                }
+            if (VoidNeedleEntity.this.attackPhase != AttackPhase.CIRCLE) {
+                return;
             }
 
+            if (--this.nextSweepTick > 0) {
+                return;
+            }
+
+            this.nextSweepTick = this.adjustedTickDelay(60);
+
+            Vec3 launchPoint = this.findLaunchPoint();
+            if (launchPoint == null) {
+                return;
+            }
+
+            Vec3 pointA = VoidNeedleEntity.this.position();
+
+            Vec3 ab = launchPoint.subtract(pointA);
+            if (ab.lengthSqr() < 0.001D) {
+                return;
+            }
+
+            VoidNeedleEntity.this.swoopStart = pointA;
+            VoidNeedleEntity.this.chargeControlPoint = launchPoint;
+            VoidNeedleEntity.this.chargeEndPoint = launchPoint.add(ab.normalize().scale(20.0D)).add(0,10,0);
+
+            VoidNeedleEntity.this.swoopStage = 0;
+            VoidNeedleEntity.this.moveTargetPoint = launchPoint;
+            VoidNeedleEntity.this.attackPhase = AttackPhase.PREPARE_SWOOP;
+            VoidNeedleEntity.this.level().broadcastEntityEvent(VoidNeedleEntity.this, (byte) 4);
         }
+
+        @Nullable
+        private Vec3 findLaunchPoint() {
+            LivingEntity target = VoidNeedleEntity.this.getTarget();
+            if (target == null) return null;
+
+            return target.position();
+        }
+
     }
 
-    private class VoidNeedleEntitySweepAttackGoal extends VoidNeedleEntity.VoidNeedleEntityMoveTargetGoal {
-        private static final int CAT_SEARCH_TICK_DELAY = 20;
-        private boolean isScaredOfCat;
-        private int catSearchTick;
-
-        private VoidNeedleEntitySweepAttackGoal() {
-            super();
-
-            Objects.requireNonNull(VoidNeedleEntity.this);
-            Objects.requireNonNull(VoidNeedleEntity.this);
-        }
-
-        public boolean canUse() {
-            return VoidNeedleEntity.this.getTarget() != null && VoidNeedleEntity.this.attackPhase == VoidNeedleEntity.AttackPhase.SWOOP;
-        }
-
-        public boolean canContinueToUse() {
-            LivingEntity target = VoidNeedleEntity.this.getTarget();
-            if (target == null) {
-                return false;
-            } else if (!target.isAlive()) {
-                return false;
-            } else {
-                if (target instanceof Player) {
-                    Player player = (Player)target;
-                    if (target.isSpectator() || player.isCreative()) {
-                        return false;
-                    }
-                }
-
-                if (!this.canUse()) {
-                    return false;
-                } else {
-                    if (VoidNeedleEntity.this.tickCount > this.catSearchTick) {
-                        this.catSearchTick = VoidNeedleEntity.this.tickCount + 20;
-                        List<Cat> cats = VoidNeedleEntity.this.level().getEntitiesOfClass(Cat.class, VoidNeedleEntity.this.getBoundingBox().inflate(16.0), EntitySelector.ENTITY_STILL_ALIVE);
-
-                        for (Cat cat : cats) {
-                            cat.hiss();
-                        }
-
-                        this.isScaredOfCat = !cats.isEmpty();
-                    }
-
-                    return !this.isScaredOfCat;
-                }
-            }
-        }
-
-        @Override
-        public void start() {
-            super.start();
-            LivingEntity target = VoidNeedleEntity.this.getTarget();
-            if (target!=null){
-                VoidNeedleEntity.this.moveTargetPoint = new Vec3(target.getX(), target.getY(0.5), target.getZ());
-                VoidNeedleEntity.this.direction = VoidNeedleEntity.this.moveTargetPoint.subtract(VoidNeedleEntity.this.position()).normalize();
-            }
-        }
-
-        public void stop() {
-            VoidNeedleEntity.this.setTarget((LivingEntity)null);
-            VoidNeedleEntity.this.attackPhase = VoidNeedleEntity.AttackPhase.CIRCLE;
-            VoidNeedleEntity.this.direction = Vec3.ZERO;
-        }
-
-        public void tick() {
-            LivingEntity target = VoidNeedleEntity.this.getTarget();
-            if (target != null) {
-                if (VoidNeedleEntity.this.getBoundingBox().inflate(0.20000000298023224).intersects(target.getBoundingBox())) {
-                    VoidNeedleEntity.this.doHurtTarget(getServerLevel(VoidNeedleEntity.this.level()), target);
-                } else if (VoidNeedleEntity.this.hurtTime > 0) {
-                    VoidNeedleEntity.this.attackPhase = VoidNeedleEntity.AttackPhase.CIRCLE;
-                }
-            }
-        }
-    }
 
     private class VoidNeedleEntityCircleAroundAnchorGoal extends VoidNeedleEntity.VoidNeedleEntityMoveTargetGoal {
         private float angle;
@@ -396,12 +360,15 @@ public class VoidNeedleEntity extends Monster {
         }
 
         public boolean canUse() {
+            if (VoidNeedleEntity.this.entityData.get(STUN)){
+                return false;
+            }
             return VoidNeedleEntity.this.getTarget() == null || VoidNeedleEntity.this.attackPhase == VoidNeedleEntity.AttackPhase.CIRCLE;
         }
 
         public void start() {
-            this.distance = 5.0F + VoidNeedleEntity.this.random.nextFloat() * 10.0F;
-            this.height = -4.0F + VoidNeedleEntity.this.random.nextFloat() * 9.0F;
+            this.distance = 10.0F + VoidNeedleEntity.this.random.nextFloat() * 10.0F;
+            this.height = -4.0F + VoidNeedleEntity.this.random.nextFloat() * 3.0F;
             this.clockwise = VoidNeedleEntity.this.random.nextBoolean() ? 1.0F : -1.0F;
             this.selectNext();
         }
@@ -413,7 +380,7 @@ public class VoidNeedleEntity extends Monster {
 
             if (VoidNeedleEntity.this.random.nextInt(this.adjustedTickDelay(250)) == 0) {
                 ++this.distance;
-                if (this.distance > 15.0F) {
+                if (this.distance > 35.0F) {
                     this.distance = 5.0F;
                     this.clockwise = -this.clockwise;
                 }
@@ -437,11 +404,6 @@ public class VoidNeedleEntity extends Monster {
                 this.height = Math.min(-1.0F, this.height);
                 this.selectNext();
             }
-            if (VoidNeedleEntity.this.getTarget()!=null && VoidNeedleEntity.this.position().subtract(VoidNeedleEntity.this.getTarget().position()).y>10){
-                VoidNeedleEntity.this.direction = VoidNeedleEntity.this.moveTargetPoint.subtract(VoidNeedleEntity.this.position()).normalize();
-                VoidNeedleEntity.this.level().broadcastEntityEvent(VoidNeedleEntity.this,(byte) 4);
-                VoidNeedleEntity.this.attackPhase = AttackPhase.CHARGE;
-            }
         }
 
 
@@ -462,17 +424,16 @@ public class VoidNeedleEntity extends Monster {
 
         private VoidNeedleEntityAttackPlayerTargetGoal() {
             super();
-            Objects.requireNonNull(VoidNeedleEntity.this);
-            Objects.requireNonNull(VoidNeedleEntity.this);
-
             this.attackTargeting = TargetingConditions.forCombat().range(64.0);
             this.nextScanTick = reducedTickDelay(20);
         }
 
         public boolean canUse() {
+            if (VoidNeedleEntity.this.entityData.get(STUN)){
+                return false;
+            }
             if (this.nextScanTick > 0) {
                 --this.nextScanTick;
-                return false;
             } else {
                 this.nextScanTick = reducedTickDelay(60);
                 ServerLevel level = getServerLevel(VoidNeedleEntity.this.level());
@@ -490,8 +451,8 @@ public class VoidNeedleEntity extends Monster {
                     }
                 }
 
-                return false;
             }
+            return false;
         }
 
         public boolean canContinueToUse() {
@@ -522,29 +483,59 @@ public class VoidNeedleEntity extends Monster {
         }
 
         public void tick() {
-            if (VoidNeedleEntity.this.attackPhase == AttackPhase.CHARGE)return;
-
-            if (VoidNeedleEntity.this.horizontalCollision) {
-                VoidNeedleEntity.this.setYRot(VoidNeedleEntity.this.getYRot() + 180.0F);
-                this.speed = 0.1F;
+            if (VoidNeedleEntity.this.entityData.get(STUN)){
+                VoidNeedleEntity.this.stopInPlace();
+                return;
             }
-
             double tdx = VoidNeedleEntity.this.moveTargetPoint.x - VoidNeedleEntity.this.getX();
             double tdy = VoidNeedleEntity.this.moveTargetPoint.y - VoidNeedleEntity.this.getY();
             double tdz = VoidNeedleEntity.this.moveTargetPoint.z - VoidNeedleEntity.this.getZ();
             double sd = Math.sqrt(tdx * tdx + tdz * tdz);
+
+
+
+            Vec3 toTarget = VoidNeedleEntity.this.moveTargetPoint.subtract(VoidNeedleEntity.this.position());
+
+            double horizontalDistance = Math.sqrt(toTarget.x * toTarget.x + toTarget.z * toTarget.z);
+
+            float yaw = (float) (Mth.atan2(toTarget.z, toTarget.x) * Mth.RAD_TO_DEG) - 90.0F;
+
+            float pitch = (float) -(Mth.atan2(toTarget.y, horizontalDistance) * Mth.RAD_TO_DEG);
+
+            VoidNeedleEntity.this.setYRot(yaw);
+            VoidNeedleEntity.this.setYBodyRot(yaw);
+            VoidNeedleEntity.this.setYHeadRot(yaw);
+            VoidNeedleEntity.this.setXRot(pitch);
+            if (VoidNeedleEntity.this.attackPhase == AttackPhase.PREPARE_SWOOP){
+                VoidNeedleEntity.this.stopInPlace();
+
+                return;
+            }
+            if (VoidNeedleEntity.this.attackPhase==AttackPhase.SWOOP){
+                if (VoidNeedleEntity.this.swoopStage == 1 && toTarget.lengthSqr() <= 1.0D) {
+                    VoidNeedleEntity.this.setDeltaMovement(Vec3.ZERO);
+                    VoidNeedleEntity.this.attackPhase = AttackPhase.CIRCLE;
+                    VoidNeedleEntity.this.swoopStart = null;
+                    VoidNeedleEntity.this.chargeControlPoint = null;
+                    VoidNeedleEntity.this.chargeEndPoint = null;
+                    return;
+                }
+
+                if (VoidNeedleEntity.this.swoopStage == 0 && VoidNeedleEntity.this.hasPassedPointB() && VoidNeedleEntity.this.chargeEndPoint != null) {
+                    VoidNeedleEntity.this.swoopStage = 1;
+                    VoidNeedleEntity.this.moveTargetPoint = VoidNeedleEntity.this.chargeEndPoint;
+                    VoidNeedleEntity.this.level().broadcastEntityEvent(VoidNeedleEntity.this,(byte) 16);
+                }
+
+
+
+                VoidNeedleEntity.this.setDeltaMovement(toTarget.normalize().scale(2.0D));
+                return;
+            }
+
+
             Vec3 movement = VoidNeedleEntity.this.getDeltaMovement();
             if (Math.abs(sd) > 9.999999747378752E-6) {
-                double t = Mth.clamp((double) chargeTick / 20.0F, 0.0, 1.0);
-
-                double parabola = 2.0 * t - 1.0;
-
-                double chargeYVelocity = parabola / 20.0F;
-                chargeYVelocity = -chargeYVelocity/Math.abs(chargeYVelocity);
-                double yRelativeScale = 1.0 - Math.abs(tdy * 0.699999988079071) / sd;
-                tdx *= yRelativeScale;
-                tdz *= yRelativeScale;
-                sd = Math.sqrt(tdx * tdx + tdz * tdz);
                 double sd2 = Math.sqrt(tdx * tdx + tdz * tdz + tdy * tdy);
                 float prev = VoidNeedleEntity.this.getYRot();
                 float angle = (float)Mth.atan2(tdz, tdx);
@@ -565,8 +556,7 @@ public class VoidNeedleEntity extends Monster {
                 double tzd = (double)(this.speed * Mth.sin((double)(moveAngle * 0.017453292F))) * Math.abs(tdz / sd2);
                 double tyd = (double)(this.speed * Mth.sin((double)(xRotD * 0.017453292F))) * Math.abs(tdy / sd2);
 
-
-                VoidNeedleEntity.this.setDeltaMovement(VoidNeedleEntity.this.attackPhase == AttackPhase.SWOOP ? new Vec3(VoidNeedleEntity.this.direction.x,-chargeYVelocity,VoidNeedleEntity.this.direction.z).scale(1.5F) :  movement.add((new Vec3(txd, tyd, tzd))).subtract(movement).scale(0.2));
+                VoidNeedleEntity.this.setDeltaMovement(movement.add((new Vec3(txd, tyd, tzd))).subtract(movement).scale(0.2));
             }
         }
     }
