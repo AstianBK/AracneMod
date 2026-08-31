@@ -12,7 +12,7 @@
     }
   },
   "display": {
-    "description": "Obtain a Forgotten Idol",
+    "description": "Find a forgotten idol inside of an Ancient City",
     "icon": {
       "id": "arachnemod:arachne_idol_item"
     },
