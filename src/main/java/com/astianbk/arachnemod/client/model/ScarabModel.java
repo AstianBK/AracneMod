@@ -261,6 +261,11 @@ public class ScarabModel<T extends ScarabRenderState> extends EntityModel<T> {
 	@Override
 	public void setupAnim(T state) {
 		super.setupAnim(state);
+		this.idle.apply(state.idle,state.ageInTicks);
+		if (state.isMoving){
+			this.resetPose();
+		}
+
 		if (state.isAgressive){
 			this.walkBodyAggressive.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
 			this.walkLegsAggressive.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
@@ -268,7 +273,6 @@ public class ScarabModel<T extends ScarabRenderState> extends EntityModel<T> {
 			this.walkBody.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
 			this.walkLegs.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
 		}
-		this.idle.apply(state.idle,state.ageInTicks);
 		this.attack1.apply(state.attack1,state.ageInTicks,0.5F);
 		this.attack2.apply(state.attack2,state.ageInTicks,0.5F);
 

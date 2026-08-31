@@ -33,7 +33,8 @@ public class VoidNeedleRenderer<T extends VoidNeedleEntity,R extends NeedleRende
         super.extractRenderState(entity, state, partialTicks);
         state.idle = entity.idle;
         state.change = entity.change;
-
+        state.stun = entity.stun;
+        state.loop_charge = entity.changeLoop;
     }
 
     @Override

@@ -228,11 +228,17 @@ public class Events {
 
         event.register(NRegistry.VOID_NEEDLE.get(),
                 SpawnPlacementTypes.NO_RESTRICTIONS,
-                Heightmap.Types.OCEAN_FLOOR_WG,
-                VoidNeedleEntity::checNeedleSpawnRules,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
         event.register(NRegistry.SCARAB.get(),
+                SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
+
+        event.register(NRegistry.VOID_SCYTHE.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Mob::checkMobSpawnRules,
@@ -267,6 +273,8 @@ public class Events {
     @SubscribeEvent
     public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(NRegistry.SCARAB.get(), ScarabEntity.createAttributes().build());
+        event.put(NRegistry.VOID_SCYTHE.get(), VoidScytheEntity.createAttributes().build());
+
         event.put(NRegistry.VOID_NEEDLE.get(), VoidNeedleEntity.createAttributes().build());
         event.put(NRegistry.VOID_HOPPER.get(), VoidHopperEntity.createAttributes().build());
         event.put(NRegistry.VOID_BEETLE.get(), VoidBeetleEntity.createAttributes().build());

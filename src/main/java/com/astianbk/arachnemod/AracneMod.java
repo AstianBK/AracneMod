@@ -57,7 +57,7 @@ public class AracneMod {
         NRegistry.FEATURE.register(modEventBus);
         NRegistry.STRUCTURE_PLACEMENT_TYPE.register(modEventBus);
         NRegistry.SOUNDS.register(modEventBus);
-
+        NRegistry.ENTITY_DATA_SERIALIZER_DEFERRED_REGISTER.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::skyRender);
         NeoForge.EVENT_BUS.addListener(this::clientLevel);
 
