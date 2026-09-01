@@ -1,11 +1,11 @@
 {
   "type" : "HUNT",
-  "title" : "Slain 5 Needle",
+  "title" : "Slay 3 Void Needles",
   "dialogDescription" : "arachnemod:arachne_quest_kill",
   "dialogFail" : "arachnemod:arachne_quest_fail",
   "entityTypeId" : "arachnemod:void_needle",
   "tier" : 0,
-  "toHuntEntities" : 10,
-  "reputation" : 10,
-  "xp" : 34
+  "toHuntEntities" : 3,
+  "reputation" : 1,
+  "xp" : 50
 }
