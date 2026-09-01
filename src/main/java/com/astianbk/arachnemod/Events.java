@@ -450,7 +450,8 @@ public class Events {
             for (ItemStack drop : drops){
                 event.getEntity().spawnAtLocation(serverLevel,drop);
             }
-            event.getLevel().playSound(null,event.getEntity(), SoundEvents.CHICKEN_DEATH_BABY.value(), SoundSource.PLAYERS,2.0F,1.0F);
+            event.getLevel().playSound(null,event.getEntity(), SoundEvents.COBWEB_BREAK, SoundSource.PLAYERS,2.0F,-1.0F);
+            event.getLevel().playSound(null,event.getEntity(), SoundEvents.SPIDER_STEP, SoundSource.PLAYERS,1.0F,-1.0F);
             event.getItemStack().shrink(1);
         }
     }

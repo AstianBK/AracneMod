@@ -91,7 +91,7 @@ public class ArachneIdolBlock extends BaseEntityBlock {
                             level.setBlock(pos,state.setValue(LIT,false),3);
                         }else if (e.currentQuest.isComplete(e)){
                             level.setBlock(pos,state.setValue(LIT,false),3);
-                            level.playSound(null,player, SoundEvents.IRON_GOLEM_DEATH,SoundSource.NEUTRAL,2.0F,1.0F);
+                            level.playSound(null,player, SoundEvents.ILLUSIONER_PREPARE_BLINDNESS,SoundSource.BLOCKS,2.0F,-1.0F);
                             PacketDistributor.sendToPlayer((ServerPlayer) player,new PacketHandlerParticle(1,pos));
                             e.completeQuest((ServerPlayer) player);
                         }

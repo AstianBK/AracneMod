@@ -137,7 +137,7 @@ public class NRegistry {
     public static final DeferredHolder<MobEffect, DamnationEffect> DAMNATION = EFFECTS.register("damnation", DamnationEffect::new);
     public static final DeferredHolder<MobEffect, ArachnophobiaEffect> ARACHNOPHOBIA = EFFECTS.register("arachnophobia", ArachnophobiaEffect::new);
 
-    public static final DeferredBlock<Block> WEAVER_IDOL_BLOCK = BLOCKS.registerBlock("arachne_idol",properties -> new ArachneIdolBlock(properties.noOcclusion()));
+    public static final DeferredBlock<Block> WEAVER_IDOL_BLOCK = BLOCKS.registerBlock("arachne_idol",properties -> new ArachneIdolBlock(properties.strength(2).explosionResistance(999).noOcclusion()));
     public static final DeferredBlock<Block> BEDCRUST_BLOCK = BLOCKS.registerBlock("bedcrust", properties -> new Block(properties.strength(-1.0F, 3600000.0F)));
     public static final DeferredBlock<Block> VOID_PUDDLE_BLOCK = BLOCKS.registerBlock("void_puddle", properties -> new Block(properties.sound(SoundType.MUD).strength(-1.0F, 3600000.0F)));
 
