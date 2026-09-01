@@ -20,15 +20,12 @@ public abstract class Quest {
     protected String title;
     protected QuestsType type;
     protected TierQuest tier;
-    protected String dialogFail;
-    protected String dialogDescription;
     protected int reputation;
     protected int xp;
-    public Quest(String title, QuestsType type, String dialogDescription,String dialogFail, TierQuest tier, int reputation, int xp) {
+    public Quest(String title, QuestsType type, TierQuest tier, int reputation, int xp) {
         this.title = title;
         this.type = type;
-        this.dialogDescription = dialogDescription;
-        this.dialogFail = dialogFail;
+
 
         this.tier = tier;
         this.reputation = reputation;
@@ -54,13 +51,6 @@ public abstract class Quest {
         return this.type;
     }
 
-    public String getDescription() {
-        return dialogDescription;
-    }
-
-    public String getDialogFail() {
-        return dialogFail;
-    }
 
 
     public TierQuest getTier(){

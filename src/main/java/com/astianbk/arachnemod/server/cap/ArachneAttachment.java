@@ -258,14 +258,19 @@ public class ArachneAttachment {
     public void acceptQuest(ServerPlayer player,Quest quest){
         this.currentQuest = quest;
         this.timeQuest = quest.getType() == QuestsType.HUNT ? 24000 : 36000;
-        PacketDistributor.sendToPlayer(player,new PacketPlayDialog(Identifier.parse(quest.getDescription()),player.getId()));
+        PacketDistributor.sendToPlayer(player,new PacketPlayDialog(getAcceptQuestForType(quest.getType()),player.getId()));
         this.progressQuest = 0;
     }
-
+    public Identifier getFailQuest(){
+        return Identifier.fromNamespaceAndPath(AracneMod.MODID,"arachne_quest_fail") ;
+    }
+    public Identifier getAcceptQuestForType(QuestsType type){
+        return type == QuestsType.COLLECT ? Identifier.fromNamespaceAndPath(AracneMod.MODID,"arachne_quest_collect") : Identifier.fromNamespaceAndPath(AracneMod.MODID,"arachne_quest_kill");
+    }
     public void failQuest(ServerPlayer serverPlayer){
         if (this.currentQuest != null){
-            PacketDistributor.sendToPlayer(serverPlayer,new PacketPlayDialog(Identifier.parse(currentQuest.getDialogFail()),serverPlayer.getId()));
-            currentReputation= Math.max(0,currentReputation-10);
+            PacketDistributor.sendToPlayer(serverPlayer,new PacketPlayDialog(getFailQuest(),serverPlayer.getId()));
+            currentReputation = Math.max(0,currentReputation-10);
             this.currentQuest = null;
         }
     }
@@ -525,7 +530,8 @@ public class ArachneAttachment {
 
     public void playDialog(Identifier identifier) {
         if (!DialogsManager.getDialog().containsKey(identifier))return;
-        if (this.currentDialog != null){
+        if (this.currentDialog!=null){
+            if(this.currentDialog.equals(identifier.toString()))return;
             Dialog dialog = DialogsManager.getDialog().get(Identifier.parse(currentDialog));
             for (String id : dialog.sounds()){
                 Minecraft.getInstance().getSoundManager().stop(Identifier.parse(id),SoundSource.AMBIENT);
@@ -536,7 +542,6 @@ public class ArachneAttachment {
             this.bufferText.clear();
         }
         this.currentDialog = identifier.toString();
-
     }
 
     public static class NerubianCapSerializer implements IAttachmentSerializer<ArachneAttachment> {

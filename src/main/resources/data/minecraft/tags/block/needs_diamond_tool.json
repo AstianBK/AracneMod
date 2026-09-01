@@ -3,7 +3,6 @@
   "values": [
     "arachnemod:bedstone_iron_ore",
     "arachnemod:bedstone_gold_ore",
-    "arachnemod:bedstone_osmium_ore",
-    "arachnemod:stone_bedrock"
+    "arachnemod:bedstone_osmium_ore"
   ]
 }
