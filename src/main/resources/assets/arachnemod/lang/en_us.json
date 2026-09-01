@@ -94,5 +94,24 @@
   "arachnemod.configuration.title": "VoidWeaver Configs",
   "arachnemod.configuration.section.arachnemod.common.toml": "VoidWeaver Configs",
   "arachnemod.configuration.section.arachnemod.common.toml.title": "VoidWeaver Configs",
-  "arachnemod.configuration.items": "Item List"
+  "arachnemod.configuration.items": "Item List",
+
+  "entity.arachnemod.blessing.on" : "",
+  "entity.arachnemod.cancel.on" : "",
+  "entity.arachnemod.quest.on" : "",
+  "entity.arachnemod.quest_get.on" : "",
+  "entity.arachnemod.quest_kill.on" : "",
+  "entity.arachnemod.quest_reputation.on" : "",
+  "entity.arachnemod.arachne_move.on" : "",
+  "entity.arachnemod.arachne_anti_fall.on" : "",
+  "entity.arachnemod.arachne_fang.on" : "",
+  "entity.arachnemod.arachne_allie.on" : "",
+  "entity.arachnemod.arachne_infection.on" : "",
+  "entity.arachnemod.arachne_protection.on" : "",
+  "entity.arachnemod.arachne_move.off" : "",
+  "entity.arachnemod.arachne_anti_fall.off" : "",
+  "entity.arachnemod.arachne_fang.off" : "",
+  "entity.arachnemod.arachne_allie.off" : "",
+  "entity.arachnemod.arachne_infection.off" : "",
+  "entity.arachnemod.arachne_protection.off" : ""
 }

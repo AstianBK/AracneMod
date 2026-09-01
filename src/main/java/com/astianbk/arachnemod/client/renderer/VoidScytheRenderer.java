@@ -35,6 +35,11 @@ public class VoidScytheRenderer<T extends VoidScytheEntity,R extends VoidScytheR
         super.submit(state, poseStack, submitNodeCollector, camera);
     }
 
+    @Override
+    protected void scale(R state, PoseStack poseStack) {
+        poseStack.scale(1.3F,1.3F,1.3F);
+        super.scale(state, poseStack);
+    }
 
     @Override
     public Identifier getTextureLocation(R r) {

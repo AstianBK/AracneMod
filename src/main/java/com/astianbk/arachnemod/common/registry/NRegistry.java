@@ -300,7 +300,7 @@ public class NRegistry {
             ENTITY_TYPES.register("void_scythe",
                     () -> EntityType.Builder
                             .of(VoidScytheEntity::new, MobCategory.MONSTER)
-                            .sized(1.0F, 2.0F).clientTrackingRange(10).updateInterval(2)
+                            .sized(2.0F, 3.0F).clientTrackingRange(10).updateInterval(2)
                             .build(ResourceKey.create(Registries.ENTITY_TYPE,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_scythe"))));
 
     public static final DeferredHolder<EntityType<?>, EntityType<VoidNeedleEntity>> VOID_NEEDLE =

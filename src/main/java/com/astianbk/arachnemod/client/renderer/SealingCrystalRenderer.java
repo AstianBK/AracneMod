@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EnderDragonRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
@@ -35,7 +36,11 @@ public class SealingCrystalRenderer extends EntityRenderer<SealingCrystalEntity,
         poseStack.mulPose(Axis.ZN.rotationDegrees(180));
         poseStack.scale(2.0F, 2.0F, 2.0F);
         poseStack.translate(0.0F, -1.5F, 0.0F);
+
         submitNodeCollector.submitModel(this.model, state, poseStack, CRYSTAL_LOCATION, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
+        submitNodeCollector.submitModel(this.model, state, poseStack, RenderTypes.entityTranslucentEmissive(CRYSTAL_LOCATION), state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
+        submitNodeCollector.submitModel(this.model, state, poseStack, RenderTypes.eyes(CRYSTAL_LOCATION), state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
+        
         poseStack.popPose();
 
         super.submit(state, poseStack, submitNodeCollector, camera);

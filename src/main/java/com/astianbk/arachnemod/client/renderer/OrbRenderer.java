@@ -44,9 +44,12 @@ public class OrbRenderer<T extends OrbEntity,S extends OrbRenderState> extends E
     public OrbRenderer(EntityRendererProvider.Context context) {
         super(context);
     }
-
+    protected boolean shouldShowName(T entity, double distanceToCameraSq) {
+        return true;
+    }
     @Override
     public void submit(S state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        super.submit(state,poseStack,submitNodeCollector,camera);
         poseStack.pushPose();
         poseStack.translate(0,1,0F);
         poseStack.mulPose(camera.orientation);

@@ -273,7 +273,6 @@ public class ArachneAttachment {
         if (this.currentQuest != null){
             if (this.currentQuest.getType() == QuestsType.COLLECT){
                 Item item = BuiltInRegistries.ITEM.getValue(Identifier.parse(currentQuest.getTargetId()));
-                AracneMod.LOGGER.info("info : {}",item);
                 serverPlayer.getInventory().clearOrCountMatchingItems((itemStack -> itemStack.is(item)),currentQuest.getMaxProgress(),serverPlayer.inventoryMenu.getCraftSlots());
             }
             playDialog(Identifier.parse(DIALOGS_FOR_TYPE.get(currentQuest.getType())[serverPlayer.getRandom().nextInt(0,6)]));

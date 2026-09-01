@@ -186,6 +186,7 @@ public class ArachneIdolBlockEntity extends BlockEntity {
                     break;
                 }
                 OrbEntity orbEntity = new OrbEntity(NRegistry.ORB.get(), level);
+                orbEntity.setLock(arachneAttachment.currentReputation<data.reputation || !data.unlock);
 
                 orbEntity.setType(OrbEntity.Type.valueOf(data.type.name()));
 
@@ -198,7 +199,6 @@ public class ArachneIdolBlockEntity extends BlockEntity {
                 orbEntity.setPos(orbPos);
 
                 orbEntity.sourceBlock = pos;
-                orbEntity.setLock(arachneAttachment.currentReputation<data.reputation || !data.unlock);
                 level.addFreshEntity(orbEntity);
                 addOrb(orbEntity);
                 i++;

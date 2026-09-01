@@ -4,6 +4,7 @@ import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.common.ArachneIdolBlockEntity;
 import com.astianbk.arachnemod.common.registry.NRegistry;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -17,6 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 public class OrbEntity extends Entity {
@@ -38,8 +40,9 @@ public class OrbEntity extends Entity {
     public void setType(Type type){
         this.type = type;
         entityData.set(TYPE,type.name());
-
+        this.setCustomName(Component.translatable("entity.arachnemod.orb_entity."+type.name().toLowerCase()+((this.isLock()) ? ".off" : ".on")));
     }
+
 
     public Type getOrbType(){
         return this.type;
@@ -52,6 +55,7 @@ public class OrbEntity extends Entity {
             this.type=Type.valueOf(entityData.get(TYPE));
         }
     }
+
 
     public void setLock(boolean lock){
         this.entityData.set(LOCK,lock);
@@ -83,7 +87,6 @@ public class OrbEntity extends Entity {
             valueOutput.putInt("z",this.sourceBlock.getZ());
         }
     }
-
 
 
     @Override

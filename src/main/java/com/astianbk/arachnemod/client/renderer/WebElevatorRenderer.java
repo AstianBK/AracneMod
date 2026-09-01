@@ -67,6 +67,8 @@ public class WebElevatorRenderer<T extends WebElevatorEntity,R extends WebElevat
         poseStack.mulPose(Axis.XN.rotationDegrees(180.0F));
         poseStack.translate(0,-1.5F,0);
         submitNodeCollector.submitModel(this.model,state,poseStack,RenderTypes.entityCutout(getTextureLocation(state)),state.lightCoords, OverlayTexture.NO_OVERLAY,state.outlineColor,null);
+        submitNodeCollector.submitModel(this.model,state,poseStack,RenderTypes.entityTranslucentEmissive(getTextureLocation(state)),state.lightCoords, OverlayTexture.NO_OVERLAY,state.outlineColor,null);
+        submitNodeCollector.submitModel(this.model,state,poseStack,RenderTypes.eyes(getTextureLocation(state)),state.lightCoords, OverlayTexture.NO_OVERLAY,state.outlineColor,null);
 
         poseStack.popPose();
         for (int i = 0 ; i < 100 ; i ++){
@@ -74,6 +76,8 @@ public class WebElevatorRenderer<T extends WebElevatorEntity,R extends WebElevat
             poseStack.pushPose();
             poseStack.translate(0,2+i,0);
             submitNodeCollector.submitModel(model1,state,poseStack,RenderTypes.entityCutout(Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/web_elevator/web_elevator.png")),state.lightCoords, OverlayTexture.NO_OVERLAY,state.outlineColor,null);
+            submitNodeCollector.submitModel(model1,state,poseStack,RenderTypes.entityTranslucentEmissive(Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/web_elevator/web_elevator.png")),state.lightCoords, OverlayTexture.NO_OVERLAY,state.outlineColor,null);
+            submitNodeCollector.submitModel(model1,state,poseStack,RenderTypes.eyes(Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/web_elevator/web_elevator.png")),state.lightCoords, OverlayTexture.NO_OVERLAY,state.outlineColor,null);
 
             poseStack.popPose();
         }
