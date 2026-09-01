@@ -36,11 +36,11 @@ displayName="${mod_name}" #mandatory
 #credits="" #optional
 
 # The authors of the mod, displayed in the mod UI (optional)
-authors="AstianBK"
+authors="AstianBK & SangreBK"
 
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-Example mod description.
+Help a forgotten goddess regain her power by descending into a prison enveloped in shadows.
 '''
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
