@@ -253,6 +253,8 @@ public class ScarabEntity extends PathfinderMob {
     protected @Nullable SoundEvent getAmbientSound() {
         return this.random.nextBoolean() ? NRegistry.SCARAB_IDLE1.get() : NRegistry.SCARAB_IDLE2.get();
     }
+
+
     public enum Attack implements StringRepresentable {
         ATTACK_1("attack_1",0),
         ATTACK_2("attack_2",1),

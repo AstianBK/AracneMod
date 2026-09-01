@@ -497,12 +497,12 @@ public class VoidScytheEntity extends PathfinderMob {
 
     @Override
     protected @Nullable SoundEvent getHurtSound(DamageSource damageSource) {
-        return SoundEvents.ZOMBIE_NAUTILUS_AMBIENT_ON_LAND;
+        return NRegistry.SCYTHE_HURT.get();
     }
 
     @Override
     protected @Nullable SoundEvent getAmbientSound() {
-        return this.random.nextBoolean() ? NRegistry.SCARAB_IDLE1.get() : NRegistry.SCARAB_IDLE2.get();
+        return NRegistry.SCYTHE_IDLE.get();
     }
 
     public class JumpToTargetGoal extends Goal{
@@ -660,4 +660,7 @@ public class VoidScytheEntity extends PathfinderMob {
             return serialize;
         }
     }
+
+
+
 }
