@@ -57,13 +57,13 @@ public class VoidScytheEntity extends PathfinderMob {
 
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MOVEMENT_SPEED, 0.26F)
-                .add(Attributes.FOLLOW_RANGE, 35.0)
-                .add(Attributes.MAX_HEALTH, 100.0)
+                .add(Attributes.MOVEMENT_SPEED, 0.28F)
+                .add(Attributes.FOLLOW_RANGE, 40.0)
+                .add(Attributes.MAX_HEALTH, 50.0)
                 .add(Attributes.ATTACK_DAMAGE, 15.0)
-                .add(Attributes.ARMOR, 10.0)
-                .add(Attributes.ARMOR_TOUGHNESS, 8.0)
-                .add(Attributes.KNOCKBACK_RESISTANCE,10F);
+                .add(Attributes.ARMOR, 5.0)
+                .add(Attributes.ARMOR_TOUGHNESS, 15.0)
+                .add(Attributes.KNOCKBACK_RESISTANCE,0.3F);
 
     }
     @Override
