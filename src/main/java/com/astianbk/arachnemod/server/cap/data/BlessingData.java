@@ -1,5 +1,6 @@
 package com.astianbk.arachnemod.server.cap.data;
 
+import com.astianbk.arachnemod.AracneMod;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.FriendlyByteBuf;

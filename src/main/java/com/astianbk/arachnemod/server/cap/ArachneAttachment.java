@@ -148,7 +148,7 @@ public class ArachneAttachment {
             }
         }
 
-        if (player.level().dimension() == NRegistry.THE_VOID){
+        if (player.level().dimension() == NRegistry.THE_VOID || player.level().dimension() == NRegistry.THE_DEPTH){
             if (!player.isCreative() && !player.isSpectator()){
                 this.prevTimeDarkness = this.timeDarkness;
 
@@ -180,9 +180,7 @@ public class ArachneAttachment {
                 }
             }
 
-        }
-
-        if (player.level().dimension() == NRegistry.THE_DEPTH){
+        }else if (player.level().dimension() == NRegistry.THE_DEPTH){
             if (!player.level().isClientSide()){
                 if (player.getY()>=250){
                     Level level = player.level();
@@ -197,6 +195,9 @@ public class ArachneAttachment {
                     }));
                 }
             }
+        }else {
+            this.prevTimeDarkness = 0;
+            timeDarkness = 0;
         }
         Inventory inventory = player.getInventory();
         if (inventory.getTimesChanged() != previousTimesChanged) {
@@ -248,7 +249,7 @@ public class ArachneAttachment {
         this.updateText(player);
         for (BlessingData data : blessingData){
             if (data.hasCooldown){
-                data.cooldownData.tick();
+                data.tick();
             }
         }
         return flag;
@@ -256,7 +257,7 @@ public class ArachneAttachment {
 
     public void acceptQuest(ServerPlayer player,Quest quest){
         this.currentQuest = quest;
-        this.timeQuest = quest.getType() == QuestsType.HUNT ? 24000 : 3600;
+        this.timeQuest = quest.getType() == QuestsType.HUNT ? 24000 : 36000;
         PacketDistributor.sendToPlayer(player,new PacketPlayDialog(Identifier.parse(quest.getDescription()),player.getId()));
         this.progressQuest = 0;
     }
@@ -416,7 +417,7 @@ public class ArachneAttachment {
 
     private void initBlessingData() {
         this.blessingData.add(new BlessingData(BlessingData.BlessingType.ARACHNE_MOVE,new CooldownData(0),5,false,false));
-        this.blessingData.add(new BlessingData(BlessingData.BlessingType.ARACHNE_ANTI_FALL,new CooldownData(24000),15,false,true));
+        this.blessingData.add(new BlessingData(BlessingData.BlessingType.ARACHNE_ANTI_FALL,new CooldownData(100),15,false,true));
         this.blessingData.add(new BlessingData(BlessingData.BlessingType.ARACHNE_FANG,new CooldownData(0),40,false,false));
         this.blessingData.add(new BlessingData(BlessingData.BlessingType.ARACHNE_ALLIE,new CooldownData(0),50,false,false));
         this.blessingData.add(new BlessingData(BlessingData.BlessingType.ARACHNE_INFECTION,new CooldownData(0),70,false,false));

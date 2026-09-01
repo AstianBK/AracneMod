@@ -46,8 +46,8 @@ public class VoidScytheEntity extends PathfinderMob {
     public AnimationState idle = new AnimationState();
     public ChargeAnimationState attack1 = new ChargeAnimationState(new AnimationState(),PhaseAttack.PREPARE_1,20,new AnimationState(),PhaseAttack.ATTACK_LOOP_1,2,new AnimationState(),PhaseAttack.ATTACK_1,12);
     public ChargeAnimationState attack2 = new ChargeAnimationState(new AnimationState(),PhaseAttack.PREPARE_2, 20, new AnimationState(),PhaseAttack.ATTACK_LOOP_2, 100, new AnimationState(),PhaseAttack.ATTACK_2, 6);
-    public ChargeAnimationState counter = new ChargeAnimationState(new AnimationState(),PhaseAttack.PREPARE_COUNTER,20,new AnimationState(),PhaseAttack.COUNTER_LOOP,100,new AnimationState(),PhaseAttack.COUNTER,12);
-    public ChargeAnimationState jump = new ChargeAnimationState(new AnimationState(),PhaseAttack.PREPARE_JUMP,10,new AnimationState(),PhaseAttack.JUMP_LOOP,100,new AnimationState(),PhaseAttack.LAND,10);
+    public ChargeAnimationState counter = new ChargeAnimationState(new AnimationState(),PhaseAttack.PREPARE_COUNTER,7,new AnimationState(),PhaseAttack.COUNTER_LOOP,100,new AnimationState(),PhaseAttack.COUNTER,21);
+    public ChargeAnimationState jump = new ChargeAnimationState(new AnimationState(),PhaseAttack.PREPARE_JUMP,10,new AnimationState(),PhaseAttack.JUMP_LOOP,100,new AnimationState(),PhaseAttack.LAND,20);
     public Vec3 targetPos = null;
     public int nextPhaseTimer = 0;
     public VoidScytheEntity(EntityType<? extends PathfinderMob> type, Level level) {
@@ -126,12 +126,8 @@ public class VoidScytheEntity extends PathfinderMob {
                             this.setPhase(Phase.COUNTER);
                             this.setPhaseAttack(PhaseAttack.PREPARE_COUNTER);
                             this.level().broadcastEntityEvent(this,(byte) 16);
-                            break;
                         }
-                        case 1 ->{
-                            this.setPhase(Phase.ATTACK_2);
-                            break;
-                        }
+                        case 1 -> this.setPhase(Phase.ATTACK_2);
                     }
                     this.nextPhaseTimer = 0;
                 }
@@ -190,7 +186,7 @@ public class VoidScytheEntity extends PathfinderMob {
                 }else if (this.getPhaseAttack() == PhaseAttack.LAND){
                     this.durationPhaseTimer++;
                     this.stopInPlace();
-                    if (this.durationPhaseTimer > 5){
+                    if (this.durationPhaseTimer > 20){
                         this.durationPhaseTimer = 0;
                         this.setPhase(Phase.AROUND);
                         this.setPhaseAttack(PhaseAttack.NONE);
@@ -229,11 +225,7 @@ public class VoidScytheEntity extends PathfinderMob {
                         this.durationPhaseTimer = 0;
                         this.setPhaseAttack(PhaseAttack.NONE);
                         this.setPhase(Phase.AROUND);
-                        if (this.level().isClientSide()){
-                            this.attack1.stopAll();
-                            this.idleResetTimer = 60;
-                            this.idle.start(tickCount);
-                        }
+                        this.level().broadcastEntityEvent(this,(byte) 61);
                     }
                     if (!this.level().isClientSide() && this.durationPhaseTimer==6){
                         float coneAngle = 60.0F;
@@ -265,7 +257,6 @@ public class VoidScytheEntity extends PathfinderMob {
                         );
                     }
                 }
-                break;
             }
             case ATTACK_2 -> {
                 this.durationPhaseTimer++;
@@ -294,10 +285,10 @@ public class VoidScytheEntity extends PathfinderMob {
                         this.setPhase(Phase.AROUND);
                         if (!this.level().isClientSide()){
                             this.level().getEntities(this,getBoundingBox().inflate(2.5F)).forEach(living->this.doHurtTarget((ServerLevel) level(),living));
+                            this.level().broadcastEntityEvent(this,(byte) 61);
                         }
                     }
                 }
-                break;
             }
             case COUNTER -> {
                 this.durationPhaseTimer++;
@@ -326,14 +317,11 @@ public class VoidScytheEntity extends PathfinderMob {
                         this.durationPhaseTimer = 0;
                         this.setPhaseAttack(PhaseAttack.NONE);
                         this.setPhase(Phase.AROUND);
-                        if (this.level().isClientSide()){
-                            this.counter.stopAll();
-                            this.idleResetTimer = 60;
-                            this.idle.start(tickCount);
+                        if (!this.level().isClientSide()){
+                            this.level().broadcastEntityEvent(this,(byte) 61);
                         }
                     }
                 }
-                break;
             }
         }
     }
@@ -345,13 +333,16 @@ public class VoidScytheEntity extends PathfinderMob {
             if (entity instanceof LivingEntity living && entity.distanceTo(this) < 4){
                 living.hurtServer(level,damageSources().mobAttack(this),damage*4);
             }
-            this.level().broadcastEntityEvent(this,(byte) 5);
+            this.playSound(NRegistry.SCYTHE_PARRY.get(),2.0F,1.0F);
+            this.durationPhaseTimer = 0;
             this.setPhaseAttack(PhaseAttack.COUNTER);
+            this.level().broadcastEntityEvent(this,(byte) 5);
             return false;
         }
+
         if (this.getPhaseAttack() == PhaseAttack.NONE){
             if (this.level().getRandom().nextFloat()<0.8F){
-                setPhase(Phase.COUNTER);
+                this.setPhase(Phase.COUNTER);
                 this.setPhaseAttack(PhaseAttack.PREPARE_COUNTER);
                 this.level().broadcastEntityEvent(this,(byte) 16);
             }
@@ -375,6 +366,7 @@ public class VoidScytheEntity extends PathfinderMob {
     }
 
     public void setupAnimation(){
+        this.counter.loop().animateWhen(getPhaseAttack() == PhaseAttack.COUNTER_LOOP,this.tickCount);
         if (this.idleResetTimer--<=0){
             this.idleResetTimer = 60;
             this.attack2.stopAll();
@@ -383,6 +375,7 @@ public class VoidScytheEntity extends PathfinderMob {
             this.jump.stopAll();
             this.idle.start(this.tickCount);
         }
+
     }
 
 
@@ -396,6 +389,7 @@ public class VoidScytheEntity extends PathfinderMob {
             this.jump.stopAll();
             this.attack1.prepare().start(this.tickCount);
         }else if (id == 5){
+            this.durationPhaseTimer = 0;
             this.idle.stop();
             this.counter.stopAll();
             this.attack2.stopAll();
@@ -417,7 +411,6 @@ public class VoidScytheEntity extends PathfinderMob {
             this.idle.stop();
             this.attack2.prepare().start(this.tickCount);
         }else if(id==12){
-            this.setPhaseAttack(PhaseAttack.ATTACK_2);
             this.counter.stopAll();
             this.attack2.stopAll();
             this.attack1.stopAll();
@@ -425,6 +418,7 @@ public class VoidScytheEntity extends PathfinderMob {
             this.durationPhaseTimer = 0;
             this.attack2.attack().start(this.tickCount);
         }else if (id == 16){
+            this.durationPhaseTimer = 0;
             this.idle.stop();
             this.counter.stopAll();
             this.attack2.stopAll();
@@ -445,7 +439,7 @@ public class VoidScytheEntity extends PathfinderMob {
             this.attack1.stopAll();
             this.jump.stopAll();
             this.jump.attack().start(this.tickCount);
-        }else if (id == 60){
+        }else if (id == 61){
             this.counter.stopAll();
             this.attack2.stopAll();
             this.attack1.stopAll();

@@ -221,7 +221,9 @@ public class VoidScytheModel<T extends VoidScytheRenderState> extends EntityMode
 
 		if (state.isMoving && !state.isJump){
 			this.resetPose();
-			this.walkBody.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
+			if (!state.counter.isStarted() && !state.counterLoop.isStarted() && !state.prepareCounter.isStarted()){
+				this.walkBody.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
+			}
 			this.walkLegs.applyWalk(state.walkAnimationPos, state.walkAnimationSpeed,2.0F,1.0F);
 		}
 
@@ -236,6 +238,7 @@ public class VoidScytheModel<T extends VoidScytheRenderState> extends EntityMode
 
 		this.prepareCounter.apply(state.prepareCounter,state.ageInTicks);
 		this.counterLoop.apply(state.counterLoop,state.ageInTicks);
+
 		this.counter.apply(state.counter,state.ageInTicks);
 
 		this.prepareJump.apply(state.jump,state.ageInTicks);

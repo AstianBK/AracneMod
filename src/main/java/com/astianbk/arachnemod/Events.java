@@ -144,6 +144,7 @@ public class Events {
             ArachneAttachment.get(player).ifPresent(e->{
                 if (e.blessingIsActive(BlessingData.BlessingType.ARACHNE_PROTECTION)){
                     e.isCocoon = true;
+                    e.startBlessingCooldown(BlessingData.BlessingType.ARACHNE_PROTECTION);
                     e.cocoonTime = 100;
                     event.setCanceled(true);
                     death.setHealth(1.0F);
@@ -185,7 +186,6 @@ public class Events {
                     return true;
                 }
             });
-
         }
     }
 
@@ -323,23 +323,20 @@ public class Events {
                 Level level = player.level();
                 if ((arachneAttachment.blessingIsActive(BlessingData.BlessingType.ARACHNE_FANG))){
                     double angle = Math.atan2(living.position().x-player.getX(),living.position().z-player.getZ());
-                    for (int d = -30 ; d <= 31 ; d+=30){
-                        float currentAngle = (float) angle + d *Mth.PI/180.0F;
-                        double r = 1;
-                        for (int e = 0; e < 8 ; e++){
-                            double xSin = player.getX()+Mth.sin(currentAngle) * r;
-                            double zCos = player.getZ()+ Mth.cos(currentAngle) * r;
-                            ArachneLegEntity leg = new ArachneLegEntity(NRegistry.ARACHNE_LEG.get(),level);
-                            leg.owner = player;
-                            leg.setPos(xSin,level.getHeight(Heightmap.Types.WORLD_SURFACE, (int) xSin, (int) zCos),zCos);
-                            leg.delay = 2*e;
-                            leg.spawnTime=10;
-                            leg.setYRot((float) player.getYRot() + 90);
+                    float currentAngle = (float) angle;
+                    double r = 1;
+                    for (int e = 0; e < 8 ; e++){
+                        double xSin = player.getX()+Mth.sin(currentAngle) * r;
+                        double zCos = player.getZ()+ Mth.cos(currentAngle) * r;
+                        ArachneLegEntity leg = new ArachneLegEntity(NRegistry.ARACHNE_LEG.get(),level);
+                        leg.owner = player;
+                        leg.setPos(xSin,level.getHeight(Heightmap.Types.WORLD_SURFACE, (int) xSin, (int) zCos),zCos);
+                        leg.delay = 2*e;
+                        leg.spawnTime=10;
+                        leg.setYRot((float) player.getYRot() + 90);
 
-                            level.addFreshEntity(leg);
-                            r+=1.5F;
-                        }
-
+                        level.addFreshEntity(leg);
+                        r+=1.5F;
                     }
                 }
             });

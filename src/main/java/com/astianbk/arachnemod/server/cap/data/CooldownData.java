@@ -24,7 +24,7 @@ public class CooldownData {
 
     public CooldownData(int cooldown,int maxTime) {
         this.cooldown = cooldown;
-        this.maxTime = maxTime;
+        this.maxTime =maxTime;
     }
 
     public void save(FriendlyByteBuf buf){
