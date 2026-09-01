@@ -245,8 +245,8 @@ public class VoidHopperEntity extends PathfinderMob {
                     this.idle.stop();
                     this.emerge.stop();
                     this.casting.stop();
-                    this.idleResetTimer = 60;
-                    this.diggingAnimationTimer = 57;
+                    this.idleResetTimer = 30;
+                    this.diggingAnimationTimer = 30;
                     this.flee.start(this.tickCount);
                     break;
             }

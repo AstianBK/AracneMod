@@ -5,6 +5,7 @@ import com.astianbk.arachnemod.Events;
 import com.astianbk.arachnemod.server.network.PacketSetScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -12,18 +13,23 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Portal;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class EnterDimensionEntity extends Entity {
+public class EnterDimensionEntity extends Entity implements Portal {
     public AnimationState idle = new AnimationState();
     public AnimationState take = new AnimationState();
     public AnimationState spawn = new AnimationState();
@@ -76,6 +82,7 @@ public class EnterDimensionEntity extends Entity {
                 if (this.takeTime == 0){
                     list.forEach(living -> {
                         Events.teleportToVoid(this.position(),level(),living);
+
                     });
                     this.discard();
                 }else if (this.takeTime == 1){
@@ -88,9 +95,12 @@ public class EnterDimensionEntity extends Entity {
             }else {
                 if (active){
                     portalTime++;
-                    if (portalTime == 40){
+                    if (portalTime == 10){
                         this.takeTime = 60;
                         this.level().broadcastEntityEvent(this,(byte) 4);
+                        list.forEach(living -> {
+                            living.addEffect(new MobEffectInstance(new MobEffectInstance(MobEffects.DARKNESS,100,0)));
+                        });
                     }
                 }
             }
@@ -148,5 +158,18 @@ public class EnterDimensionEntity extends Entity {
     @Override
     protected void addAdditionalSaveData(ValueOutput valueOutput) {
 
+    }
+
+    @Override
+    public int getPortalTransitionTime(ServerLevel level, Entity entity) {
+        return 60;
+    }
+
+    public Portal.Transition getLocalTransition() {
+        return Transition.CONFUSION;
+    }
+    @Override
+    public @Nullable TeleportTransition getPortalDestination(ServerLevel serverLevel, Entity entity, BlockPos blockPos) {
+        return new TeleportTransition(serverLevel,Vec3.atBottomCenterOf(blockPos),Vec3.ZERO,0,0,TeleportTransition.PLACE_PORTAL_TICKET);
     }
 }
