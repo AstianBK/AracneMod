@@ -19,6 +19,7 @@
   "item.arachnemod.sealing_crystal_item": "Sealing Crystal",
   "item.arachnemod.void_string": "Void String",
   "item.arachnemod.void_chitin": "Exo-Chitin",
+  "item.arachnemod.needle_helmet": "Needle Helmet",
   "item.arachnemod.raw_osmium": "Raw Osmium Ore",
   "item.arachnemod.osmium_ingot": "Osmium Ingot",
   "item.arachnemod.osmium_helmet": "Osmium Helmet",
@@ -82,6 +83,7 @@
   "item.arachnemod.escape_string.tooltip": "§7§oCreates a temporary escape web out of the void",
   "item.arachnemod.sealing_crystal_item.tooltip": "§7§oCapable of sealing power within it",
   "item.arachnemod.weaver_cocoon.tooltip": "§oTear it open to obtain a reward!",
+  "item.arachnemod.needle_helmet.tooltip": "§oRamming into enemies at high speeds deals damage and heals you",
 
   "sounds.arachnemod.needle_loop":"VoidNeedle Flapping Wings",
 
