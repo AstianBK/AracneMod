@@ -272,6 +272,8 @@ public class Events {
             event.getToolTip().add(Component.translatable("item.arachnemod.sealing_crystal_item.tooltip"));
         }else if (event.getItemStack().is(NRegistry.WEAVER_COCOON)){
             event.getToolTip().add(Component.translatable("item.arachnemod.weaver_cocoon.tooltip"));
+        }else if (event.getItemStack().is(NRegistry.ENTER_DIMENSION_ITEM)){
+            event.getToolTip().add(Component.translatable("item.arachnemod.enter_dimension.tooltip"));
         }
     }
     @SubscribeEvent
@@ -451,10 +453,31 @@ public class Events {
             event.getLevel().playSound(null,event.getEntity(), SoundEvents.SPIDER_STEP, SoundSource.PLAYERS,1.0F,-1.0F);
             event.getItemStack().shrink(1);
         }
+        if (event.getItemStack().is(NRegistry.ENTER_DIMENSION_ITEM)){
+            Vec3 position = event.getEntity().position();
+            ResourceKey<Level> dimension = event.getLevel().dimension();
+            ResourceKey<Level> dimensionTo = dimension == NRegistry.THE_DEPTH || dimension == NRegistry.THE_VOID ? Level.OVERWORLD : NRegistry.THE_VOID;
+            ServerLevel serverLevel = ((ServerLevel)event.getLevel()).getServer().getLevel(dimensionTo);
+            ChunkPos pos = serverLevel.getChunk(event.getEntity().blockPosition()).getPos();
+            Vec3 posFinal;
+            if (dimensionTo == Level.OVERWORLD){
+                ArachneAttachment arachneAttachment = ArachneAttachment.get(event.getEntity()).orElse(null);
+                if (arachneAttachment!=null){
+                    posFinal = arachneAttachment.teleportBack!=null ? Vec3.atBottomCenterOf(arachneAttachment.teleportBack ) : new Vec3(event.getEntity().position().x,serverLevel.getHeight(Heightmap.Types.WORLD_SURFACE,event.getEntity().blockPosition()),event.getEntity().position().z);
+                }else {
+                    posFinal =  new Vec3(event.getEntity().position().x,serverLevel.getHeight(Heightmap.Types.WORLD_SURFACE,event.getEntity().blockPosition()),event.getEntity().position().z);
+                }
+            }else {
+                posFinal = getCenterIsland(serverLevel,serverLevel.getSeed(),pos.x(),pos.z());
+            }
+            event.getEntity().teleport(new TeleportTransition(serverLevel,posFinal, Vec3.ZERO,0.0F,0.0F,(entity)->{
+
+            }));
+
+        }
     }
     public static void teleportToTheDepth(Vec3 position, Level level, LivingEntity living){
         ServerLevel serverLevel = ((ServerLevel)level).getServer().getLevel(ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath("arachnemod", "the_depths")));
-        ChunkPos pos = serverLevel.getChunk(living.blockPosition()).getPos();
         living.teleport(new TeleportTransition(serverLevel,new Vec3(position.x,245,position.z), Vec3.ZERO,0.0F,0.0F,(entity)->{
 
         }));

@@ -82,7 +82,6 @@ public class EnterDimensionEntity extends Entity implements Portal {
                 if (this.takeTime == 0){
                     list.forEach(living -> {
                         Events.teleportToVoid(this.position(),level(),living);
-
                     });
                     this.discard();
                 }else if (this.takeTime == 1){
