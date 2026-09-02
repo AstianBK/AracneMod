@@ -61,7 +61,7 @@ public class VoidScytheEntity extends PathfinderMob {
                 .add(Attributes.FOLLOW_RANGE, 40.0)
                 .add(Attributes.MAX_HEALTH, 50.0)
                 .add(Attributes.ATTACK_DAMAGE, 15.0)
-                .add(Attributes.ARMOR, 5.0)
+                .add(Attributes.ARMOR, 8.0)
                 .add(Attributes.ARMOR_TOUGHNESS, 15.0)
                 .add(Attributes.KNOCKBACK_RESISTANCE,0.3F);
 
