@@ -2,9 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "show_notification": false,
   "pattern": [
-    " =#",
-    "#=#",
-    "/  "
+    "#= ",
+    "#==",
+    "/##"
   ],
   "key": {
     "=": "arachnemod:void_chitin",
