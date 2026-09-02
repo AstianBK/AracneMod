@@ -1,7 +1,5 @@
 {
   "title" : "Bring 1 Power Fragment",
-  "dialogDescription" : "arachnemod:arachne_quest_collect",
-  "dialogFail" : "arachnemod:arachne_quest_fail",
   "type" : "COLLECT",
   "itemId" : "arachnemod:power_fragment",
   "toCollect" : 1,

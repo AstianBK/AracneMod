@@ -12,8 +12,6 @@ public class QuestCollect extends Quest{
             RecordCodecBuilder.mapCodec(instance ->
                     instance.group(
                             Codec.STRING.fieldOf("title").forGetter(Quest::getTitle),
-                            Codec.STRING.fieldOf("dialogDescription").forGetter(Quest::getDescription),
-                            Codec.STRING.fieldOf("dialogFail").forGetter(Quest::getDialogFail),
                             TierQuest.CODEC.fieldOf("tier").forGetter(Quest::getTier),
                             Codec.INT.fieldOf("reputation").forGetter(Quest::getReputation),
                             Codec.INT.fieldOf("xp").forGetter(Quest::getXp),
@@ -23,8 +21,8 @@ public class QuestCollect extends Quest{
             );
     public String itemId;
     public int toCollect;
-    public QuestCollect(String title, String dialogDescription,String dialogFail, TierQuest tier, int reputation, int xp, String itemId,int toCollect) {
-        super(title, QuestsType.COLLECT,dialogDescription,dialogFail, tier,reputation,xp);
+    public QuestCollect(String title, TierQuest tier, int reputation, int xp, String itemId,int toCollect) {
+        super(title, QuestsType.COLLECT, tier,reputation,xp);
         this.itemId = itemId;
         this.toCollect = toCollect;
     }

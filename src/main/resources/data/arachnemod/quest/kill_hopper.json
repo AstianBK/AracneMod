@@ -1,8 +1,6 @@
 {
   "type" : "HUNT",
   "title" : "Slay 3 Void Hexers",
-  "dialogDescription" : "arachnemod:arachne_quest_kill",
-  "dialogFail" : "arachnemod:arachne_quest_fail",
   "entityTypeId" : "arachnemod:void_hopper",
   "tier" : 0,
   "toHuntEntities" : 3,

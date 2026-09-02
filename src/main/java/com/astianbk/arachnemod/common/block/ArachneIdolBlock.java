@@ -73,9 +73,7 @@ public class ArachneIdolBlock extends BaseEntityBlock {
             ArachneIdolBlockEntity arachneIdol = (ArachneIdolBlockEntity) level.getBlockEntity(pos);
             if (!level.isClientSide()){
                 if (arachneIdol==null)return;
-                AracneMod.LOGGER.info("item");
                 if (arachneIdol.currentState == ArachneIdolBlockEntity.State.NONE){
-                    AracneMod.LOGGER.info("NONE");
                     if(!state.getValue(LIT)){
                         if (e.currentQuest==null){
                             Identifier id = Identifier.fromNamespaceAndPath(AracneMod.MODID,"first_contact");
@@ -89,11 +87,9 @@ public class ArachneIdolBlock extends BaseEntityBlock {
                             arachneIdol.startMenu(player,level,pos,typesForState.get(ArachneIdolBlockEntity.State.MENU));
                         }
                     }else {
-                        AracneMod.LOGGER.info("LIT");
                         if (e.currentQuest==null){
                             level.setBlock(pos,state.setValue(LIT,false),3);
                         }else if (e.currentQuest.isComplete(e)){
-                            AracneMod.LOGGER.info("Complete");
                             level.setBlock(pos,state.setValue(LIT,false),3);
                             level.playSound(null,player, SoundEvents.ILLUSIONER_PREPARE_BLINDNESS,SoundSource.BLOCKS,2.0F,-1.0F);
                             PacketDistributor.sendToPlayer((ServerPlayer) player,new PacketHandlerParticle(1,pos));

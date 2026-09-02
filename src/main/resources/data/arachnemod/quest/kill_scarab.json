@@ -1,9 +1,6 @@
 {
   "type" : "HUNT",
   "title" : "Slay 5 Void Reavers",
-  "dialogDescription" : "arachnemod:arachne_quest_kill",
-  "dialogFail" : "arachnemod:arachne_quest_fail",
-
   "entityTypeId" : "arachnemod:scarab",
   "tier" : 0,
   "toHuntEntities" : 5,

@@ -23,7 +23,7 @@ public class EscapeStringItem extends Item {
 
     public InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
-        if (level.dimension() != NRegistry.THE_VOID || level.dimension() != NRegistry.THE_DEPTH){
+        if (level.dimension() != NRegistry.THE_VOID && level.dimension() != NRegistry.THE_DEPTH){
             return InteractionResult.FAIL;
         }
         BlockPos pos = context.getClickedPos();
