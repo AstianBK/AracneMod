@@ -13,11 +13,11 @@
     }
   },
   "display": {
-    "description": "Obtain Void Chitin",
+    "description": "Obtain Exo-Chitin",
     "icon": {
       "id": "arachnemod:void_chitin"
     },
-    "title": "Blocking Shadows",
+    "title": "Outer Shell",
     "show_toast": false,
     "announce_to_chat": true,
     "hidden": true
