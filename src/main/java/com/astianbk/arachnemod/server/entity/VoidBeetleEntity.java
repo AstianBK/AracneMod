@@ -74,6 +74,11 @@ public class VoidBeetleEntity extends PathfinderMob {
     }
 
     @Override
+    protected void checkFallDamage(double ya, boolean onGround, BlockState onState, BlockPos pos) {
+
+    }
+
+    @Override
     protected void defineSynchedData(SynchedEntityData.Builder entityData) {
         super.defineSynchedData(entityData);
     }

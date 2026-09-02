@@ -62,6 +62,11 @@ public class VoidGrubEntity extends PathfinderMob {
     }
 
     @Override
+    protected void checkFallDamage(double ya, boolean onGround, BlockState onState, BlockPos pos) {
+
+    }
+
+    @Override
     public void handleEntityEvent(byte id) {
 
         super.handleEntityEvent(id);
