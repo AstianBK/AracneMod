@@ -366,7 +366,7 @@ public class ArachneAttachment {
 
         if (player.level().isClientSide()){
             SoundEvent event1 = BuiltInRegistries.SOUND_EVENT.getValue(Identifier.parse(dialog.sounds().get(player.level().getRandom().nextInt(0,dialog.sounds().size()))));
-            Minecraft.getInstance().getSoundManager().play(new EntityBoundSoundInstance(event1, SoundSource.NEUTRAL, 1.5F, 1.0F, player,player.level().getRandom().nextLong()));
+            Minecraft.getInstance().getSoundManager().play(new EntityBoundSoundInstance(event1, SoundSource.NEUTRAL, 1.0F, 1.0F, player,player.level().getRandom().nextLong()));
         }
 
     }
