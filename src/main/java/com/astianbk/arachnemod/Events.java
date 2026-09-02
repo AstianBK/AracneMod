@@ -453,6 +453,7 @@ public class Events {
             event.getLevel().playSound(null,event.getEntity(), SoundEvents.SPIDER_STEP, SoundSource.PLAYERS,1.0F,-1.0F);
             event.getItemStack().shrink(1);
         }
+        if (event.getLevel().isClientSide())return;
         if (event.getItemStack().is(NRegistry.ENTER_DIMENSION_ITEM)){
             Vec3 position = event.getEntity().position();
             ResourceKey<Level> dimension = event.getLevel().dimension();
