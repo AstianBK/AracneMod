@@ -204,6 +204,7 @@ public class NRegistry {
     public static final DeferredItem<Item> CHITIN_LEG = ITEMS.registerItem("chitin_leg", properties -> new Item(properties.food((new FoodProperties.Builder()).nutrition(2).saturationModifier(0.3F).build(),defaultFood().onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.HUNGER, 200, 0), 0.2F)).build())));
     public static final DeferredItem<Item> ENTER_DIMENSION_ITEM = ITEMS.registerItem("enter_dimension", (properties -> new Item(properties.rarity(Rarity.EPIC))));
 
+    public static final DeferredItem<Item> CHITIN_SPIKE = ITEMS.registerItem("chitin_spike", Item::new);
     public static final DeferredItem<Item> VOID_CHITIN = ITEMS.registerItem("void_chitin", Item::new);
     public static final DeferredItem<Item> RAW_OSMIUM = ITEMS.registerItem("raw_osmium", Item::new);
     public static final DeferredItem<Item> OSMIUM_INGOT = ITEMS.registerItem("osmium_ingot", Item::new);
@@ -237,6 +238,7 @@ public class NRegistry {
                 output.accept(POWER_FRAGMENT.get());
                 output.accept(VOID_STRING.get());
                 output.accept(VOID_CHITIN.get());
+                output.accept(CHITIN_SPIKE.get());
                 output.accept(CHITIN_LEG.get());
                 output.accept(ARTHROPOD_EYE.get());
                 output.accept(WEAVER_COCOON.get());
