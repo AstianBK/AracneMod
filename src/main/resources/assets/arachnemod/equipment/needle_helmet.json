@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "arachnemod:needle_helmet"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "arachnemod:needle_helmet"
+      }
+    ]
+  }
+}

@@ -12,10 +12,7 @@ import com.astianbk.arachnemod.server.cap.data.BlessingData;
 import com.astianbk.arachnemod.server.entity.*;
 import com.astianbk.arachnemod.server.goal.SpiderTargetEnemyGoal;
 import com.astianbk.arachnemod.server.goal.SpiderTargetGoal;
-import com.astianbk.arachnemod.server.network.PacketHandlerParticle;
-import com.astianbk.arachnemod.server.network.PacketNerubianData;
-import com.astianbk.arachnemod.server.network.PacketPlayDialog;
-import com.astianbk.arachnemod.server.network.PacketSetScreen;
+import com.astianbk.arachnemod.server.network.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -283,6 +280,7 @@ public class Events {
         registrar.playToClient(PacketNerubianData.TYPE, PacketNerubianData.STREAM_CODEC, PacketNerubianData::handle);
         registrar.playToClient(PacketSetScreen.TYPE, PacketSetScreen.STREAM_CODEC,PacketSetScreen::handle);
         registrar.playToClient(PacketHandlerParticle.TYPE, PacketHandlerParticle.STREAM_CODEC, PacketHandlerParticle::handle);
+        registrar.playToServer(PacketSyncLeftClick.TYPE, PacketSyncLeftClick.STREAM_CODEC,PacketSyncLeftClick::handle);
 
     }
 
@@ -477,6 +475,9 @@ public class Events {
 
         }
     }
+
+
+
     public static void teleportToTheDepth(Vec3 position, Level level, LivingEntity living){
         ServerLevel serverLevel = ((ServerLevel)level).getServer().getLevel(ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath("arachnemod", "the_depths")));
         living.teleport(new TeleportTransition(serverLevel,new Vec3(position.x,245,position.z), Vec3.ZERO,0.0F,0.0F,(entity)->{

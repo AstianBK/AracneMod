@@ -1,0 +1,200 @@
+{
+	"format_version": "1.21.11",
+	"credit": "Made with Blockbench",
+	"texture_size": [128, 128],
+	"textures": {
+		"0": "arachnemod:block/scarab_1",
+		"particle": "arachnemod:block/scarab_1"
+	},
+	"elements": [
+		{
+			"name": "RightShoulder",
+			"from": [5.97, -1.02513, 11.97478],
+			"to": [10.97, 5.97487, 17.97478],
+			"rotation": {"x": 90, "y": 0, "z": 0, "origin": [8.47, 2.47487, 14.97478]},
+			"faces": {
+				"north": {"uv": [13.75, 5.25, 14.375, 6.125], "texture": "#0"},
+				"east": {"uv": [13, 5.25, 13.75, 6.125], "texture": "#0"},
+				"south": {"uv": [15.125, 5.25, 15.75, 6.125], "texture": "#0"},
+				"west": {"uv": [14.375, 5.25, 15.125, 6.125], "texture": "#0"},
+				"up": {"uv": [14.375, 5.25, 13.75, 4.5], "texture": "#0"},
+				"down": {"uv": [15, 4.5, 14.375, 5.25], "texture": "#0"}
+			}
+		},
+		{
+			"name": "RightForeArm",
+			"from": [6.12, -5.12513, 14.87478],
+			"to": [9.82, 3.57487, 19.57478],
+			"rotation": {"x": 90, "y": 0, "z": 0, "origin": [7.97, 5.22487, 14.47478]},
+			"faces": {
+				"north": {"uv": [1.5, 1.5, 2, 2.625], "texture": "#0"},
+				"east": {"uv": [0.875, 1.5, 1.5, 2.625], "texture": "#0"},
+				"south": {"uv": [2.625, 1.5, 3.125, 2.625], "texture": "#0"},
+				"west": {"uv": [2, 1.5, 2.625, 2.625], "texture": "#0"},
+				"up": {"uv": [2, 1.5, 1.5, 0.875], "texture": "#0"},
+				"down": {"uv": [2.5, 0.875, 2, 1.5], "texture": "#0"}
+			}
+		},
+		{
+			"name": "RightHand",
+			"from": [5.35027, -1.19745, 0.35539],
+			"to": [9.65027, 4.10255, 5.65539],
+			"rotation": {"x": 180, "y": 0, "z": -90, "origin": [7.985, 1.97755, 2.7349]},
+			"faces": {
+				"north": {"uv": [12.625, 0.625, 13.125, 1.25], "texture": "#0"},
+				"east": {"uv": [12, 0.625, 12.625, 1.25], "texture": "#0"},
+				"south": {"uv": [13.75, 0.625, 14.25, 1.25], "texture": "#0"},
+				"west": {"uv": [13.125, 0.625, 13.75, 1.25], "texture": "#0"},
+				"up": {"uv": [13.125, 0.625, 12.625, 0], "texture": "#0"},
+				"down": {"uv": [13.625, 0, 13.125, 0.625], "texture": "#0"}
+			}
+		},
+		{
+			"name": "RightClaw3",
+			"from": [6.08369, -0.57087, 2.6026],
+			"to": [6.08369, 5.42913, 12.60261],
+			"rotation": {"x": 180, "y": 0, "z": -90, "origin": [7.99, 1.92913, 2.52522]},
+			"faces": {
+				"north": {"uv": [1.25, 0, 1.25, 0.75], "texture": "#0"},
+				"east": {"uv": [0, 0, 1.25, 0.75], "texture": "#0"},
+				"south": {"uv": [2.5, 0, 2.5, 0.75], "texture": "#0"},
+				"west": {"uv": [1.25, 0, 2.5, 0.75], "texture": "#0"},
+				"up": {"uv": [1.25, 0, 1.25, -1.25], "texture": "#0"},
+				"down": {"uv": [1.25, -1.25, 1.25, 0], "texture": "#0"}
+			}
+		},
+		{
+			"name": "RightClaw4",
+			"from": [6.08369, -0.57087, 2.6026],
+			"to": [6.08369, 5.42913, 12.60261],
+			"rotation": {"x": 180, "y": 0, "z": -90, "origin": [7.99, 1.92913, 2.52522]},
+			"faces": {
+				"north": {"uv": [1.25, 0, 1.25, 0.75], "texture": "#0"},
+				"east": {"uv": [2.5, 0, 1.25, 0.75], "texture": "#0"},
+				"south": {"uv": [2.5, 0, 2.5, 0.75], "texture": "#0"},
+				"west": {"uv": [1.25, 0, 0, 0.75], "texture": "#0"},
+				"up": {"uv": [1.25, 0, 1.25, -1.25], "texture": "#0"},
+				"down": {"uv": [1.25, -1.25, 1.25, 0], "texture": "#0"}
+			}
+		},
+		{
+			"name": "RightClaw",
+			"from": [8.99, -0.57087, 3.02523],
+			"to": [8.99, 5.42913, 13.02523],
+			"rotation": {"x": 180, "y": 0, "z": -90, "origin": [7.99, 1.92913, 2.52522]},
+			"faces": {
+				"north": {"uv": [1.25, 0, 1.25, 0.75], "texture": "#0"},
+				"east": {"uv": [0, 0, 1.25, 0.75], "texture": "#0"},
+				"south": {"uv": [2.5, 0, 2.5, 0.75], "texture": "#0"},
+				"west": {"uv": [1.25, 0, 2.5, 0.75], "texture": "#0"},
+				"up": {"uv": [1.25, 0, 1.25, -1.25], "texture": "#0"},
+				"down": {"uv": [1.25, -1.25, 1.25, 0], "texture": "#0"}
+			}
+		},
+		{
+			"name": "RightClaw",
+			"from": [8.99, -0.57087, 3.02523],
+			"to": [8.99, 5.42913, 13.02523],
+			"rotation": {"x": 180, "y": 0, "z": -90, "origin": [7.99, 1.92913, 2.52522]},
+			"faces": {
+				"north": {"uv": [1.25, 0, 1.25, 0.75], "texture": "#0"},
+				"east": {"uv": [2.5, 0, 1.25, 0.75], "texture": "#0"},
+				"south": {"uv": [2.5, 0, 2.5, 0.75], "texture": "#0"},
+				"west": {"uv": [1.25, 0, 0, 0.75], "texture": "#0"},
+				"up": {"uv": [1.25, 0, 1.25, -1.25], "texture": "#0"},
+				"down": {"uv": [1.25, -1.25, 1.25, 0], "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"translation": [0.5, 3.5, 3.25]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [0, 0, -180],
+			"translation": [0.5, -7.5, 3.25]
+		},
+		"firstperson_righthand": {
+			"rotation": [31, 0, 76],
+			"translation": [-3.25, 4, 5.5],
+			"scale": [0.85, 0.85, 0.85]
+		},
+		"firstperson_lefthand": {
+			"rotation": [31, 18, -112],
+			"translation": [3.75, 0.75, 4.25],
+			"scale": [0.85, 0.85, 0.85]
+		},
+		"ground": {
+			"rotation": [57, 0, 0],
+			"translation": [0, 4, 0],
+			"scale": [0.35, 0.35, 0.35]
+		},
+		"gui": {
+			"rotation": [81.77, -40.91, 155.72],
+			"translation": [-2.25, -0.5, 0],
+			"scale": [0.55, 0.55, 0.55]
+		},
+		"fixed": {
+			"rotation": [89.48, 52.77, -9.05],
+			"translation": [1.25, 0, 3],
+			"scale": [0.55, 0.55, 0.55]
+		}
+	},
+	"groups": [
+		{
+			"name": "truemain",
+			"origin": [7.1, 26.07046, 9.28126],
+			"scope": 0,
+			"color": 0,
+			"children": [
+				{
+					"name": "RightArm",
+					"origin": [7.1, 26.07046, 9.28126],
+					"scope": 0,
+					"color": 0,
+					"children": [
+						{
+							"name": "RightUpper",
+							"origin": [7.1, 26.07046, 9.28126],
+							"scope": 0,
+							"color": 0,
+							"children": [
+								0,
+								{
+									"name": "RightNerubianArmor",
+									"origin": [7.1, 26.07046, 9.28126],
+									"scope": 0,
+									"color": 0,
+									"children": [1, 2]
+								}
+							]
+						},
+						{
+							"name": "RightLower",
+							"origin": [9.1, 21.07046, 9.28126],
+							"scope": 0,
+							"color": 0,
+							"children": [
+								{
+									"name": "RightLowerArmor",
+									"origin": [9.1, 21.07046, 9.28126],
+									"scope": 0,
+									"color": 0,
+									"children": [3]
+								},
+								4,
+								{
+									"name": "RightHand",
+									"origin": [9, 18.75086, -0.97534],
+									"scope": 0,
+									"color": 0,
+									"children": [5, 6, 7, 8, 9]
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

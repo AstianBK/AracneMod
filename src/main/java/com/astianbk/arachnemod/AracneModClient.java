@@ -7,23 +7,32 @@ import com.astianbk.arachnemod.client.render_state.SpiderAvatarRenderState;
 import com.astianbk.arachnemod.client.renderer.*;
 import com.astianbk.arachnemod.client.gui.DarknessGui;
 import com.astianbk.arachnemod.client.model.*;
+import com.astianbk.arachnemod.client.renderer.item.ScytheScissorsClientExtensions;
+import com.astianbk.arachnemod.client.renderer.item.ScytheScissorsItemModel;
+import com.astianbk.arachnemod.client.renderer.item.ScytheScissorsRenderer;
 import com.astianbk.arachnemod.common.items.VoidKnightArmorItem;
 import com.astianbk.arachnemod.common.registry.NRegistry;
 import com.astianbk.arachnemod.server.cap.ArachneAttachment;
+import com.astianbk.arachnemod.server.network.PacketSyncLeftClick;
 import com.google.common.base.Suppliers;
 import com.google.common.reflect.TypeToken;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.*;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.client.resources.model.EquipmentAssetManager;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.context.ContextKey;
@@ -42,18 +51,24 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
 
 @Mod(value = AracneMod.MODID, dist = Dist.CLIENT)
 @EventBusSubscriber(modid = AracneMod.MODID, value = Dist.CLIENT)
 public class AracneModClient {
+    public static float[] offset = new float[3];
+    public static int index = 0;
     public static final Identifier LOCATION = Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/war_spider/warspider.png");
     public static final Identifier LOCATION_COCOON= Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/cocoon/shield_cocoon.png");
+    public static final ContextKey<Boolean> IS_FIRST_PERSON = new ContextKey<>(Identifier.fromNamespaceAndPath(AracneMod.MODID,"is_first_person"));
 
     public static final ContextKey<List<ArachneAttachment.Hex>> HEXS = new ContextKey<>(Identifier.fromNamespaceAndPath(AracneMod.MODID,"hexs"));
     public AracneModClient(ModContainer container) {
@@ -61,10 +76,82 @@ public class AracneModClient {
     }
 
     @SubscribeEvent
+    public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
+        event.registerItem(new ScytheScissorsClientExtensions(), NRegistry.CHITIN_LEG);
+    }
+    @SubscribeEvent
+    public static void registerRenderers(RegisterSpecialModelRendererEvent event) {
+        event.register(Identifier.fromNamespaceAndPath(AracneMod.MODID, "scythe_scissors"),  ScytheScissorsRenderer.Unbaked.MAP_CODEC);
+    }
+
+    @SubscribeEvent
+    public static void registerItemModel(RegisterItemModelsEvent event){
+        event.register(Identifier.fromNamespaceAndPath(AracneMod.MODID, "scythe_scissors_model"),  ScytheScissorsItemModel.Unbaked.MAP_CODEC);
+    }
+    @SubscribeEvent
     public static void sky(RenderLevelStageEvent.AfterSky event){
         if (Minecraft.getInstance().level.getData(NRegistry.THE_VOID_ATTACHMENT.get()).flash){
             Minecraft.getInstance().levelRenderer.skyRenderer.renderEndFlash(event.getPoseStack(),Minecraft.getInstance().level.getData(NRegistry.THE_VOID_ATTACHMENT.get()).getIntensityFlash(Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaTicks()),0,0);
         }
+    }
+    @SubscribeEvent
+    public static void onLeftClick(InputEvent.InteractionKeyMappingTriggered event) {
+        if (!event.isAttack())return;
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) {
+            return;
+        }
+
+        ItemStack stack = player.getMainHandItem();
+
+        if (!stack.is(NRegistry.POWER_FRAGMENT.get())) {
+            return;
+        }
+//        ClientPacketDistributor.sendToServer(new PacketSyncLeftClick(player.getId()));
+    }
+    @SubscribeEvent
+    public static void onClick(InputEvent.MouseButton.Post event){
+        if (event.getAction()==0){
+//            if (event.getButton() == 1){
+//                offset[index] += 0.1F;
+//            }else {
+//                index = (index+1) %3;
+//            }
+        }
+        AracneMod.LOGGER.info("offset {} , index {}",offset,index);
+        if (event.getButton() == 1)return;
+        if (event.getAction() == 0){
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player == null) {
+                return;
+            }
+
+            ItemStack stack = player.getMainHandItem();
+
+            if (!stack.is(NRegistry.SCYTHE_SCISSORS.get()) || stack != player.getUseItem()) {
+                return;
+            }
+            ClientPacketDistributor.sendToServer(new PacketSyncLeftClick(player.getId()));
+
+        }
+    }
+    @SubscribeEvent
+    public static void onKey(InputEvent.Key event){
+//        if (event.getAction() == 0){
+//            AracneMod.LOGGER.info("click");
+//            LocalPlayer player = Minecraft.getInstance().player;
+//            if (player == null) {
+//                return;
+//            }
+//
+//            ItemStack stack = player.getMainHandItem();
+//
+//            if (!stack.is(NRegistry.POWER_FRAGMENT.get())) {
+//                return;
+//            }
+//            ClientPacketDistributor.sendToServer(new PacketSyncLeftClick(player.getId()));
+//
+//        }
     }
     @SubscribeEvent
     public static void registerLayer(EntityRenderersEvent.AddLayers event) {
@@ -74,6 +161,12 @@ public class AracneModClient {
             renderer.addLayer(new MarkSilentLayer(renderer));
         }
     }
+
+    @SubscribeEvent
+    public static void renderArm(RenderArmEvent event){
+
+    }
+
     @SubscribeEvent
     public static void extractEvent(RegisterRenderStateModifiersEvent event){
         event.registerEntityModifier(
@@ -83,6 +176,13 @@ public class AracneModClient {
                         ArachneAttachment.get(player).ifPresent(arachneAttachment -> {
                             renderState.setRenderData(HEXS, arachneAttachment.hexes);
                         });
+                    }
+                });
+        event.registerEntityModifier(
+                new TypeToken<LivingEntityRenderer<LivingEntity,LivingEntityRenderState,?>>() {},
+                (entity, renderState) -> {
+                    if (entity instanceof Player player && Minecraft.getInstance().player == player){
+                        renderState.setRenderData(IS_FIRST_PERSON,Minecraft.getInstance().options.getCameraType().isFirstPerson());
                     }
                 });
     }
@@ -107,6 +207,8 @@ public class AracneModClient {
         event.registerLayerDefinition(ShieldCocoonModel.LAYER_LOCATION,Suppliers.ofInstance(ShieldCocoonModel.createBodyLayer()));
         event.registerLayerDefinition(ArachneLegModel.LAYER_LOCATION,Suppliers.ofInstance(ArachneLegModel.createBodyLayer()));
         event.registerLayerDefinition(VoidScytheModel.LAYER_LOCATION,Suppliers.ofInstance(VoidScytheModel.createBodyLayer()));
+        event.registerLayerDefinition(ScytheScissorsModel.LAYER_LOCATION,Suppliers.ofInstance(ScytheScissorsModel.createBodyLayer()));
+        event.registerLayerDefinition(NeedleHelmetModel.LAYER_LOCATION,Suppliers.ofInstance(NeedleHelmetModel.createBodyLayer()));
 
         //        event.registerLayerDefinition(ScarabModel.ARMOR_LOCATION,Suppliers.ofInstance(ScarabModel.createBodyLayer(new CubeDeformation(1.0F))));
     }

@@ -19,6 +19,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -30,6 +31,7 @@ import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
@@ -38,9 +40,7 @@ import net.minecraft.util.Util;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.AnimationState;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -98,6 +98,12 @@ public class ArachneAttachment {
     public boolean completeText = false;
     public int time = 0;
     public int cocoonTime = 0;
+    public int scissorAttackTime = 0;
+    public boolean scissorAttack = false;
+    public boolean runningWithHelmet = false;
+    public Map<Entity, Long> recentRunningHelmetEnemies = new HashMap<>();
+    public final float CONE_ANGLE_SCISSORS = 60.0F;
+    public final double RANGE_SCISSORS = 3.5D;
     public final Map<QuestsType,String[]> DIALOGS_FOR_TYPE = Map.of(QuestsType.HUNT,new String[]{"arachnemod:arachne_quest_kill_complete1","arachnemod:arachne_quest_kill_complete2","arachnemod:arachne_quest_kill_complete3","arachnemod:arachne_quest_kill_complete4","arachnemod:arachne_quest_kill_complete5","arachnemod:arachne_quest_kill_complete6"},
             QuestsType.COLLECT,new String[]{"arachnemod:arachne_quest_collect_complete1","arachnemod:arachne_quest_collect_complete2","arachnemod:arachne_quest_collect_complete3","arachnemod:arachne_quest_collect_complete4","arachnemod:arachne_quest_collect_complete5","arachnemod:arachne_quest_collect_complete6"});
     public String getTimeInMinuteAndSeconds(){
@@ -179,7 +185,6 @@ public class ArachneAttachment {
                     Events.teleportToTheDepth(player.position(),player.level(),player);
                 }
             }
-
         }else if (player.level().dimension() == NRegistry.THE_DEPTH){
             if (!player.level().isClientSide()){
                 if (player.getY()>=250){
@@ -233,6 +238,7 @@ public class ArachneAttachment {
 
 
         if(player.level().isClientSide()){
+
             this.speechTimeO = this.speechTime;
 
             if(this.speechTime>0){
@@ -245,6 +251,71 @@ public class ArachneAttachment {
             }else {
                 this.idleTimer--;
             }
+
+        }
+        if (this.scissorAttack){
+            if (this.scissorAttackTime>0){
+                this.scissorAttackTime--;
+                if (this.scissorAttackTime == 6){
+                    if (!player.level().isClientSide()){
+                        player.level().getEntities(player, player.getBoundingBox().inflate(RANGE_SCISSORS),
+                                living -> {
+
+                            if (!(living instanceof LivingEntity)) {
+                                return false;
+                            }
+                            if (player.distanceToSqr(living) < 1F){
+                                return true;
+                            }
+
+                            double dx = living.getX() - player.getX();
+                            double dz = living.getZ() - player.getZ();
+
+                            double distanceSqr = dx * dx + dz * dz;
+
+                            if (distanceSqr < 1.0E-7) {
+                                return true;
+                            }
+
+                            double angleToEntity = Math.toDegrees(Math.atan2(dz, dx)) - 90.0D;
+
+                            double angleDifference = Mth.wrapDegrees((float)(angleToEntity - player.getYRot()));
+
+                            return Math.abs(angleDifference) <= CONE_ANGLE_SCISSORS;
+                        }
+                        ).forEach(living ->
+                                living.hurtServer((ServerLevel)player.level(),player.damageSources().generic(),10.0F )
+                        );
+                        player.level().playSound(null,player, SoundEvents.UI_STONECUTTER_TAKE_RESULT,SoundSource.PLAYERS,1.0F,1.0F);
+                    }
+                }
+                if (this.scissorAttackTime == 10 && player.level().isClientSide()){
+                    float yaw = (float) (player.getYRot()/180.0F * Math.PI - Math.PI/2.0f);
+
+                    for (float currentYaw = (float) (yaw-Math.toRadians(30.0F)); currentYaw < yaw+Math.toRadians(30.0F) ; currentYaw+=0.0872664626F){
+                        float sin = Mth.sin(currentYaw);
+                        float cos = Mth.cos(currentYaw);
+                        for (double dist = 0.0D ; dist <RANGE_SCISSORS; dist += 0.5F ){
+                            player.level().addParticle(ParticleTypes.SWEEP_ATTACK,player.getX() -cos * dist,player.getY() + 1.0F,player.getZ() -sin * dist,0.0F,0.0F,0.0F);
+                        }
+                    }
+                }
+
+
+                if (this.scissorAttackTime == 0){
+                    this.scissorAttack = false;
+                }
+                if (this.scissorAttackTime==18){
+                    float yaw = (float) (player.getYRot()/180.0F * Math.PI - Math.PI/2.0f);
+                    float sin = Mth.sin(yaw);
+                    float cos = Mth.cos(yaw);
+                    player.setDeltaMovement(new Vec3(-cos*0.5f,0.2F,-sin*0.5F));
+                }
+
+            }
+        }
+        if (!player.level().isClientSide()){
+            this.tickRunningHelmet(player);
         }
         this.updateText(player);
         for (BlessingData data : blessingData){
@@ -254,7 +325,94 @@ public class ArachneAttachment {
         }
         return flag;
     }
+    private void runningHelmetAttack(Player player) {
+        double range = 2.5D;
+        float coneAngle = 35.0F;
 
+        Vec3 look = player.getLookAngle();
+        Vec3 attackerMotion = player.getKnownSpeed().scale(20.0F);
+        double attackerSpeedProjection = look.dot(attackerMotion);
+
+        attackerSpeedProjection = Math.max(0.0D, attackerSpeedProjection);
+
+        double finalAttackerSpeedProjection = attackerSpeedProjection;
+        player.level().getEntities(player, player.getBoundingBox().inflate(range), entity -> {
+                    if (!(entity instanceof LivingEntity living)) {
+                        return false;
+                    }
+
+                    if (living == player) {
+                        return false;
+                    }
+
+                    if (wasRecentlyHit(living)) {
+                        return false;
+                    }
+
+                    Vec3 direction = living.position().subtract(player.position());
+                    direction = new Vec3(direction.x, 0, direction.z);
+
+                    if (direction.lengthSqr() < 1.0E-6D) {
+                        return false;
+                    }
+
+                    direction = direction.normalize();
+
+                    Vec3 horizontalLook = new Vec3(look.x, 0, look.z);
+
+                    if (horizontalLook.lengthSqr() < 1.0E-6D) {
+                        return false;
+                    }
+
+                    horizontalLook = horizontalLook.normalize();
+
+                    double dot = horizontalLook.dot(direction);
+                    double angle = Math.toDegrees(
+                            Math.acos(Mth.clamp(dot, -1.0D, 1.0D))
+                    );
+
+                    return angle <= coneAngle;
+                }
+        ).forEach(entity -> {
+            LivingEntity living = (LivingEntity) entity;
+
+            Vec3 targetMotion = living.getDeltaMovement();
+            double targetSpeedProjection = look.dot(targetMotion);
+
+            double relativeSpeed = Math.max(0.0D, finalAttackerSpeedProjection - targetSpeedProjection);
+            float damage = (float) (relativeSpeed * 1.5D);
+
+            if (damage <= 0.0F) {
+                return;
+            }
+
+            living.hurtServer((ServerLevel) player.level(), player.damageSources().playerAttack(player), damage);
+
+            this.recentRunningHelmetEnemies.put(entity, player.level().getGameTime());
+        });
+    }
+    private void tickRunningHelmet(Player player) {
+        boolean active = isRunningWithHelmet(player);
+        if (active) {
+            this.runningHelmetAttack(player);
+            this.runningWithHelmet = true;
+        } else {
+            this.runningWithHelmet = false;
+        }
+    }
+    private boolean isRunningWithHelmet(Player player) {
+
+        ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
+
+        if (!helmet.is(NRegistry.NEEDLE_HELMET.get())) {
+            return false;
+        }
+
+        Vec3 motion = player.getKnownSpeed();
+
+        double horizontalSpeedSqr = motion.x * motion.x + motion.z * motion.z;
+        return horizontalSpeedSqr > 0.9F ;
+    }
     public void acceptQuest(ServerPlayer player,Quest quest){
         this.currentQuest = quest;
         this.timeQuest = quest.getType() == QuestsType.HUNT ? 24000 : 36000;
@@ -523,7 +681,12 @@ public class ArachneAttachment {
         }
         blessingData = new ArrayList<>(tag.read("blessingData",BlessingData.CODEC.listOf()).orElseGet(List::of));
     }
+    private boolean wasRecentlyHit(Entity entity) {
 
+        Long time = recentRunningHelmetEnemies.get(entity);
+
+        return time != null && entity.level().getGameTime() - time < 10;
+    }
     public static Optional<ArachneAttachment> get(Player player){
         return Optional.of(player.getData(NRegistry.ARACNE.get()));
     }
@@ -589,6 +752,8 @@ public class ArachneAttachment {
                         buf.writeInt(attachment.cocoonTime);
                         buf.writeInt(attachment.timeDarkness);
                         buf.writeInt(attachment.previousTimesChanged);
+                        buf.writeInt(attachment.scissorAttackTime);
+                        buf.writeBoolean(attachment.scissorAttack);
                     }
 
                     @Override
@@ -633,6 +798,8 @@ public class ArachneAttachment {
                         attachment.timeDarkness = buf.readInt();
                         attachment.prevTimeDarkness = attachment.timeDarkness;
                         attachment.previousTimesChanged = buf.readInt();
+                        attachment.scissorAttackTime = buf.readInt();
+                        attachment.scissorAttack = buf.readBoolean();
                         return attachment;
                     }
                 };

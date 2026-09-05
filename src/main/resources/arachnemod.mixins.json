@@ -5,6 +5,7 @@
   "mixins": [
     "CloudRendererMixin",
     "HumanoidArmorLayerMixin",
+    "HumanoidModelMixin",
     "LevelRendererMixin",
     "LightmapRenderStateExtractorMixin",
     "WebBlockMixin"

@@ -1,6 +1,17 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "arachnemod:item/scythe_scissors"
+    "type": "minecraft:condition",
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "arachnemod:item/scythe_scissors"
+    },
+    "on_true": {
+      "type": "arachnemod:scythe_scissors_model",
+      "base": "minecraft:item/template_skull",
+      "model": {
+        "type": "arachnemod:scythe_scissors"
+      }
+    },
+    "property": "minecraft:using_item"
   }
 }

@@ -1,5 +1,6 @@
 package com.astianbk.arachnemod.server.entity;
 
+import com.astianbk.arachnemod.common.registry.NRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -56,6 +57,7 @@ public class VoidNeedleEntity extends PathfinderMob {
     @Nullable private Vec3 chargeEndPoint;
     private int swoopStage;
     @Nullable private Vec3 swoopStart;
+    private int needleSoundTimer = 0;
     public VoidNeedleEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
         this.moveTargetPoint = Vec3.ZERO;
@@ -89,7 +91,14 @@ public class VoidNeedleEntity extends PathfinderMob {
     @Override
     public void tick() {
         super.tick();
+
         if (!this.level().isClientSide()) {
+            if (this.needleSoundTimer <= 0) {
+                this.playSound(NRegistry.NEEDLE_LOOP.get(), 1.0F, 1.0F);
+                this.needleSoundTimer = 80;
+            } else {
+                this.needleSoundTimer--;
+            }
             if (this.attackPhase != AttackPhase.CIRCLE
                     && !this.hasValidSwoopTarget()) {
 
@@ -137,6 +146,7 @@ public class VoidNeedleEntity extends PathfinderMob {
                 }
                 if (stun){
                     VoidNeedleEntity.this.entityData.set(STUN,true);
+                    VoidNeedleEntity.this.attackPhase = AttackPhase.CIRCLE;
                     VoidNeedleEntity.this.level().broadcastEntityEvent(VoidNeedleEntity.this,(byte) 8);
                 }
                 if (this.chargeTick>70){

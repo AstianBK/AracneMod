@@ -34,6 +34,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -41,7 +42,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.BlocksAttacks;
 import net.minecraft.world.item.component.Consumable;
+import net.minecraft.world.item.component.UseEffects;
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.level.Level;
@@ -63,6 +66,8 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.*;
 import org.codehaus.plexus.util.Os;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -204,7 +209,6 @@ public class NRegistry {
     public static final DeferredItem<Item> CHITIN_LEG = ITEMS.registerItem("chitin_leg", properties -> new Item(properties.food((new FoodProperties.Builder()).nutrition(2).saturationModifier(0.3F).build(),defaultFood().onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.HUNGER, 200, 0), 0.2F)).build())));
     public static final DeferredItem<Item> ENTER_DIMENSION_ITEM = ITEMS.registerItem("enter_dimension", (properties -> new Item(properties.rarity(Rarity.EPIC))));
 
-    public static final DeferredItem<Item> CHITIN_SPIKE = ITEMS.registerItem("chitin_spike", Item::new);
     public static final DeferredItem<Item> VOID_CHITIN = ITEMS.registerItem("void_chitin", Item::new);
     public static final DeferredItem<Item> RAW_OSMIUM = ITEMS.registerItem("raw_osmium", Item::new);
     public static final DeferredItem<Item> OSMIUM_INGOT = ITEMS.registerItem("osmium_ingot", Item::new);
@@ -219,10 +223,13 @@ public class NRegistry {
     public static final DeferredItem<Item> VOID_NEEDLE_SPAWN_EGG = ITEMS.registerItem("void_needle_spawn_egg",(properties)->new SpawnEggItem(properties.spawnEgg(NRegistry.VOID_NEEDLE.get())));
     public static final DeferredItem<Item> VOID_SCYTHE_SPAWN_EGG = ITEMS.registerItem("void_scythe_spawn_egg",(properties)->new SpawnEggItem(properties.spawnEgg(NRegistry.VOID_SCYTHE.get())));
 
+    public static final DeferredItem<Item> NEEDLE_HELMET = ITEMS.registerItem("needle_helmet",(properties)->new NeedleHelmetItem(new Item.Properties().spear(ToolMaterial.DIAMOND, 1.05F, 1.075F, 0.5F, 3.0F, 10.0F, 6.5F, 5.1F, 10.0F, 4.6F).humanoidArmor(VoidMaterial.NEEDLE_HELMET, ArmorType.HELMET).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"needle_helmet" )))));
     public static final DeferredItem<Item> VOID_HELMET = ITEMS.registerItem("void_helmet",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.HELMET).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_helmet" )))));
-    public static final DeferredItem<Item> VOID_CHESTPLATE = ITEMS.registerItem("void_chestplate",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.CHESTPLATE).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_chestplate" )))));
+    public static final DeferredItem<Item> VOID_CHESTPLATE = ITEMS.registerItem("void_chestplate",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.CHESTPLATE).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_chestplate")))));
     public static final DeferredItem<Item> VOID_LEGGINGS = ITEMS.registerItem("void_leggings",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.LEGGINGS).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_leggings" )))));
     public static final DeferredItem<Item> VOID_BOOTS = ITEMS.registerItem("void_boots",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.BOOTS).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_boots" )))));
+    public static final DeferredItem<Item> SCYTHE_SCISSORS = ITEMS.registerItem("scythe_scissors",(properties)->new ScytheScissorsItem(properties));
+    public static final DeferredItem<Item> REAVER_GAUNTLET = ITEMS.registerItem("reaver_gauntlet",(properties)->new ReaverGauntletItem(properties.sword(ToolMaterial.DIAMOND,10,1.0F).component(DataComponents.USE_EFFECTS,new UseEffects(true,false,1.0F)).delayedComponent(DataComponents.BLOCKS_ATTACKS,(context) -> new BlocksAttacks(0.25F, 1.0F, List.of(new BlocksAttacks.DamageReduction(90.0F, Optional.empty(), 0.0F, 1.0F)), new BlocksAttacks.ItemDamageFunction(3.0F, 1.0F, 1.0F), Optional.of(context.getOrThrow(DamageTypeTags.BYPASSES_SHIELD)), Optional.of(SoundEvents.SHIELD_BLOCK), Optional.of(SoundEvents.SHIELD_BREAK)))));
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> TAB = CREATIVE_MODE_TABS.register("tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.arachnemod"))
@@ -238,11 +245,13 @@ public class NRegistry {
                 output.accept(POWER_FRAGMENT.get());
                 output.accept(VOID_STRING.get());
                 output.accept(VOID_CHITIN.get());
-                output.accept(CHITIN_SPIKE.get());
                 output.accept(CHITIN_LEG.get());
                 output.accept(ARTHROPOD_EYE.get());
                 output.accept(WEAVER_COCOON.get());
                 output.accept(RAW_OSMIUM.get());
+                output.accept(NEEDLE_HELMET.get());
+                output.accept(REAVER_GAUNTLET.get());
+                output.accept(SCYTHE_SCISSORS.get());
                 output.accept(OSMIUM_INGOT.get());
                 output.accept(OSMIUM_HELMET.get());
                 output.accept(OSMIUM_CHESTPLATE.get());

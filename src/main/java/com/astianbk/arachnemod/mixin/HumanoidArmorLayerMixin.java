@@ -1,7 +1,9 @@
 package com.astianbk.arachnemod.mixin;
 
 import com.astianbk.arachnemod.AracneMod;
+import com.astianbk.arachnemod.client.model.NeedleHelmetModel;
 import com.astianbk.arachnemod.client.model.VoidKnightArmorModel;
+import com.astianbk.arachnemod.common.items.NeedleHelmetItem;
 import com.astianbk.arachnemod.common.items.VoidKnightArmorItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -13,6 +15,7 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.ArmorModelSet;
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.component.DataComponents;
@@ -54,6 +57,16 @@ public abstract class HumanoidArmorLayerMixin<S extends HumanoidRenderState, M e
                 A model = (A) new VoidKnightArmorModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(VoidKnightArmorModel.ALL_LOCATION));
                 EquipmentClientInfo.LayerType layerType = state.isBaby && state.entityType != EntityTypes.ARMOR_STAND ? EquipmentClientInfo.LayerType.HUMANOID_BABY : (this.usesInnerModel(slot) ? EquipmentClientInfo.LayerType.HUMANOID_LEGGINGS : EquipmentClientInfo.LayerType.HUMANOID);
                 ((VoidKnightArmorModel)model).setPartVisibility(((VoidKnightArmorModel)model),slot);
+                this.equipmentRenderer.renderLayers(layerType, (ResourceKey)equippable.assetId().orElseThrow(), model, state, itemStack, poseStack, submitNodeCollector, lightCoords, state.outlineColor);
+            }
+        }
+        if (itemStack.getItem() instanceof NeedleHelmetItem){
+            cir.cancel();
+            Equippable equippable = (Equippable)itemStack.get(DataComponents.EQUIPPABLE);
+            if (equippable != null && shouldRender(equippable, slot)) {
+                A model = (A) new NeedleHelmetModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(NeedleHelmetModel.LAYER_LOCATION));
+                EquipmentClientInfo.LayerType layerType = state.isBaby && state.entityType != EntityTypes.ARMOR_STAND ? EquipmentClientInfo.LayerType.HUMANOID_BABY : (this.usesInnerModel(slot) ? EquipmentClientInfo.LayerType.HUMANOID_LEGGINGS : EquipmentClientInfo.LayerType.HUMANOID);
+                ((NeedleHelmetModel<AvatarRenderState>)model).setPartVisibility(((NeedleHelmetModel<AvatarRenderState>)model),slot);
                 this.equipmentRenderer.renderLayers(layerType, (ResourceKey)equippable.assetId().orElseThrow(), model, state, itemStack, poseStack, submitNodeCollector, lightCoords, state.outlineColor);
             }
         }
