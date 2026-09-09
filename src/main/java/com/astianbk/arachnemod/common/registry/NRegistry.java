@@ -76,7 +76,7 @@ import java.util.function.Supplier;
 
 public class NRegistry {
     public static final TagKey<Item> CHITIN_TOOL_MATERIAL = ItemTags.create(Identifier.fromNamespaceAndPath(AracneMod.MODID,"chitin_tool_materials"));
-    public static final ToolMaterial EXO_CHITIN =new ToolMaterial(BlockTags.INCORRECT_FOR_WOODEN_TOOL, 59, 2.0F, 0.0F, 15, CHITIN_TOOL_MATERIAL);
+    public static final ToolMaterial EXO_CHITIN =new ToolMaterial(BlockTags.INCORRECT_FOR_WOODEN_TOOL, 59, 0.0F, -0.0F, 15, CHITIN_TOOL_MATERIAL);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPE = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE,AracneMod.MODID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, AracneMod.MODID);
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, AracneMod.MODID);
@@ -234,7 +234,7 @@ public class NRegistry {
     public static final DeferredItem<Item> VOID_LEGGINGS = ITEMS.registerItem("void_leggings",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.LEGGINGS).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_leggings" )))));
     public static final DeferredItem<Item> VOID_BOOTS = ITEMS.registerItem("void_boots",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.BOOTS).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_boots" )))));
     public static final DeferredItem<Item> SCYTHE_SCISSORS = ITEMS.registerItem("scythe_scissors", ScytheScissorsItem::new);
-    public static final DeferredItem<Item> REAVER_GAUNTLET = ITEMS.registerItem("reaver_gauntlet",(properties)->new ReaverGauntletItem(properties.sword(EXO_CHITIN,8,1.0F).component(DataComponents.USE_EFFECTS,new UseEffects(true,false,-1.0F)).delayedComponent(DataComponents.BLOCKS_ATTACKS,(context) -> new BlocksAttacks(0.25F, 1.0F, List.of(new BlocksAttacks.DamageReduction(90.0F, Optional.empty(), 0.0F, 1.0F)), new BlocksAttacks.ItemDamageFunction(3.0F, 1.0F, 1.0F), Optional.of(context.getOrThrow(DamageTypeTags.BYPASSES_SHIELD)), Optional.of(SoundEvents.SHIELD_BLOCK), Optional.of(SoundEvents.SHIELD_BREAK)))));
+    public static final DeferredItem<Item> REAVER_GAUNTLET = ITEMS.registerItem("reaver_gauntlet",(properties)->new ReaverGauntletItem(properties.sword(EXO_CHITIN,8,1.0F).component(DataComponents.USE_EFFECTS,new UseEffects(true,false,1.0F)).delayedComponent(DataComponents.BLOCKS_ATTACKS,(context) -> new BlocksAttacks(0.25F, 1.0F, List.of(new BlocksAttacks.DamageReduction(90.0F, Optional.empty(), 0.0F, 1.0F)), new BlocksAttacks.ItemDamageFunction(3.0F, 1.0F, 1.0F), Optional.of(context.getOrThrow(DamageTypeTags.BYPASSES_SHIELD)), Optional.of(SoundEvents.SHIELD_BLOCK), Optional.of(SoundEvents.SHIELD_BREAK)))));
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> TAB = CREATIVE_MODE_TABS.register("tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.arachnemod"))
