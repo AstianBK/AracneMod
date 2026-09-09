@@ -74,7 +74,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 public class NRegistry {
-    public static final ToolMaterial EXO_CHITIN =new ToolMaterial(BlockTags.INCORRECT_FOR_WOODEN_TOOL, 59, 2.0F, 0.0F, 15, ItemTags.WOODEN_TOOL_MATERIALS);
+    public static final ToolMaterial EXO_CHITIN =new ToolMaterial(BlockTags.INCORRECT_FOR_WOODEN_TOOL, 80, 1.0F, 0.0F, 0, ItemTags.WOODEN_TOOL_MATERIALS);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPE = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE,AracneMod.MODID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, AracneMod.MODID);
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, AracneMod.MODID);
