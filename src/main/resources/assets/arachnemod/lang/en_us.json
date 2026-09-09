@@ -85,7 +85,8 @@
   "item.arachnemod.sealing_crystal_item.tooltip": "§7§oCapable of sealing power within it",
   "item.arachnemod.weaver_cocoon.tooltip": "§oTear it open to obtain a reward!",
   "item.arachnemod.needle_helmet.tooltip": "§oRamming into enemies at high speeds deals damage and heals you",
-
+  "item.arachnemod.reaver_gauntlet.tooltip": "",
+  "item.arachnemod.scythe_scissor.tooltip" : "",
   "sounds.arachnemod.needle_loop":"VoidNeedle Flapping Wings",
 
   "sounds.arachnemod.veil_crystal_shimmer":"Veil Crystal Shimmering",

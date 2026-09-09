@@ -216,22 +216,26 @@ public class Events {
     public static void spawnEvent(RegisterSpawnPlacementsEvent event) {
         event.register(NRegistry.VOID_HOPPER.get(),
                 SpawnPlacementTypes.ON_GROUND,
-                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Heightmap.Types.WORLD_SURFACE_WG,
                 Mob::checkMobSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
         event.register(NRegistry.VOID_VEILMOTH.get(),
                 SpawnPlacementTypes.NO_RESTRICTIONS,
-                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Heightmap.Types.WORLD_SURFACE_WG,
                 Mob::checkMobSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
         event.register(NRegistry.VOID_BEETLE.get(),
                 SpawnPlacementTypes.ON_GROUND,
-                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Heightmap.Types.WORLD_SURFACE_WG,
                 Mob::checkMobSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.REPLACE);
-
+        event.register(NRegistry.VOID_GRUB.get(),
+                SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.WORLD_SURFACE_WG,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
         event.register(NRegistry.VOID_NEEDLE.get(),
                 SpawnPlacementTypes.NO_RESTRICTIONS,
@@ -247,7 +251,7 @@ public class Events {
 
         event.register(NRegistry.VOID_SCYTHE.get(),
                 SpawnPlacementTypes.ON_GROUND,
-                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Heightmap.Types.WORLD_SURFACE_WG,
                 Mob::checkMobSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
@@ -271,6 +275,10 @@ public class Events {
             event.getToolTip().add(Component.translatable("item.arachnemod.weaver_cocoon.tooltip"));
         }else if (event.getItemStack().is(NRegistry.ENTER_DIMENSION_ITEM)){
             event.getToolTip().add(Component.translatable("item.arachnemod.enter_dimension.tooltip"));
+        }else if (event.getItemStack().is(NRegistry.REAVER_GAUNTLET)){
+            event.getToolTip().add(Component.translatable("item.arachnemod.reaver_gauntlet.tooltip"));
+        }else if (event.getItemStack().is(NRegistry.SCYTHE_SCISSORS)){
+            event.getToolTip().add(Component.translatable("item.arachnemod.scythe_scissor.tooltip"));
         }
     }
     @SubscribeEvent

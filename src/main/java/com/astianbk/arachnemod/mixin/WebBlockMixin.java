@@ -21,7 +21,6 @@ public abstract class WebBlockMixin {
     public void entityInsideMixin(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, boolean isPrecise, CallbackInfo ci){
         if (entity instanceof Player player){
             ArachneAttachment.get(player).ifPresent(arachneAttachment -> {
-                AracneMod.LOGGER.info("inside");
                 if (arachneAttachment.blessingIsActive(BlessingData.BlessingType.ARACHNE_MOVE)){
                     ci.cancel();
                 }

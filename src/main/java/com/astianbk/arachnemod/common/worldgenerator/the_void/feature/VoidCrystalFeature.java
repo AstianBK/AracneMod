@@ -41,7 +41,7 @@ public class VoidCrystalFeature extends Feature<VoidCrystalFeatureConfiguration>
         if (random.nextFloat() < 0.6F){
             BlockState crystal = NRegistry.VEIL_CRYSTAL_BLOCK.get().defaultBlockState();
             level.setBlock(pos,crystal,3);
-        }if (random.nextFloat() < 0.2F){
+        }else if (random.nextFloat() < 0.2F){
             BlockState crystal = NRegistry.LARGE_VEIL_CRYSTAL_BLOCK.get().defaultBlockState();
             level.setBlock(pos, crystal.setValue(LargeTallVeilCrystalBlock.THICKNESS, SpeleothemThickness.BASE),3);
 
