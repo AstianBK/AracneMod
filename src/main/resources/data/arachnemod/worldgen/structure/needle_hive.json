@@ -1,7 +1,7 @@
 {
   "type": "arachnemod:needle_hive",
   "biomes": [
-    "arachnemod:pilar"
+    "arachnemod:chasm"
   ],
   "spawn_overrides": {
     "monster": {

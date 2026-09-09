@@ -29,13 +29,17 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.ai.util.GoalUtils;
+import net.minecraft.world.entity.ai.util.RandomPos;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -73,11 +77,26 @@ public class ScarabEntity extends PathfinderMob {
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.targetSelector.addGoal(1,new NearestAttackableTargetGoal<>(this, Player.class,true){
+        this.goalSelector.addGoal(6,new RandomStrollGoal(this,1.0F){
             @Override
-            public boolean canUse() {
-                return super.canUse();
+            protected @Nullable Vec3 getPosition() {
+                return getNoLightPos(ScarabEntity.this,10, 7);
             }
+
+            public static @Nullable Vec3 getNoLightPos(PathfinderMob mob, int horizontalDist, int verticalDist) {
+                boolean restrict = GoalUtils.mobRestricted(mob, (double)horizontalDist);
+                return RandomPos.generateRandomPos(mob, () -> {
+                    BlockPos direction = RandomPos.generateRandomDirection(mob.getRandom(), horizontalDist, verticalDist);
+                    return generateRandomPosTowardDirection(mob, horizontalDist, restrict, direction);
+                });
+            }
+
+            private static @Nullable BlockPos generateRandomPosTowardDirection(PathfinderMob mob, int horizontalDist, boolean restrict, BlockPos direction) {
+                BlockPos pos = RandomPos.generateRandomPosTowardDirection(mob, (double)horizontalDist, mob.getRandom(), direction);
+                return !GoalUtils.isOutsideLimits(pos, mob) && !GoalUtils.isRestricted(restrict, mob, pos) && !GoalUtils.isNotStable(mob.getNavigation(), pos) && !GoalUtils.hasMalus(mob, pos) && mob.level().getBrightness(LightLayer.BLOCK,pos) <= 0 ? pos : null;
+            }
+        });
+        this.targetSelector.addGoal(1,new NearestAttackableTargetGoal<>(this, Player.class,true){
             protected void findTarget() {
                 ServerLevel level = getServerLevel(this.mob);
                 if (this.targetType != Player.class) {

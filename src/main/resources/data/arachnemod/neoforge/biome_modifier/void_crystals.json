@@ -1,6 +1,6 @@
 {
   "type": "neoforge:add_features",
-  "biomes": "arachnemod:pilar",
+  "biomes": "arachnemod:chasm",
   "features": "arachnemod:void_crystal",
   "step": "vegetal_decoration"
 }

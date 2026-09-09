@@ -103,7 +103,7 @@ public class ArachneAttachment {
     public boolean runningWithHelmet = false;
     public Map<Entity, Long> recentRunningHelmetEnemies = new HashMap<>();
     public final float CONE_ANGLE_SCISSORS = 60.0F;
-    public final double RANGE_SCISSORS = 3.5D;
+    public final double RANGE_SCISSORS = 5.5D;
     public final Map<QuestsType,String[]> DIALOGS_FOR_TYPE = Map.of(QuestsType.HUNT,new String[]{"arachnemod:arachne_quest_kill_complete1","arachnemod:arachne_quest_kill_complete2","arachnemod:arachne_quest_kill_complete3","arachnemod:arachne_quest_kill_complete4","arachnemod:arachne_quest_kill_complete5","arachnemod:arachne_quest_kill_complete6"},
             QuestsType.COLLECT,new String[]{"arachnemod:arachne_quest_collect_complete1","arachnemod:arachne_quest_collect_complete2","arachnemod:arachne_quest_collect_complete3","arachnemod:arachne_quest_collect_complete4","arachnemod:arachne_quest_collect_complete5","arachnemod:arachne_quest_collect_complete6"});
     public String getTimeInMinuteAndSeconds(){
@@ -326,7 +326,7 @@ public class ArachneAttachment {
         return flag;
     }
     private void runningHelmetAttack(Player player) {
-        double range = 2.5D;
+        double range = 0.5D;
         float coneAngle = 35.0F;
 
         Vec3 look = player.getLookAngle();
