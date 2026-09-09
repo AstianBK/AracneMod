@@ -158,9 +158,6 @@ public class VoidNeedleEntity extends PathfinderMob {
         }
 
         if (this.level().isClientSide()){
-            this.level().addParticle(ParticleTypes.MYCELIUM, this.getX(), this.getY() , this.getZ(), 0.0, 0.0, 0.0);
-            this.level().addParticle(ParticleTypes.MYCELIUM, this.getX() , this.getY(), this.getZ() , 0.0, 0.0, 0.0);
-
             this.setupAnimation();
         }
     }
