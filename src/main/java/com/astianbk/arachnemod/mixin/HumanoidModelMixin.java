@@ -23,16 +23,17 @@ public class HumanoidModelMixin {
 
     @Inject(method = "poseRightArm",at = @At(value = "HEAD"),cancellable = true)
     private void poseMix(HumanoidRenderState state,CallbackInfo callbackInfo){
-        if (state.rightArmPose == HumanoidModel.ArmPose.BLOCK && state.rightHandItemStack.is(NRegistry.REAVER_GAUNTLET)){
-            callbackInfo.cancel();
-            rightArm.xRot = rightArm.xRot * 0.5F - 1.5424779F + Mth.clamp(this.head.xRot, (float) (-Math.PI * 4.0 / 9.0), 0.43633232F);
-            rightArm.yRot = ( -60.0F ) * (float) (Math.PI / 180.0) + Mth.clamp(this.head.yRot, (float) (-Math.PI / 6), (float) (Math.PI / 6));
-
-            AracneMod.LOGGER.info("poseMix");
-            if (!state.getRenderData(AracneModClient.IS_FIRST_PERSON)){
-            }else {
-                AracneMod.LOGGER.info("is_first_person");
+        if (state.rightArmPose == HumanoidModel.ArmPose.BLOCK){
+            if ((state.rightHandItemStack.is(NRegistry.REAVER_GAUNTLET))){
+                callbackInfo.cancel();
+                rightArm.xRot = rightArm.xRot * 0.5F - 1.5424779F + Mth.clamp(this.head.xRot, (float) (-Math.PI * 4.0 / 9.0), 0.43633232F);
+                rightArm.yRot = ( -60.0F ) * (float) (Math.PI / 180.0) + Mth.clamp(this.head.yRot, (float) (-Math.PI / 6), (float) (Math.PI / 6));
+            }else if ((state.rightHandItemStack.is(NRegistry.SCYTHE_SCISSORS))){
+                callbackInfo.cancel();
+                this.rightArm.xRot = this.rightArm.xRot * 0.5F - (float) (Math.PI / 10);
+                this.rightArm.yRot = 0.0F;
             }
+
         }
     }
 }

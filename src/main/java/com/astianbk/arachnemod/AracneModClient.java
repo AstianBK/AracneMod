@@ -11,6 +11,7 @@ import com.astianbk.arachnemod.client.renderer.item.ScytheScissorsClientExtensio
 import com.astianbk.arachnemod.client.renderer.item.ScytheScissorsItemModel;
 import com.astianbk.arachnemod.client.renderer.item.ScytheScissorsRenderer;
 import com.astianbk.arachnemod.common.items.VoidKnightArmorItem;
+import com.astianbk.arachnemod.common.items.model_properties.UseScytherScissor;
 import com.astianbk.arachnemod.common.registry.NRegistry;
 import com.astianbk.arachnemod.server.cap.ArachneAttachment;
 import com.astianbk.arachnemod.server.network.PacketSyncLeftClick;
@@ -89,14 +90,19 @@ public class AracneModClient {
         event.register(Identifier.fromNamespaceAndPath(AracneMod.MODID, "scythe_scissors_model"),  ScytheScissorsItemModel.Unbaked.MAP_CODEC);
     }
     @SubscribeEvent
+    public static void registerItemModel(RegisterConditionalItemModelPropertyEvent event){
+        event.register(Identifier.fromNamespaceAndPath(AracneMod.MODID, "attack"), UseScytherScissor.MAP_CODEC);
+    }
+    @SubscribeEvent
     public static void sky(RenderLevelStageEvent.AfterSky event){
         if (Minecraft.getInstance().level.getData(NRegistry.THE_VOID_ATTACHMENT.get()).flash){
             Minecraft.getInstance().levelRenderer.skyRenderer.renderEndFlash(event.getPoseStack(),Minecraft.getInstance().level.getData(NRegistry.THE_VOID_ATTACHMENT.get()).getIntensityFlash(Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaTicks()),0,0);
         }
     }
     @SubscribeEvent
-    public static void onLeftClick(InputEvent.InteractionKeyMappingTriggered event) {
-        if (!event.isAttack())return;
+    public static void onClick(InputEvent.MouseButton.Pre event){
+        if (Minecraft.getInstance().gui.screen()!=null)return;
+        if (event.getButton() == 1)return;
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) {
             return;
@@ -104,54 +110,13 @@ public class AracneModClient {
 
         ItemStack stack = player.getMainHandItem();
 
-        if (!stack.is(NRegistry.POWER_FRAGMENT.get())) {
+        if (!stack.is(NRegistry.SCYTHE_SCISSORS.get())) {
             return;
         }
-//        ClientPacketDistributor.sendToServer(new PacketSyncLeftClick(player.getId()));
-    }
-    @SubscribeEvent
-    public static void onClick(InputEvent.MouseButton.Post event){
-        if (event.getAction()==0){
-//            if (event.getButton() == 1){
-//                offset[index] += 0.1F;
-//            }else {
-//                index = (index+1) %3;
-//            }
-        }
-        AracneMod.LOGGER.info("offset {} , index {}",offset,index);
-        if (event.getButton() == 1)return;
+        event.setCanceled(true);
         if (event.getAction() == 0){
-            LocalPlayer player = Minecraft.getInstance().player;
-            if (player == null) {
-                return;
-            }
-
-            ItemStack stack = player.getMainHandItem();
-
-            if (!stack.is(NRegistry.SCYTHE_SCISSORS.get()) || stack != player.getUseItem()) {
-                return;
-            }
             ClientPacketDistributor.sendToServer(new PacketSyncLeftClick(player.getId()));
-
         }
-    }
-    @SubscribeEvent
-    public static void onKey(InputEvent.Key event){
-//        if (event.getAction() == 0){
-//            AracneMod.LOGGER.info("click");
-//            LocalPlayer player = Minecraft.getInstance().player;
-//            if (player == null) {
-//                return;
-//            }
-//
-//            ItemStack stack = player.getMainHandItem();
-//
-//            if (!stack.is(NRegistry.POWER_FRAGMENT.get())) {
-//                return;
-//            }
-//            ClientPacketDistributor.sendToServer(new PacketSyncLeftClick(player.getId()));
-//
-//        }
     }
     @SubscribeEvent
     public static void registerLayer(EntityRenderersEvent.AddLayers event) {
