@@ -5,15 +5,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.AnimationState;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
@@ -25,9 +23,11 @@ import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.util.AirAndWaterRandomPos;
 import net.minecraft.world.entity.ai.util.HoverRandomPos;
+import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.bee.Bee;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathType;
@@ -37,11 +37,11 @@ import org.jspecify.annotations.Nullable;
 import java.util.EnumSet;
 import java.util.Objects;
 
-public class VoidVeilmothEntity extends PathfinderMob {
+public class VoidVeilmothEntity extends Animal {
     public int idleResetTimer = 0;
     public AnimationState idle = new AnimationState();
 
-    public VoidVeilmothEntity(EntityType<? extends PathfinderMob> type, Level level) {
+    public VoidVeilmothEntity(EntityType<? extends Animal> type, Level level) {
         super(type, level);
         this.moveControl = new FlyingMoveControl(this, 20, true);
         this.setPathfindingMalus(PathType.FIRE_IN_NEIGHBOR, -1.0F);
@@ -97,9 +97,19 @@ public class VoidVeilmothEntity extends PathfinderMob {
     }
 
     @Override
+    public boolean isFood(ItemStack itemStack) {
+        return false;
+    }
+
+    @Override
     public void handleEntityEvent(byte id) {
 
         super.handleEntityEvent(id);
+    }
+
+    @Override
+    public @Nullable AgeableMob getBreedOffspring(ServerLevel serverLevel, AgeableMob ageableMob) {
+        return null;
     }
 
     @Override

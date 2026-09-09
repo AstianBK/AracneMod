@@ -58,7 +58,6 @@ public class FleeBlockLightGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-
         if (this.level.getBrightness(LightLayer.BLOCK, this.mob.blockPosition()) <= 0) {
             return false;
         }
@@ -73,7 +72,6 @@ public class FleeBlockLightGoal extends Goal {
 
     @Nullable
     protected Vec3 getDarkPos() {
-
         RandomSource random = this.mob.getRandom();
         BlockPos origin = this.mob.blockPosition();
 
