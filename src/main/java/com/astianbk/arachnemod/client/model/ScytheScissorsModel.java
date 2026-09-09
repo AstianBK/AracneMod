@@ -5,6 +5,7 @@ package com.astianbk.arachnemod.client.model;// Made with Blockbench 5.1.5
 
 import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.client.anim.ItemsAnim;
+import com.astianbk.arachnemod.client.renderer.item.ScytheScissorsItemModel;
 import net.minecraft.client.animation.KeyframeAnimation;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -15,6 +16,7 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
+import org.joml.Matrix4fc;
 import org.jspecify.annotations.Nullable;
 
 public class ScytheScissorsModel extends Model<ScytheScissorsModel.State> {
@@ -143,7 +145,7 @@ public class ScytheScissorsModel extends Model<ScytheScissorsModel.State> {
 
 		return 0.5F * (2.0F * p1 + (-p0 + p2) * t + (2.0F * p0 - 5.0F * p1 + 4.0F * p2 - p3) * t2 + (-p0 + 3.0F * p1 - 3.0F * p2 + p3) * t3);
 	}
-	public record State(float ticks, boolean attacking, ItemDisplayContext ctxDisplay) {
+	public record State(float ticks, boolean attacking, ItemDisplayContext ctxDisplay, Matrix4fc transformation) {
         public float ticks() {
 			return this.ticks;
 		}

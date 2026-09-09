@@ -13,19 +13,19 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 
 import java.util.function.IntUnaryOperator;
 import java.util.function.UnaryOperator;
 
-public class ScytheScissorsItem extends Item {
+public class ScytheScissorsItem extends ShieldItem {
     public ScytheScissorsItem(Properties properties) {
         super(properties);
     }
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
-        player.startUsingItem(hand);
         return InteractionResult.PASS;
     }
 

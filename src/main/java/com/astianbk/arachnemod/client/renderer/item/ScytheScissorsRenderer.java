@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 public final class ScytheScissorsRenderer implements SpecialModelRenderer<ScytheScissorsModel.State> {
     public ScytheScissorsModel model;
 
-    public static final ScytheScissorsModel.State INSTANCE = new ScytheScissorsModel.State(0,true, ItemDisplayContext.FIRST_PERSON_LEFT_HAND);
+    public static final ScytheScissorsModel.State INSTANCE = new ScytheScissorsModel.State(0,true, ItemDisplayContext.FIRST_PERSON_LEFT_HAND,null);
     public ScytheScissorsRenderer(ScytheScissorsModel model){
         this.model = model;
     }
@@ -27,22 +27,7 @@ public final class ScytheScissorsRenderer implements SpecialModelRenderer<Scythe
     public void submit(ScytheScissorsModel.State itemStack, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, int i1, boolean b, int i2) {
         poseStack.pushPose();
 
-//        poseStack.scale(2,2,2);
-
-
-
-        if (itemStack.ctxDisplay().firstPerson()){
-            poseStack.translate(0.3,0.75,0.4);
-            poseStack.mulPose(Axis.YN.rotation(0.516810F));
-            poseStack.mulPose(Axis.ZP.rotation(2.0000002F));
-            poseStack.mulPose(Axis.XP.rotation(1.916809F));
-        }else {
-            poseStack.mulPose(Axis.YN.rotationDegrees(-130));
-            poseStack.mulPose(Axis.XP.rotationDegrees(-35));
-            poseStack.translate(-0.9,0.3,0.3);
-            poseStack.mulPose(Axis.ZP.rotationDegrees(15));
-        }
-
+        poseStack.translate(0.4, 0.0, -0.1);
         model.setupAnim(itemStack);
         submitNodeCollector.submitModel(model, itemStack,poseStack, RenderTypes.entityCutout(Identifier.fromNamespaceAndPath(AracneMod.MODID,"textures/entity/void_scythe/voidscythe.png")),i,i1,i2,null);
 
@@ -50,8 +35,9 @@ public final class ScytheScissorsRenderer implements SpecialModelRenderer<Scythe
     }
 
     @Override
-    public void getExtents(Consumer<Vector3fc> consumer) {
-
+    public void getExtents(Consumer<Vector3fc> output) {
+        PoseStack poseStack = new PoseStack();
+        this.model.root().getExtentsForGui(poseStack, output);
     }
 
     @Override

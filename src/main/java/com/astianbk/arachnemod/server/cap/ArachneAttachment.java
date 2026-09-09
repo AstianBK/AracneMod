@@ -309,7 +309,7 @@ public class ArachneAttachment {
                     float yaw = (float) (player.getYRot()/180.0F * Math.PI - Math.PI/2.0f);
                     float sin = Mth.sin(yaw);
                     float cos = Mth.cos(yaw);
-                    player.setDeltaMovement(new Vec3(-cos*0.5f,0.2F,-sin*0.5F));
+                    player.setDeltaMovement(new Vec3(-cos*0.85f,0.2F,-sin*0.85F));
                 }
 
             }
