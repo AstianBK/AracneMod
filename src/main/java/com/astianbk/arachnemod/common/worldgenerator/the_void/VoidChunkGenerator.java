@@ -84,10 +84,6 @@ public class VoidChunkGenerator extends ChunkGenerator {
         return 252;
     }
 
-    @Override
-    public int getSpawnHeight(LevelHeightAccessor heightAccessor) {
-        return 250;
-    }
 
     @Override
     public NoiseColumn getBaseColumn(int x, int z, LevelHeightAccessor level, RandomState randomState) {
