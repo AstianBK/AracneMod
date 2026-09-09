@@ -83,11 +83,10 @@ public class VoidVeilmothEntity extends PathfinderMob {
     @Override
     public void tick() {
         super.tick();
-
-
         if (this.level().isClientSide()){
             this.setupAnimation();
         }
+
     }
     public void setupAnimation(){
         if (this.idleResetTimer--<=0){
