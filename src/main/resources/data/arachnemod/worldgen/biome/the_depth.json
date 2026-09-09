@@ -34,9 +34,21 @@
     "axolotls": [],
     "creature": [
       {
+        "type": "arachnemod:void_grub",
+        "weight": 35,
+        "minCount": 1,
+        "maxCount": 2
+      },
+      {
+        "type": "arachnemod:void_beetle",
+        "weight": 35,
+        "minCount": 1,
+        "maxCount": 2
+      },
+      {
         "type": "arachnemod:void_scythe",
-        "weight": 20,
-        "minCount": 0,
+        "weight": 2,
+        "minCount": 1,
         "maxCount": 1
       }
     ],

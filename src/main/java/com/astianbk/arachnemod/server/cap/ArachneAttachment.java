@@ -185,19 +185,20 @@ public class ArachneAttachment {
                     Events.teleportToTheDepth(player.position(),player.level(),player);
                 }
             }
-        }else if (player.level().dimension() == NRegistry.THE_DEPTH){
-            if (!player.level().isClientSide()){
-                if (player.getY()>=250){
-                    Level level = player.level();
-                    ServerLevel serverLevel = ((ServerLevel)level).getServer().getLevel(ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath("arachnemod", "void")));
-                    player.teleport(new TeleportTransition(serverLevel,new Vec3(player.getX(),2,player.getZ()), Vec3.ZERO,0.0F,0.0F,(entity)->{
-                        if (entity instanceof ServerPlayer serverPlayer){
-                            serverLevel.setBlock(new BlockPos((int) player.getX(),0, (int) player.getZ()), Blocks.DEEPSLATE.defaultBlockState(),3);
-                            ArachneAttachment.get(serverPlayer).ifPresent(arachneAttachment -> {
+            if (player.level().dimension() == NRegistry.THE_DEPTH){
+                if (!player.level().isClientSide()){
+                    if (player.getY()>=250){
+                        Level level = player.level();
+                        ServerLevel serverLevel = ((ServerLevel)level).getServer().getLevel(ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath("arachnemod", "void")));
+                        player.teleport(new TeleportTransition(serverLevel,new Vec3(player.getX(),2,player.getZ()), Vec3.ZERO,0.0F,0.0F,(entity)->{
+                            if (entity instanceof ServerPlayer serverPlayer){
+                                serverLevel.setBlock(new BlockPos((int) player.getX(),0, (int) player.getZ()), Blocks.DEEPSLATE.defaultBlockState(),3);
+                                ArachneAttachment.get(serverPlayer).ifPresent(arachneAttachment -> {
 
-                            });
-                        }
-                    }));
+                                });
+                            }
+                        }));
+                    }
                 }
             }
         }else {
@@ -253,6 +254,7 @@ public class ArachneAttachment {
             }
 
         }
+
         if (this.scissorAttack){
             if (this.scissorAttackTime>0){
                 this.scissorAttackTime--;

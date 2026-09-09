@@ -160,6 +160,11 @@ public class TheDepthsChunkGenerator extends ChunkGenerator {
     }
 
     @Override
+    public int getSpawnHeight(LevelHeightAccessor heightAccessor) {
+        return 1;
+    }
+
+    @Override
     public int getSeaLevel() {
         return 0;
     }
