@@ -147,10 +147,10 @@
               "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:netherite_scrap"
+          "name": "arachnemod:raw_osmium"
         }
       ],
-      "rolls": 1
+      "rolls": 3
     }
   ],
   "random_sequence": "minecraft:chests/pillager_outpost"
