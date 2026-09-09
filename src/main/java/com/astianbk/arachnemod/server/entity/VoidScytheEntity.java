@@ -2,6 +2,7 @@ package com.astianbk.arachnemod.server.entity;
 
 import com.astianbk.arachnemod.AracneMod;
 import com.astianbk.arachnemod.common.registry.NRegistry;
+import com.astianbk.arachnemod.server.goal.FleeBlockLightGoal;
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
@@ -99,6 +100,8 @@ public class VoidScytheEntity extends PathfinderMob {
                 return VoidScytheEntity.this.getPhase()!=Phase.JUMP && (VoidScytheEntity.this.getPhase() == Phase.COUNTER || VoidScytheEntity.this.getPhase() == Phase.AROUND || VoidScytheEntity.this.getPhase() == Phase.ATTACK_1) && super.canUse();
             }
         });
+        this.goalSelector.addGoal(1,new FleeBlockLightGoal(this,2.0F));
+
     }
 
 
