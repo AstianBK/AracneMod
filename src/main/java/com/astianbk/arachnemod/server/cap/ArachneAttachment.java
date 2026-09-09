@@ -19,6 +19,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -260,34 +261,41 @@ public class ArachneAttachment {
                 this.scissorAttackTime--;
                 if (this.scissorAttackTime == 6){
                     if (!player.level().isClientSide()){
-                        player.level().getEntities(player, player.getBoundingBox().inflate(RANGE_SCISSORS),
+                       boolean isHurtAnyEntity= false;
+                        for (Entity living :  player.level().getEntities(player, player.getBoundingBox().inflate(RANGE_SCISSORS),
                                 living -> {
+                                    if (!(living instanceof LivingEntity)) {
+                                        return false;
+                                    }
+                                    if (player.distanceToSqr(living) < 1F){
+                                        return true;
+                                    }
 
-                            if (!(living instanceof LivingEntity)) {
-                                return false;
+                                    double dx = living.getX() - player.getX();
+                                    double dz = living.getZ() - player.getZ();
+
+                                    double distanceSqr = dx * dx + dz * dz;
+
+                                    if (distanceSqr < 1.0E-7) {
+                                        return true;
+                                    }
+
+                                    double angleToEntity = Math.toDegrees(Math.atan2(dz, dx)) - 90.0D;
+
+                                    double angleDifference = Mth.wrapDegrees((float)(angleToEntity - player.getYRot()));
+
+                                    return Math.abs(angleDifference) <= CONE_ANGLE_SCISSORS;
+                                })){
+                            if (living.hurtServer((ServerLevel)player.level(),player.damageSources().generic(),15.0F)){
+                                isHurtAnyEntity = true;
                             }
-                            if (player.distanceToSqr(living) < 1F){
-                                return true;
-                            }
-
-                            double dx = living.getX() - player.getX();
-                            double dz = living.getZ() - player.getZ();
-
-                            double distanceSqr = dx * dx + dz * dz;
-
-                            if (distanceSqr < 1.0E-7) {
-                                return true;
-                            }
-
-                            double angleToEntity = Math.toDegrees(Math.atan2(dz, dx)) - 90.0D;
-
-                            double angleDifference = Mth.wrapDegrees((float)(angleToEntity - player.getYRot()));
-
-                            return Math.abs(angleDifference) <= CONE_ANGLE_SCISSORS;
                         }
-                        ).forEach(living ->
-                                living.hurtServer((ServerLevel)player.level(),player.damageSources().generic(),10.0F )
-                        );
+                        if (isHurtAnyEntity){
+                            if (player.getMainHandItem().has(DataComponents.DAMAGE)){
+                                int damage = player.getMainHandItem().getDamageValue();
+                                player.getMainHandItem().set(DataComponents.DAMAGE,Math.max(0,damage-5));
+                            }
+                        }
                         player.level().playSound(null,player, SoundEvents.UI_STONECUTTER_TAKE_RESULT,SoundSource.PLAYERS,1.0F,1.0F);
                     }
                 }
