@@ -275,6 +275,8 @@ public class Events {
             event.getToolTip().add(Component.translatable("item.arachnemod.weaver_cocoon.tooltip"));
         }else if (event.getItemStack().is(NRegistry.ENTER_DIMENSION_ITEM)){
             event.getToolTip().add(Component.translatable("item.arachnemod.enter_dimension.tooltip"));
+        }else if (event.getItemStack().is(NRegistry.NEEDLE_HELMET)){
+            event.getToolTip().add(Component.translatable("item.arachnemod.needle_helmet.tooltip"));
         }else if (event.getItemStack().is(NRegistry.REAVER_GAUNTLET)){
             event.getToolTip().add(Component.translatable("item.arachnemod.reaver_gauntlet.tooltip"));
         }else if (event.getItemStack().is(NRegistry.SCYTHE_SCISSORS)){

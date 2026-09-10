@@ -17,7 +17,7 @@ public class VoidMaterial implements ArmorMaterials {
     public static ResourceKey<EquipmentAsset> ASSET_OSMIUM = createId("osmium");
     public static ResourceKey<EquipmentAsset> ASSET_NEETLE_HELMET= createId("needle_helmet");
 
-    public static ArmorMaterial NEEDLE_HELMET = new ArmorMaterial(5, makeDefense(3, 6, 8, 3, 0), 2, SoundEvents.ARMOR_EQUIP_NETHERITE, 7.0F, 0.0F, ItemTags.REPAIRS_LEATHER_ARMOR,ASSET_NEETLE_HELMET);
+    public static ArmorMaterial NEEDLE_HELMET = new ArmorMaterial(5, makeDefense(3, 6, 8, 2, 0), 2, SoundEvents.ARMOR_EQUIP_LEATHER, 0.0F, 0.0F, ItemTags.REPAIRS_LEATHER_ARMOR,ASSET_NEETLE_HELMET);
     public static ArmorMaterial VOID = new ArmorMaterial(5, makeDefense(3, 6, 8, 3, 0), 2, SoundEvents.ARMOR_EQUIP_NETHERITE, 7.0F, 0.0F, ItemTags.REPAIRS_LEATHER_ARMOR,ASSET_VOID);
     public static ArmorMaterial OSMIUM = new ArmorMaterial(8, makeDefense(2, 2, 3, 2, 0), 20, SoundEvents.ARMOR_EQUIP_DIAMOND, 5.0F, 0.0F, ItemTags.REPAIRS_LEATHER_ARMOR,ASSET_OSMIUM);
 
