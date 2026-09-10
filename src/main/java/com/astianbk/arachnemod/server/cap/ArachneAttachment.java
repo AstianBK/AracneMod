@@ -305,9 +305,7 @@ public class ArachneAttachment {
                     for (float currentYaw = (float) (yaw-Math.toRadians(30.0F)); currentYaw < yaw+Math.toRadians(30.0F) ; currentYaw+=0.0872664626F){
                         float sin = Mth.sin(currentYaw);
                         float cos = Mth.cos(currentYaw);
-                        for (double dist = 0.0D ; dist <RANGE_SCISSORS; dist += 0.5F ){
-                            player.level().addParticle(ParticleTypes.SWEEP_ATTACK,player.getX() -cos * dist,player.getY() + 1.0F,player.getZ() -sin * dist,0.0F,0.0F,0.0F);
-                        }
+                        player.level().addParticle(ParticleTypes.SWEEP_ATTACK,player.getX() -cos * RANGE_SCISSORS,player.getY() + 1.0F,player.getZ() -sin * RANGE_SCISSORS,0.0F,0.0F,0.0F);
                     }
                 }
 

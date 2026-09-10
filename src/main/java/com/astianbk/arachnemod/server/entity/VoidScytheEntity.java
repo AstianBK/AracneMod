@@ -161,12 +161,12 @@ public class VoidScytheEntity extends PathfinderMob {
 
                         double vx = dx / horizontalDistance * speed;
                         double vz = dz / horizontalDistance * speed;
-
-
+                        
                         double ticks = horizontalDistance / speed;
                         ticks = Math.max(ticks, 1.0);
                         double vy = calculateVerticalVelocity(ticks);
                         this.setDeltaMovement(vx, vy, vz);
+                        this.playSound(SoundEvents.CHICKEN_DEATH_BABY.value(),10.0F,1.0F);
                     }
                     if (this.durationPhaseTimer > 10){
                         this.durationPhaseTimer = 0;
@@ -581,6 +581,7 @@ public class VoidScytheEntity extends PathfinderMob {
                 VoidScytheEntity.this.durationPhaseTimer = 0;
                 VoidScytheEntity.this.setPhaseAttack(PhaseAttack.ATTACK_2);
                 this.mob.level().broadcastEntityEvent(this.mob,(byte) 12);
+
             }
         }
 

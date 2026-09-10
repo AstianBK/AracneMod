@@ -281,6 +281,8 @@ public class Events {
             event.getToolTip().add(Component.translatable("item.arachnemod.reaver_gauntlet.tooltip"));
         }else if (event.getItemStack().is(NRegistry.SCYTHE_SCISSORS)){
             event.getToolTip().add(Component.translatable("item.arachnemod.scythe_scissor.tooltip"));
+        }else if (event.getItemStack().is(NRegistry.NEEDLE_HELMET)){
+            event.getToolTip().add(Component.translatable("item.arachnemod.reaver_gauntlet.tooltip"));
         }
     }
     @SubscribeEvent
