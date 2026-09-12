@@ -254,9 +254,6 @@ public class NRegistry {
                 output.accept(ARTHROPOD_EYE.get());
                 output.accept(WEAVER_COCOON.get());
                 output.accept(RAW_OSMIUM.get());
-                output.accept(NEEDLE_HELMET.get());
-                output.accept(REAVER_GAUNTLET.get());
-                output.accept(SCYTHE_SCISSORS.get());
                 output.accept(OSMIUM_INGOT.get());
                 output.accept(OSMIUM_HELMET.get());
                 output.accept(OSMIUM_CHESTPLATE.get());

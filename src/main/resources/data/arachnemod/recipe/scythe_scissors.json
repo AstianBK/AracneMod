@@ -9,7 +9,7 @@
   "key": {
     "=": "arachnemod:void_chitin",
     "#": "arachnemod:chitin_spike",
-    "/": "minecraft:bone"
+    "/": "minecraft:barrier"
   },
   "result": {
     "id": "arachnemod:scythe_scissors"
