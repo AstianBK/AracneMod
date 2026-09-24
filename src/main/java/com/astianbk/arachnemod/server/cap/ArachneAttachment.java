@@ -292,13 +292,13 @@ public class ArachneAttachment {
                         }
                         if (isHurtAnyEntity){
                             if (player.getMainHandItem().has(DataComponents.DAMAGE)){
-                                int damage = player.getMainHandItem().getDamageValue();
-                                player.getMainHandItem().set(DataComponents.DAMAGE,Math.max(0,damage-5));
+                                player.getMainHandItem().hurtAndBreak(5,((ServerLevel)player.level()),player,(i)->{});
                             }
                         }
                         player.level().playSound(null,player, SoundEvents.UI_STONECUTTER_TAKE_RESULT,SoundSource.PLAYERS,1.0F,1.0F);
                     }
                 }
+
                 if (this.scissorAttackTime == 10 && player.level().isClientSide()){
                     float yaw = (float) (player.getYRot()/180.0F * Math.PI - Math.PI/2.0f);
 
@@ -394,11 +394,17 @@ public class ArachneAttachment {
                 return;
             }
 
-            living.hurtServer((ServerLevel) player.level(), player.damageSources().playerAttack(player), damage);
-
+            if (living.hurtServer((ServerLevel) player.level(), player.damageSources().playerAttack(player), damage)){
+                if (player.getItemBySlot(EquipmentSlot.HEAD).has(DataComponents.DAMAGE)){
+                    player.getItemBySlot(EquipmentSlot.HEAD).hurtAndBreak(5,((ServerLevel)living.level()),player,(i)->{});
+                }
+                living.playSound(SoundEvents.GENERIC_DRINK.value());
+                player.heal(damage/2.0F);
+            }
             this.recentRunningHelmetEnemies.put(entity, player.level().getGameTime());
         });
     }
+
     private void tickRunningHelmet(Player player) {
         boolean active = isRunningWithHelmet(player);
         if (active) {
@@ -457,7 +463,6 @@ public class ArachneAttachment {
     public void setCurrentReputation(ServerPlayer serverPlayer,int reputation){
         currentReputation= Math.min(100,reputation);
     }
-
 
 
     public static float getSpiderCrosshairAmount(Player player, double maxDistance) {
@@ -545,6 +550,7 @@ public class ArachneAttachment {
     public void setTeleportBackPos(BlockPos pos){
         this.teleportBack = pos;
     }
+
     public float getAnimDarkness (float partialTick){
         return (Mth.lerp(partialTick,(float)prevTimeDarkness,(float)timeDarkness)) / 100.0F;
     }
