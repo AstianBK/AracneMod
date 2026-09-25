@@ -453,6 +453,7 @@ public class ArachneAttachment {
                 Item item = BuiltInRegistries.ITEM.getValue(Identifier.parse(currentQuest.getTargetId()));
                 serverPlayer.getInventory().clearOrCountMatchingItems((itemStack -> itemStack.is(item)),currentQuest.getMaxProgress(),serverPlayer.inventoryMenu.getCraftSlots());
             }
+            serverPlayer.getInventory().placeItemBackInInventory(new ItemStack(NRegistry.COCOONCHEST_ITEM.get()));
             playDialog(Identifier.parse(DIALOGS_FOR_TYPE.get(currentQuest.getType())[serverPlayer.getRandom().nextInt(0,6)]));
             setCurrentReputation(serverPlayer,currentReputation + currentQuest.getReputation());
             this.currentQuest = null;
