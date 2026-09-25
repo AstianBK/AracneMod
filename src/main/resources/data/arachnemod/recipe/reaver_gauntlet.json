@@ -8,7 +8,7 @@
   ],
   "key": {
     "#": "arachnemod:void_chitin",
-    "/": "minecraft:barrier"
+    "/": "minecraft:bone"
   },
   "result": {
     "id": "arachnemod:reaver_gauntlet"
