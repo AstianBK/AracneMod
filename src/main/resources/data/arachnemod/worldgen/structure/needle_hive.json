@@ -1,0 +1,20 @@
+{
+  "type": "arachnemod:needle_hive",
+  "biomes": [
+    "arachnemod:chasm"
+  ],
+  "spawn_overrides": {
+    "monster": {
+      "bounding_box": "full",
+      "spawns": [
+        {
+          "type": "arachnemod:void_needle",
+          "maxCount": 3,
+          "minCount": 1,
+          "weight": 1
+        }
+      ]
+    }
+  },
+  "step": "surface_structures"
+}

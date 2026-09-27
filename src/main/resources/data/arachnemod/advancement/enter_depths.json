@@ -1,0 +1,30 @@
+{
+  "parent": "arachnemod:enter_void",
+  "criteria": {
+    "enterdepths": {
+      "trigger": "minecraft:changed_dimension",
+      "conditions": {
+        "from": "minecraft:overworld",
+        "to": "arachnemod:the_depths"
+      }
+    }
+  },
+  "display": {
+    "description": "Where Darkness is Born",
+    "icon": {
+      "id": "arachnemod:void_puddle"
+    },
+    "title": "Fall into The Depths",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "requirements": [
+    [
+      "enterdepths"
+    ]
+  ],
+  "rewards": {
+    "experience": 100
+  }
+}

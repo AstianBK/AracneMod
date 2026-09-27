@@ -1,0 +1,9 @@
+{
+  "type" : "HUNT",
+  "title" : "Slay 3 Void Hexers",
+  "entityTypeId" : "arachnemod:void_hopper",
+  "tier" : 0,
+  "toHuntEntities" : 3,
+  "reputation" : 1,
+  "xp" : 50
+}

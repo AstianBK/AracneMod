@@ -1,0 +1,5 @@
+{
+  "type" : "EVENT",
+  "idEvent" : "arachnemod:first_quest_kill",
+  "idDialog" : "arachnemod:arachne_quest_kill"
+}

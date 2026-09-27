@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "arachnemod:osmium"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "arachnemod:osmium"
+      }
+    ]
+  }
+}

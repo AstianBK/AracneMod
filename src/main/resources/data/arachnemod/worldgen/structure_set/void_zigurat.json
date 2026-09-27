@@ -1,0 +1,15 @@
+{
+  "structures": [
+    {
+      "structure": "arachnemod:void_zigurat",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "arachnemod:void_placement",
+    "salt": 123456789,
+    "frequency_reduction_method": "default",
+    "frequency": 0.15,
+    "cell_size": 256
+  }
+}

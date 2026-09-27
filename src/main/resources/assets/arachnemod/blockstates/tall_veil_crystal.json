@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=lower": {
+      "model": "arachnemod:block/tall_veil_crystal_bottom"
+    },
+    "half=upper": {
+      "model": "arachnemod:block/tall_veil_crystal_top"
+    }
+  }
+}

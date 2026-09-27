@@ -1,0 +1,29 @@
+{
+  "ambient_light": 0.10,
+  "attributes": {
+    "minecraft:audio/ambient_sounds": {
+      "loop": "arachnemod:ambience_loop"
+    },
+    "minecraft:visual/fog_start_distance": 0.0,
+    "minecraft:visual/fog_end_distance": 30.0,
+    "minecraft:visual/fog_color": "#090912"
+  },
+  "coordinate_scale": 1.0,
+  "default_clock": "minecraft:the_end",
+  "has_ceiling": false,
+  "has_ender_dragon_fight": false,
+  "has_skylight": false,
+  "has_fixed_time": true,
+  "height": 400,
+  "infiniburn": "#minecraft:infiniburn_end",
+  "logical_height": 400,
+  "min_y": 0,
+  "monster_spawn_block_light_limit": 0,
+  "monster_spawn_light_level": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 7,
+    "min_inclusive": 0
+  },
+  "skybox": "none",
+  "timelines": "#minecraft:in_end"
+}

@@ -1,0 +1,128 @@
+{
+  "arachne_talk1": {
+    "subtitle": "sounds.arachnemod.arachne_talk1",
+    "sounds": [
+      "arachnemod:arachne_talk1"
+    ]
+  },
+    "arachne_talk2": {
+    "subtitle": "sounds.arachnemod.arachne_talk2",
+    "sounds": [
+      "arachnemod:arachne_talk2"
+    ]
+  },
+    "arachne_talk3": {
+    "subtitle": "sounds.arachnemod.arachne_talk3",
+    "sounds": [
+      "arachnemod:arachne_talk3"
+    ]
+  },
+  "scythe_attack": {
+    "subtitle": "sounds.arachnemod.scythe_attack",
+    "sounds": [
+      "arachnemod:scythe_attack"
+    ]
+  },
+  "scythe_idle": {
+    "subtitle": "sounds.arachnemod.scythe_idle",
+    "sounds": [
+      "arachnemod:scythe_idle"
+    ]
+  },
+  "scythe_hurt": {
+    "subtitle": "sounds.arachnemod.scythe_hurt",
+    "sounds": [
+      "arachnemod:scythe_hurt"
+    ]
+  },
+  "scythe_parry": {
+    "subtitle": "sounds.arachnemod.scythe_parry",
+    "sounds": [
+      "arachnemod:scythe_parry"
+    ]
+  },
+    "hopper_hex": {
+    "subtitle": "sounds.arachnemod.hopper_hex",
+    "sounds": [
+      "arachnemod:hopper_hex"
+    ]
+  },
+  "hopper_channel": {
+    "subtitle": "sounds.arachnemod.hopper_channel",
+    "sounds": [
+      "arachnemod:hopper_channel"
+    ]
+  },
+    "scarab_idle1": {
+    "subtitle": "sounds.arachnemod.scarab_idle1",
+    "sounds": [
+      "arachnemod:scarab_idle1"
+    ]
+  },
+	"scarab_idle2": {
+    "subtitle": "sounds.arachnemod.scarab_idle2",
+    "sounds": [
+      "arachnemod:scarab_idle2"
+    ]
+  },
+	"veil_crystal_shimmer": {
+    "subtitle": "sounds.arachnemod.veil_crystal_shimmer",
+    "sounds": [
+      "arachnemod:veil_crystal_shimmer"
+    ]
+  },
+    "needle_loop": {
+    "subtitle": "sounds.arachnemod.needle_loop",
+    "sounds": [
+      "arachnemod:needle_loop"
+    ]
+  },
+  "bedrockfall": {
+  "subtitle": "sounds.arachnemod.bedrockfall",
+  "sounds": [
+    "arachnemod:bedrockfall"
+  ]
+},
+    "ambience_0": {
+    "subtitle": "sounds.arachnemod.ambience_0",
+    "sounds": [
+      "arachnemod:ambience_0"
+    ]
+  },
+    "ambience_1": {
+    "subtitle": "sounds.arachnemod.ambience_1",
+    "sounds": [
+      "arachnemod:ambience_1"
+    ]
+  },
+    "ambience_2": {
+    "subtitle": "sounds.arachnemod.ambience_2",
+    "sounds": [
+      "arachnemod:ambience_2"
+    ]
+  },
+    "ambience_3": {
+    "subtitle": "sounds.arachnemod.ambience_3",
+    "sounds": [
+      "arachnemod:ambience_3"
+    ]
+  },
+    "ambience_loop": {
+    "subtitle": "sounds.arachnemod.ambience_loop",
+    "sounds": [
+      "arachnemod:ambience_loop"
+    ]
+  },
+    "orb_select": {
+    "subtitle": "sounds.arachnemod.orb_select",
+    "sounds": [
+      "arachnemod:orb_select"
+    ]
+  },
+    "darkness_constrict": {
+    "subtitle": "sounds.arachnemod.darkness_constrict",
+    "sounds": [
+      "arachnemod:darkness_constrict"
+    ]
+  }
+}

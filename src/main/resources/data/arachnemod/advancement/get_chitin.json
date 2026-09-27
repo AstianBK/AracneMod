@@ -1,0 +1,30 @@
+{
+  "parent": "arachnemod:enter_void",
+  "criteria": {
+    "getchitin": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "arachnemod:void_chitin"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "description": "Obtain Exo-Chitin",
+    "icon": {
+      "id": "arachnemod:void_chitin"
+    },
+    "title": "Outer Shell",
+    "show_toast": false,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "requirements": [
+    [
+      "getchitin"
+    ]
+  ]
+}

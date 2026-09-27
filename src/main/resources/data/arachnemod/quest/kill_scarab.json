@@ -1,0 +1,9 @@
+{
+  "type" : "HUNT",
+  "title" : "Slay 5 Void Reavers",
+  "entityTypeId" : "arachnemod:scarab",
+  "tier" : 0,
+  "toHuntEntities" : 5,
+  "reputation" : 1,
+  "xp" : 50
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "show_notification": false,
+  "pattern": [
+    " # ",
+    " # ",
+    "#=#"
+  ],
+  "key": {
+    "#": "arachnemod:void_string",
+    "=": "arachnemod:power_fragment"
+  },
+  "result": {
+    "id": "arachnemod:escape_string"
+  }
+}

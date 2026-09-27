@@ -1,0 +1,9 @@
+package com.tbk.voidweaver;
+
+import com.mojang.serialization.Codec;
+
+public enum QuestsType {
+    HUNT,
+    COLLECT;
+    public static final Codec<QuestsType> CODEC = Codec.STRING.xmap(QuestsType::valueOf, QuestsType::name);
+}

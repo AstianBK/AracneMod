@@ -1,0 +1,6 @@
+{
+  "type" : "ENTITY",
+  "idEntity" : "arachnemod:void_hopper",
+  "idDialog" : "arachnemod:arachne_dialogue_hopper",
+  "action": "KILL"
+}
