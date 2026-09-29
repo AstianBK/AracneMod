@@ -9,9 +9,11 @@ import com.astianbk.arachnemod.common.effect.SilentEffect;
 import com.astianbk.arachnemod.common.items.*;
 import com.astianbk.arachnemod.common.worldgenerator.the_depths.TheDepthsChunkGenerator;
 import com.astianbk.arachnemod.common.worldgenerator.the_void.VoidChunkGenerator;
+import com.astianbk.arachnemod.common.worldgenerator.the_void.feature.BonePileFeature;
 import com.astianbk.arachnemod.common.worldgenerator.the_void.feature.BonesFeature;
 import com.astianbk.arachnemod.common.worldgenerator.the_void.feature.PoitedBedrockFeature;
 import com.astianbk.arachnemod.common.worldgenerator.the_void.feature.VoidCrystalFeature;
+import com.astianbk.arachnemod.common.worldgenerator.the_void.feature_configuration.BonePileFeatureConfiguration;
 import com.astianbk.arachnemod.common.worldgenerator.the_void.feature_configuration.VoidCrystalFeatureConfiguration;
 import com.astianbk.arachnemod.common.worldgenerator.the_void.structure.CrystalMonumentStructure;
 import com.astianbk.arachnemod.common.worldgenerator.the_void.structure.VoidBoneRemainsStructure;
@@ -168,6 +170,7 @@ public class NRegistry {
     public static final DeferredBlock<Block> BEDSTONE_GOLD_ORE_BLOCK = BLOCKS.registerBlock("bedstone_gold_ore", (properties -> new Block(properties.noOcclusion().requiresCorrectToolForDrops().strength(4.5F, 3600000.0F))));
     public static final DeferredBlock<Block> BEDSTONE_IRON_ORE_BLOCK = BLOCKS.registerBlock("bedstone_iron_ore", (properties -> new Block(properties.noOcclusion().requiresCorrectToolForDrops().strength(4.5F, 3600000.0F))));
     public static final DeferredBlock<Block> BEDSTONE_OSMIUM_ORE_BLOCK = BLOCKS.registerBlock("bedstone_osmium_ore", (properties -> new Block(properties.noOcclusion().requiresCorrectToolForDrops().strength(4.5F, 3600000.0F))));
+    public static final DeferredBlock<Block> BONE_PILE_BLOCK = BLOCKS.registerBlock("bone_pile", (properties -> new BonePileBlock(properties.noOcclusion().requiresCorrectToolForDrops().strength(4.5F, 3600000.0F))));
 
     public static final DeferredHolder<BlockEntityType<?>,BlockEntityType<ArachneIdolBlockEntity>> ARACHNE_IDOL_BLOCK_ENTITY = BLOCK_ENTITY_TYPE.register("arachne_idol_block_entity", () -> new BlockEntityType<>(ArachneIdolBlockEntity::new, Set.of(WEAVER_IDOL_BLOCK.get())));
 
@@ -192,6 +195,7 @@ public class NRegistry {
     public static final DeferredItem<BlockItem> BEDSTONE_GOLD_ORE = ITEMS.registerSimpleBlockItem("bedstone_gold_ore_item",BEDSTONE_GOLD_ORE_BLOCK);
     public static final DeferredItem<BlockItem> BEDSTONE_IRON_ORE = ITEMS.registerSimpleBlockItem("bedstone_iron_ore_item",BEDSTONE_IRON_ORE_BLOCK);
     public static final DeferredItem<BlockItem> BEDSTONE_OSMIUM_ORE = ITEMS.registerSimpleBlockItem("bedstone_osmium_ore_item",BEDSTONE_OSMIUM_ORE_BLOCK);
+    public static final DeferredItem<BlockItem> BONE_PILE = ITEMS.registerSimpleBlockItem("bone_pile_item",BONE_PILE_BLOCK);
 
     public static final DeferredItem<BlockItem> CRACKED_BEDROCK_ITEM = ITEMS.registerSimpleBlockItem("cracked_bedrock_item",CRACKED_BEDROCK_BLOCK);
     public static final DeferredItem<BlockItem> CHISELED_BEDROCK_ITEM = ITEMS.registerSimpleBlockItem("chiseled_bedrock_item",CHISELED_BEDROCK_BLOCK);
@@ -410,6 +414,9 @@ public class NRegistry {
             FEATURE.register("void_crystal",()->new VoidCrystalFeature(VoidCrystalFeatureConfiguration.CODEC));
     public static final DeferredHolder<Feature<?>,Feature<SpeleothemClusterConfiguration>> POINTED_BEDROCK =
             FEATURE.register("pointed_bedrock",()->new PoitedBedrockFeature(SpeleothemClusterConfiguration.CODEC));
+    public static final DeferredHolder<Feature<?>,Feature<BonePileFeatureConfiguration>> BONE_PILE_FEATURE =
+            FEATURE.register("bone_pile",()->new BonePileFeature(BonePileFeatureConfiguration.CODEC));
+
     public static Consumable.Builder defaultFood() {
         return Consumable.builder().consumeSeconds(1.6F).animation(ItemUseAnimation.EAT).sound(SoundEvents.GENERIC_EAT).hasConsumeParticles(true);
     }

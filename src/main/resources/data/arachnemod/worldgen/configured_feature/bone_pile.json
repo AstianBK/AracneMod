@@ -1,0 +1,8 @@
+{
+  "type": "arachnemod:bone_pile",
+  "config": {
+    "min_count": 1,
+    "max_count": 10,
+    "max_attempts": 3
+  }
+}

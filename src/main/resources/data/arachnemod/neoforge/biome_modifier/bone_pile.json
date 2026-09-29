@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "arachnemod:chasm",
+  "features": "arachnemod:bone_pile",
+  "step": "vegetal_decoration"
+}
