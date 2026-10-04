@@ -172,7 +172,7 @@ public class NRegistry {
     public static final DeferredBlock<Block> BEDSTONE_GOLD_ORE_BLOCK = BLOCKS.registerBlock("bedstone_gold_ore", (properties -> new Block(properties.noOcclusion().requiresCorrectToolForDrops().strength(4.5F, 3600000.0F))));
     public static final DeferredBlock<Block> BEDSTONE_IRON_ORE_BLOCK = BLOCKS.registerBlock("bedstone_iron_ore", (properties -> new Block(properties.noOcclusion().requiresCorrectToolForDrops().strength(4.5F, 3600000.0F))));
     public static final DeferredBlock<Block> BEDSTONE_OSMIUM_ORE_BLOCK = BLOCKS.registerBlock("bedstone_osmium_ore", (properties -> new Block(properties.noOcclusion().requiresCorrectToolForDrops().strength(4.5F, 3600000.0F))));
-    public static final DeferredBlock<Block> BONE_PILE_BLOCK = BLOCKS.registerBlock("bone_pile", (properties -> new BonePileBlock(properties.noOcclusion().requiresCorrectToolForDrops().strength(4.5F, 3600000.0F))));
+    public static final DeferredBlock<Block> BONE_PILE_BLOCK = BLOCKS.registerBlock("bone_pile", (properties -> new BonePileBlock(properties.noOcclusion().strength(0.5F, 3600000.0F))));
 
     public static final DeferredHolder<BlockEntityType<?>,BlockEntityType<ArachneIdolBlockEntity>> ARACHNE_IDOL_BLOCK_ENTITY = BLOCK_ENTITY_TYPE.register("arachne_idol_block_entity", () -> new BlockEntityType<>(ArachneIdolBlockEntity::new, Set.of(WEAVER_IDOL_BLOCK.get())));
 
