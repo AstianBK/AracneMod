@@ -52,7 +52,7 @@ public class TheVoidAttachment {
                     for (Player player : level.players()){
                         if (fall == MAX_FALL_BLOCk_FOR_TICK)break;
                         for (int i = 0 ; i < 3 ; i++){
-                            FallingBlockEntity entity = FallingBlockEntity.fall(level,new BlockPos((int) (player.getRandomX(40)),300, (int)(  player.getRandomZ(40))),NRegistry.BEDROCK_TRANSPARENT_BLOCK.get().defaultBlockState());
+                            FallingBlockEntity entity = FallingBlockEntity.fall(level,new BlockPos((int) (player.getRandomX(40)),300, (int)(  player.getRandomZ(40))),NRegistry.BEDROCK_FALLING_BLOCK.get().defaultBlockState());
                             level.addFreshEntity(entity);
                             fall++;
                         }
