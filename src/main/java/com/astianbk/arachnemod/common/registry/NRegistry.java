@@ -212,23 +212,24 @@ public class NRegistry {
     public static final DeferredItem<BlockItem> COCOONCHEST_ITEM = ITEMS.registerSimpleBlockItem("cocoonchest_item",COCOONCHEST_BLOCK);
 
     public static final DeferredItem<BlockItem> POINTED_BEDROCK_ITEM = ITEMS.registerSimpleBlockItem("pointed_bedrock_item",POINTED_BEDROCK_BLOCK);
-    public static final DeferredItem<Item> SEALING_CRYSTAL_ITEM = ITEMS.registerItem("sealing_crystal_item",(properties)->new SealingCrystalItem(properties.rarity(Rarity.EPIC).component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)));
-    public static final DeferredItem<Item> POWER_FRAGMENT = ITEMS.registerItem("power_fragment", (properties -> new Item(properties.rarity(Rarity.EPIC))));
+    public static final DeferredItem<Item> SEALING_CRYSTAL_ITEM = ITEMS.registerItem("sealing_crystal_item",(properties)->new SealingCrystalItem(properties.rarity(Rarity.EPIC).stacksTo(1).component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)));
+    public static final DeferredItem<Item> POWER_FRAGMENT = ITEMS.registerItem("power_fragment", (properties -> new Item(properties.rarity(Rarity.EPIC).stacksTo(1))));
     public static final DeferredItem<Item> VOID_STRING = ITEMS.registerItem("void_string", Item::new);
-    public static final DeferredItem<Item> ESCAPE_STRING = ITEMS.registerItem("escape_string", (properties -> new EscapeStringItem(properties.rarity(Rarity.UNCOMMON))));
+    public static final DeferredItem<Item> ESCAPE_STRING = ITEMS.registerItem("escape_string", (properties -> new EscapeStringItem(properties.rarity(Rarity.UNCOMMON).stacksTo(1))));
     public static final DeferredItem<Item> ARTHROPOD_EYE = ITEMS.registerItem("arthropod_eye", properties -> new Item(properties.food((new FoodProperties.Builder()).nutrition(4).saturationModifier(0.1F).build(),defaultFood().onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.HUNGER, 200, 0), 0.4F)).build())));
     public static final DeferredItem<Item> CHITIN_LEG = ITEMS.registerItem("chitin_leg", properties -> new Item(properties.food((new FoodProperties.Builder()).nutrition(2).saturationModifier(0.3F).build(),defaultFood().onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.HUNGER, 200, 0), 0.2F)).build())));
-    public static final DeferredItem<Item> ENTER_DIMENSION_ITEM = ITEMS.registerItem("enter_dimension", (properties -> new Item(properties.rarity(Rarity.EPIC))));
+    public static final DeferredItem<Item> ENTER_DIMENSION_ITEM = ITEMS.registerItem("enter_dimension", (properties -> new Item(properties.rarity(Rarity.EPIC).stacksTo(1))));
 
     public static final DeferredItem<Item> VOID_CHITIN = ITEMS.registerItem("void_chitin", Item::new);
+    public static final DeferredItem<Item> CHITIN_SPIKE = ITEMS.registerItem("chitin_spike", Item::new);
     public static final DeferredItem<Item> RAW_OSMIUM = ITEMS.registerItem("raw_osmium", Item::new);
     public static final DeferredItem<Item> OSMIUM_INGOT = ITEMS.registerItem("osmium_ingot", Item::new);
-    public static final DeferredItem<Item> WEAVER_COCOON = ITEMS.registerItem("weaver_cocoon", (properties -> new Item(properties.rarity(Rarity.RARE))));
+    public static final DeferredItem<Item> WEAVER_COCOON = ITEMS.registerItem("weaver_cocoon", (properties -> new Item(properties.rarity(Rarity.RARE).stacksTo(1))));
 
-    public static final DeferredItem<Item> OSMIUM_HELMET = ITEMS.registerItem("osmium_helmet",(properties)->new OsmiumArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.OSMIUM, ArmorType.HELMET).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"osmium_helmet" )))));
-    public static final DeferredItem<Item> OSMIUM_CHESTPLATE = ITEMS.registerItem("osmium_chestplate",(properties)->new OsmiumArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.OSMIUM, ArmorType.CHESTPLATE).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"osmium_chestplate" )))));
-    public static final DeferredItem<Item> OSMIUM_LEGGINGS = ITEMS.registerItem("osmium_leggings",(properties)->new OsmiumArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.OSMIUM, ArmorType.LEGGINGS).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"osmium_leggings" )))));
-    public static final DeferredItem<Item> OSMIUM_BOOTS = ITEMS.registerItem("osmium_boots",(properties)->new OsmiumArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.OSMIUM, ArmorType.BOOTS).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"osmium_boots" )))));
+    public static final DeferredItem<Item> OSMIUM_HELMET = ITEMS.registerItem("osmium_helmet",(properties)->new OsmiumArmorItem(new Item.Properties().stacksTo(1).humanoidArmor(VoidMaterial.OSMIUM, ArmorType.HELMET).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"osmium_helmet" )))));
+    public static final DeferredItem<Item> OSMIUM_CHESTPLATE = ITEMS.registerItem("osmium_chestplate",(properties)->new OsmiumArmorItem(new Item.Properties().stacksTo(1).humanoidArmor(VoidMaterial.OSMIUM, ArmorType.CHESTPLATE).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"osmium_chestplate" )))));
+    public static final DeferredItem<Item> OSMIUM_LEGGINGS = ITEMS.registerItem("osmium_leggings",(properties)->new OsmiumArmorItem(new Item.Properties().stacksTo(1).humanoidArmor(VoidMaterial.OSMIUM, ArmorType.LEGGINGS).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"osmium_leggings" )))));
+    public static final DeferredItem<Item> OSMIUM_BOOTS = ITEMS.registerItem("osmium_boots",(properties)->new OsmiumArmorItem(new Item.Properties().stacksTo(1).humanoidArmor(VoidMaterial.OSMIUM, ArmorType.BOOTS).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"osmium_boots" )))));
     public static final DeferredItem<Item> VOID_SCARAB_SPAWN_EGG = ITEMS.registerItem("void_scarab_spawn_egg",(properties)->new SpawnEggItem(properties.spawnEgg(NRegistry.SCARAB.get())));
     public static final DeferredItem<Item> VOID_HOPPER_SPAWN_EGG = ITEMS.registerItem("void_hopper_spawn_egg",(properties)->new SpawnEggItem(properties.spawnEgg(NRegistry.VOID_HOPPER.get())));
     public static final DeferredItem<Item> VOID_NEEDLE_SPAWN_EGG = ITEMS.registerItem("void_needle_spawn_egg",(properties)->new SpawnEggItem(properties.spawnEgg(NRegistry.VOID_NEEDLE.get())));
@@ -238,9 +239,9 @@ public class NRegistry {
     public static final DeferredItem<Item> VOID_CHESTPLATE = ITEMS.registerItem("void_chestplate",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.CHESTPLATE).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_chestplate")))));
     public static final DeferredItem<Item> VOID_LEGGINGS = ITEMS.registerItem("void_leggings",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.LEGGINGS).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_leggings" )))));
     public static final DeferredItem<Item> VOID_BOOTS = ITEMS.registerItem("void_boots",(properties)->new VoidKnightArmorItem(new Item.Properties().humanoidArmor(VoidMaterial.VOID, ArmorType.BOOTS).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"void_boots" )))));
-    public static final DeferredItem<Item> NEEDLE_HELMET = ITEMS.registerItem("needle_helmet",(properties)->new NeedleHelmetItem(new Item.Properties().durability(100).repairable(CHITIN_TOOL_MATERIAL).humanoidArmor(VoidMaterial.NEEDLE_HELMET, ArmorType.HELMET).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"needle_helmet" )))));
-    public static final DeferredItem<Item> SCYTHE_SCISSORS = ITEMS.registerItem("scythe_scissors", (properties -> new ScytheScissorsItem(properties.durability(100).repairable(CHITIN_TOOL_MATERIAL))));
-    public static final DeferredItem<Item> REAVER_GAUNTLET = ITEMS.registerItem("reaver_gauntlet",(properties)->new ReaverGauntletItem(properties.sword(EXO_CHITIN,8,-3.0F).component(DataComponents.USE_EFFECTS,new UseEffects(true,false,1.0F)).delayedComponent(DataComponents.BLOCKS_ATTACKS,(context) -> new BlocksAttacks(0.25F, 1.0F, List.of(new BlocksAttacks.DamageReduction(90.0F, Optional.empty(), 0.0F, 1.0F)), new BlocksAttacks.ItemDamageFunction(3.0F, 1.0F, 1.0F), Optional.of(context.getOrThrow(DamageTypeTags.BYPASSES_SHIELD)), Optional.of(SoundEvents.SHIELD_BLOCK), Optional.of(SoundEvents.SHIELD_BREAK)))));
+    public static final DeferredItem<Item> NEEDLE_HELMET = ITEMS.registerItem("needle_helmet",(properties)->new NeedleHelmetItem(new Item.Properties().stacksTo(1).durability(100).repairable(CHITIN_TOOL_MATERIAL).humanoidArmor(VoidMaterial.NEEDLE_HELMET, ArmorType.HELMET).setId(ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(AracneMod.MODID,"needle_helmet" )))));
+    public static final DeferredItem<Item> SCYTHE_SCISSORS = ITEMS.registerItem("scythe_scissors", (properties -> new ScytheScissorsItem(properties.stacksTo(1).durability(100).repairable(CHITIN_TOOL_MATERIAL))));
+    public static final DeferredItem<Item> REAVER_GAUNTLET = ITEMS.registerItem("reaver_gauntlet",(properties)->new ReaverGauntletItem(properties.stacksTo(1).sword(EXO_CHITIN,8,-3.0F).component(DataComponents.USE_EFFECTS,new UseEffects(true,false,1.0F)).delayedComponent(DataComponents.BLOCKS_ATTACKS,(context) -> new BlocksAttacks(0.25F, 1.0F, List.of(new BlocksAttacks.DamageReduction(90.0F, Optional.empty(), 0.0F, 1.0F)), new BlocksAttacks.ItemDamageFunction(3.0F, 1.0F, 1.0F), Optional.of(context.getOrThrow(DamageTypeTags.BYPASSES_SHIELD)), Optional.of(SoundEvents.SHIELD_BLOCK), Optional.of(SoundEvents.SHIELD_BREAK)))));
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> TAB = CREATIVE_MODE_TABS.register("tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.arachnemod"))
@@ -256,6 +257,7 @@ public class NRegistry {
                 output.accept(POWER_FRAGMENT.get());
                 output.accept(VOID_STRING.get());
                 output.accept(VOID_CHITIN.get());
+                output.accept(CHITIN_SPIKE.get());
                 output.accept(CHITIN_LEG.get());
                 output.accept(ARTHROPOD_EYE.get());
                 output.accept(WEAVER_COCOON.get());
